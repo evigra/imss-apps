@@ -5,6 +5,8 @@
 		##  Propiedades	
 		##############################################################################
 		var $mod_menu=array();
+
+
 		
 		var $sys_fields		=array( 
 			"id"	    =>array(
