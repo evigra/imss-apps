@@ -1,0 +1,164 @@
+<div class="fondo_formulario">
+	{trabajador_departamento_id}	
+	{trabajador_puesto_id}
+	
+
+	<div class="subtitulo">TRABAJADOR </div> 
+	<table border="0"  width="100%">
+		<tr>
+			<td width="13%" colspan="2">
+				{trabajador_clave}
+			</td>                	
+			<td width="20%">
+				{trabajador_nss}
+			</td>                	
+			
+			<td colspan="3">
+				{trabajador_horario}
+			</td>               												
+			<td colspan="3">
+				{trabajador_puesto} 
+			</td>        
+		</tr>   
+		<tr>
+			<td colspan="9">
+				{trabajador_nombre}
+			</td>                	
+		</tr>   
+		<tr>
+			<td colspan="3">	{trabajador_departamento}	</td>        
+			<td colspan="6">	{trabajador_dependencia} 	</td>        			
+		</tr>         
+	</table>
+
+			<div id="tabs" class="form">
+				<ul>
+					<li  class="form"><a href="#tabs-1">Citas</a></li>
+					<li  class="form"><a href="#tabs-2">InterConsultas</a></li>
+					<li  class="form"><a href="#tabs-3">Laboratorio</a></li>					
+					<li  class="form"><a href="#tabs-5">Rayos X</a></li>					
+					<li  class="form"><a href="#tabs-4">Historico</a></li>					
+				</ul>
+				<div id="tabs-1" class="form">
+					<table border="0"  width="100%">
+						<tr>
+							<td valign="top">{cita_laboratorio}	</td>           
+							<td valign="top">{horario_laboratorio}</td>                	
+							<td valign="top">{laboratorio}</td>                	
+							<td></td>           
+							<td rowspan="3"  valign="top" align="right">{boton_citas}</td>           
+						</tr>   
+						<tr>
+							<td width="13%" >{cita}			</td>                	
+							<td width="10%" >{horario}		</td>               			
+							<td width="10%">{cita_cumplida}	</td> 									
+						</tr>   
+					</table>
+					<table border="0"  width="100%">
+						<tr>
+							<td width="50%" valign="top">{examenes_laboratorio}</td>           
+							<td valign="top">{examenes_rayosx}</td>                	
+						</tr>   
+					</table>					
+				</div>		
+				<div id="tabs-2" class="form">	
+					<table border="0"  width="100%">
+						<tr>
+							<td  valign="top" width="50%">
+
+								<table border="0"  width="100%">
+									<tr><td width="10%">{alergologia}</td><td>{m_alergologia}</td></tr>
+									<tr><td>{angiologia}</td><td>{m_angiologia}</td></tr>
+									<tr><td>{audiometria}</td><td>{m_audiometria}</td></tr>
+									<tr><td>{cardiologia}</td><td>{m_cardiologia}</td></tr>
+									<tr><td>{c_general}</td><td>{m_c_general}</td></tr>
+									<tr><td>{c_mama}</td><td>{m_c_mama}</td></tr>
+									<tr><td>{dermatologia}</td><td>{m_dermatologia}</td></tr>
+									<tr><td>{endocrinologia}</td><td>{m_endocrinologia}</td></tr>
+									<tr><td>{estomatologia}</td><td>{m_estomatologia}</td></tr>
+									<tr><td>{gastroenterologia}</td><td>{m_gastroenterologia}</td></tr>
+									<tr><td>{ginecologia}</td><td>{m_ginecologia}</td></tr>
+									<tr><td>{hematologia}</td><td>{m_hematologia}</td></tr>
+									<tr><td>{psiquiatria}</td><td>{m_psiquiatria}</td></tr>
+																		
+								</table>
+							
+							</td>						
+							<td valign="top">
+								<table border="0"  width="100%">
+									<tr><td width="10%">{maxilofacial}</td><td>{m_maxilofacial}</td></tr>
+									<tr><td>{m_familiar}</td><td>{m_m_familiar}</td></tr>
+									<tr><td>{m_interna}</td><td>{m_m_interna}</td></tr>
+									<tr><td>{neumologia}</td><td>{m_neumologia}</td></tr>
+									<tr><td>{neurologia}</td><td>{m_neurologia}</td></tr>
+									<tr><td>{nutriologia}</td><td>{m_nutriologia}</td></tr>
+									<tr><td>{oftalmologia}</td><td>{m_oftalmologia}</td></tr>
+									<tr><td>{otorrinolaringologia}</td><td>{m_otorrinolaringologia}</td></tr>
+									<tr><td>{pass}</td><td>{m_pass}</td></tr>
+									<tr><td>{urologia}</td><td>{m_urologia}</td></tr>
+									<tr><td>{traumatologia}</td><td>{m_traumatologia}</td></tr>								
+									<tr><td>{usg}</td><td>{m_usg}</td></tr>								
+								</table>							
+							</td>
+						</tr>
+					</table>
+				
+				
+
+					<br>
+					{boton_interconsultas}
+
+				</div>
+				<div id="tabs-3" class="form">	
+				
+					<div id="tabs2" class="form">
+						<ul>
+							<li  class="form"><a href="#tabs-1_COL">COLIMA</a></li>
+							<li  class="form"><a href="#tabs-2_MZO">MANZANILLO</a></li>
+							<li  class="form"><a href="#tabs-3_TEC">TECOMAN</a></li>					
+						</ul>
+						<div id="tabs-1_COL" class="form">				
+							<iframe id="ilaboratorio" name="ilaboratorio" height="400" width="100%" src="../modulos/sppstims_citados/ajax/laboratorio.php">					
+							</iframe>					
+							<script>
+								var src="../modulos/sppstims_citados/ajax/laboratorio.php?trabajador_nss=" + $("#trabajador_nss").val();
+								$("#ilaboratorio").attr({"src":src});					
+							</script>					
+						</div>		
+						<div id="tabs-2_MZO" class="form">				
+							<iframe id="ilaboratorio" name="ilaboratorio" height="400" width="100%" src="../modulos/sppstims_citados/ajax/laboratorio.php">					
+							</iframe>					
+							<script>
+								var src="../modulos/sppstims_citados/ajax/laboratorio.php?trabajador_nss=" + $("#trabajador_nss").val();
+								$("#ilaboratorio").attr({"src":src});					
+							</script>					
+						</div>		
+						
+					</div>
+				</div>
+				<div id="tabs-5" class="form">	
+					<!--
+					<iframe id="irayos" name="irayos" height="400" width="100%" src="../modulos/sppstims_citados/ajax/rayos.php">					
+					</iframe>					
+					<script>
+						var src="../modulos/sppstims_citados/ajax/rayos.php?trabajador_nss=" + $("#trabajador_nss").val();
+						$("#irayos").attr({"src":src});					
+					</script>					
+					-->
+				</div>
+				
+				<div id="tabs-4" class="form">	
+					<div style="position: relative; height:400px;">
+						{sys_historico}
+					</div>
+				</div>				
+				
+				
+				
+			</div>	
+  <script>
+	  $(function() {
+		$( "#tabs,#tabs2" ).tabs();
+	  });
+  </script> 	
+</div>

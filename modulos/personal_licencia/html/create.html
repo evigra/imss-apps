@@ -1,0 +1,94 @@
+<div class="fondo_formulario">
+	{sustituto_departamento_id}
+	{sustituto_departamento}	
+	
+	{trabajador_departamento_id}
+	{trabajador_departamento}	
+	{trabajador_horario}
+	{trabajador_puesto}
+	{trabajador_nombre}
+	
+	{estatus}
+
+	
+    <table border="0"  width="100%" >
+        <tr>
+            <td colspan="2">				
+				<!--
+				<div class="subtitulo" style="float: left;">TRABAJADOR </div> 
+				-->
+				<div class="subtitulo" style="float: left;"><font id="trabajador" style="color:black;">&nbsp</font></div> 
+			<td>
+		</tr>	
+        <tr>
+            <td width="50%" valign="top">
+				<table border="0"  width="100%">
+					<tr>
+						<td width="25%" colspan="2">{trabajador_clave}</td>                	
+						<td width="25%" colspan="2">{inicio}</td>        
+						<td colspan="2">{fin}</td>        												
+						<td colspan="3">{goce}</td>        												
+					</tr>   
+					<tr>
+						<td colspan="9">
+							<div class="subtitulo">GENERALES </div> 	
+						</td>               																	
+					</tr>    
+					
+				</table>
+				<div id="block_goce">
+					<table border="0"  width="100%">										
+							<tr>						
+								<td width="33%" colspan="3">{articulo} </td>        
+								<td width="33%" colspan="3">{fraccion} </td>        
+								<td colspan="2">{inciso} </td>        						
+								<td></td>							
+							</tr>    	
+							<tr>						
+								<td width="66%" colspan="6">{motivo} </td>        
+								<td>{comprovante} </td>        
+							</tr>    																		
+					</table>
+				</div>
+				<div id="block_no_goce">
+					<table border="0"  width="100%">										
+							<tr>						
+								<td width="25%" colspan="2">{clausula}</td>
+								<td width="25%" colspan="2">{fraccion} </td>        								
+								<td width="50%" colspan="4"></td>               																	
+							</tr>    					
+						
+					</table>
+				</div>
+				<div id="block_nota">
+					<table border="0"  width="100%">										
+							<tr>						
+								<td colspan="9">
+									{observacion}								
+								</td> 
+							</tr>    											
+					</table>
+				</div>
+				<br>
+				<div id="comentario">
+					<div id="nota_fraccion"></div>					
+					<div id="nota_inciso"></div>
+				</div>
+            </td>                	
+            <td valign="top" style="padding-left:10px;" align="right">
+				<div id="REPORT"></div>
+				*NOTA, Solicitudes realizadas:  
+				<font style="color:green">AUTORIZADO</font>
+				<font style="color:red">CANCELADO</font>
+				<font>PENDIENTE DE AUTORIZAR</font>
+				
+            </td>                	
+        </tr>   
+    </table>
+
+</div>
+
+
+
+
+

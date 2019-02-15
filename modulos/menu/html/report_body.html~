@@ -1,0 +1,34 @@
+            
+		    <tr  class={class}>
+		        <td width="50">
+		        	<table>
+		        		<tr>
+			        		<td>
+								<a href="&sys_section=show&sys_action=&sys_id={id}"  class="ui-icon ui-icon-contact">
+									{id}
+								</a>								
+							</td>
+			        		<td>
+								<a href="&sys_section=write&sys_action=&sys_id={id}" class="ui-icon ui-icon-pencil">
+									{id}
+								</a>								
+							</td>						
+			        		<td>
+			        			<input type="checkbox" name="menu[]">								
+							</td>													
+						</tr>
+					</table>
+		        </td>
+		        <td width="100">{type}</td>
+		        <td width="20">
+    				<a href="&sys_section=create&parent={id}" class="ui-icon ui-icon-arrowthickstop-1-s">
+						{id}
+					</a>	
+				</td>
+		        <td>					
+			        {name}
+		        </td>
+		        <td>{link}</td>		        
+		    </tr>    
+            
+

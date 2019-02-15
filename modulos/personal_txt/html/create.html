@@ -1,0 +1,78 @@
+<div class="fondo_formulario">
+	{sustituto_departamento_id}
+	{sustituto_departamento}	
+	{sustituto_puesto_id}
+	{trabajador_departamento_id}
+	{trabajador_departamento}	
+	{trabajador_puesto_id}
+	{estatus}
+
+	<div class="subtitulo">TRABAJADOR </div> 
+    <table border="0"  width="100%" >
+        <tr>
+            <td width="50%" >
+				<table border="0"  width="100%">
+					<tr>
+						<td width="33%" colspan="3">
+							{trabajador_clave}
+						</td>                	
+						<td colspan="3">
+							{trabajador_turno}	
+						</td>               
+						<td colspan="3">
+							{trabajador_horario}
+						</td>               												
+					</tr>   
+					<tr>
+						<td colspan="9">
+							{trabajador_nombre}
+						</td>                	
+					</tr>   
+					<tr>
+						<td colspan="9">
+							{trabajador_puesto} 
+						</td>        
+					</tr>         
+				</table>
+				
+				<div class="subtitulo">SUSTITUTO</div>    
+				<table border="0"  width="100%">
+					<tr>
+						<td width="33%">                        
+							{sustituto_clave}
+						</td>                	
+						<td width="33%">
+							{sustituto_turno}
+						</td>                	
+						<td>
+							{sustituto_horario}
+						</td>	
+					</tr>   						
+				    <tr>
+						<td colspan="3"> 
+							{sustituto_nombre}
+						</td>                							
+					</tr>   
+				    <tr>
+						<td colspan="2"> 
+							{sustituto_puesto}
+						</td>                							
+						<td width="33%">
+							{dias}
+						</td>        						
+					</tr>   					
+				</table>
+    		
+            </td>                	
+            <td valign="top" style="padding-left:10px;" align="right">
+				<div id="REPORT"></div>
+				*NOTA, Solicitudes realizadas:  
+				<font style="color:green">AUTORIZADO</font>
+				<font style="color:red">CANCELADO</font>
+				<font>PENDIENTE DE AUTORIZAR</font>
+				
+            </td>                	
+        </tr>   
+    </table>
+
+</div>

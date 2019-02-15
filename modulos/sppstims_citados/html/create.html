@@ -1,0 +1,75 @@
+<div class="fondo_formulario">
+	{trabajador_departamento_id}	
+	{trabajador_puesto_id}
+	{estatus}
+
+	<div class="subtitulo">TRABAJADOR </div> 
+	<table border="0"  width="100%">
+		<tr>
+			<td width="13%" colspan="2">
+				{trabajador_clave}
+			</td>                	
+			<td width="20%">
+				{trabajador_nss}
+			</td>                	
+			
+			<td colspan="3">
+				{trabajador_horario}
+			</td>               												
+			<td colspan="3">
+				{trabajador_puesto} 
+			</td>        
+		</tr>   
+		<tr>
+			<td colspan="9">
+				{trabajador_nombre}
+			</td>                	
+		</tr>   
+		<tr>
+			<td colspan="3">	{trabajador_departamento}	</td>        
+			<td colspan="6">	{trabajador_dependencia} 	</td>        			
+		</tr>         
+	</table>
+
+			<div id="tabs" class="form">
+				<ul>
+					<li  class="form"><a href="#tabs-1">Citas</a></li>
+					<li  class="form"><a href="#tabs-2">Historicos Acumulados</a></li>
+					
+				</ul>
+				<div id="tabs-1" class="form">
+					<table border="0"  width="100%">
+						<tr>
+							<td valign="top">{cita_laboratorio}	</td>           
+							<td valign="top">{horario_laboratorio}</td>                	
+							<td valign="top">{laboratorio}</td>                	
+							<td></td>           
+							<td rowspan="3" >{boton_citas}</td>           
+						</tr>   
+						<tr>
+							<td width="13%" >{cita}			</td>                	
+							<td width="10%" >{horario}		</td>               			
+							<td width="10%">{cita_cumplida}	</td> 									
+						</tr>   
+					</table>
+					<br>	
+					{examenes_laboratorio}
+
+				</div>		
+				<div id="tabs-2" class="form">
+					{historicos_ids}
+				</div>
+				<div id="tabs-3" class="form">
+					{conceptos_ids}
+				</div>
+			</div>	
+	
+
+  <script>
+	  $(function() {
+		$( "#tabs" ).tabs();
+	  });
+  </script> 	
+	
+
+</div>
