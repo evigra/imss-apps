@@ -1,5 +1,5 @@
 <?php	
-	$objeto											=new seet_asegurado();		
+	$objeto											=new fonoaudiologia();		
 	$objeto->__SESSION();
 	$_SESSION["pdf"]["subject"]						="DIRECCION DE PRESTACIONES ECONOMICAS Y SOCIALES";
 	
