@@ -19,18 +19,12 @@
 		var $sys_fields		=array( 
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"nss"	    =>array(
 			    "title"             => "NSS",
-			    "showTitle"         => "si",
 				"holder"             => "0000 00 0000",			    
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(		
 					"required",					
 					"placeholder" 	=> "0000 00 0000",			    
@@ -41,10 +35,7 @@
 			"nombre"	    =>array(
 			    "title"             => "Nombre",
 				"title_filter"      => "Nombre",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",
   			    "style"             => array(			    	
 					"color"=>array("red"=>"1==1"),
 					"font-size"=>array("25px"=>"1==1"),					
@@ -53,11 +44,29 @@
 			),		
 			"agregado"	    =>array(
 			    "title"             => "Agregado",				
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",		
 			),
+			"colonia"	    =>array(
+			    "title"             => "Colonia",				
+			    "type"              => "input",
+			),
+			"cp"	    =>array(
+			    "title"             => "CP",				
+			    "type"              => "input",
+			),
+			"calle"	    =>array(
+			    "title"             => "Calle",				
+			    "type"              => "input",
+			),
+			"numero"	    =>array(
+			    "title"             => "Numero",				
+			    "type"              => "input",
+			),
+			"Telefono"	    =>array(
+			    "title"             => "Telefono",				
+			    "type"              => "input",
+			),
+
 			"incapacidad_ids"	    =>array(
 			    "title"             => "Horario",
 			    "showTitle"         => "si",
