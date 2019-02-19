@@ -62,7 +62,7 @@
 			    "title"             => "Numero",				
 			    "type"              => "input",
 			),
-			"Telefono"	    =>array(
+			"telefono"	    =>array(
 			    "title"             => "Telefono",				
 			    "type"              => "input",
 			),
