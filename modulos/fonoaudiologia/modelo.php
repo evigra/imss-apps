@@ -57,7 +57,8 @@
 			    "class_field_m"    	=> "asegurado_id",				
 				#"class_field_l"    	=> "horario",	
 	
-	*/		),							
+			),							
+*/
 		);				
 		##############################################################################	
 		##  Metodos	
@@ -76,8 +77,6 @@
     	    return parent::__SAVE($datas,$option);
 		}
 		#*/		
-
-
 	}
 ?>
 
