@@ -1,12 +1,33 @@
 	$(document).ready(function()
 	{			
-	    if($("#action_dev").length>0)
+	    if($("#sobres_patrones").length>0)
+	    {
+			$("#sobres_patrones").click(function()
+			{
+				generacion_var("&sys_action=print_pdf&sys_section_seet_asegurado=carta_patron");
+				
+				$("form")
+					.attr({"target":"_blank"})					
+					.submit()					
+					.removeAttr("target");
+					
+				$("#sys_section_" + obj).val(section);									
+				$("#sys_action").val("");													
+				
+				
+				
+				//&sys_action=print_pdf&sys_section_seet_asegurado=carta_patron&sys_id_seet_asegurado={id}	
+				$("#sys_section_seet_asegurado").val("sobres_patrones");				
+				$("#sys_action").val("print_pdf");				
+				$("form").submit();				
+		    });
+	    }	    
+
+		if($("#action_dev").length>0)
 	    {
 			$("#action_dev").click(function()
 			{
 				$("#sys_section_seet_asegurado").val("__SAVE");				
-
-			
 				$("form").submit();				
 		    });
 	    }	    
@@ -85,8 +106,29 @@
 				}
 			});			
 			
-		});	
-    });
+		});
+		$("#registro_patronal").focusout(function() 		
+		{					
+			$.ajax({
+				type: 'GET',
+				url: '../modulos/patron/ajax/index.php',
+				contentType:"application/json",
+				data:"&rp_rale="+$(this).val(),				
+				success: function (response) 
+				{
+					var obj = $.parseJSON( response);
+					if(obj.length>0)
+					{		
+							$("#patron").val(obj[0].nombre);
+							$("#patron_locacion").val(obj[0].mpio_edo);
+							$("#patron_domicilio").val(obj[0].domicilio);
+
+					}	
+				}
+			});			
+			
+		});
+	});	
 	
 	function valida_matricula(tipo, obj,)
 	{

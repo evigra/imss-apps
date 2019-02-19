@@ -15,21 +15,4 @@
 	
 	echo json_encode($data["data"]);
 	
-	/*
-	if($data["total"]>0)
-	{
-		echo " 
-			<script>
-				alert(\"aaa\");
-				$(\"#sys_id_seet_asegurado\").val(\"{$data["data"][0]["id"]}\");
-				$(\"#sys_section_seet_asegurado\").val(\"write\");
-				//$(\"form\").submit();
-				
-			</script>
-		";	
-
-	}
-	*/
-	#$objeto->__PRINT_R($data);
-	
 ?>
