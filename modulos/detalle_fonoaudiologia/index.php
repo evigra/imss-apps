@@ -1,5 +1,5 @@
 <?php	
-	$objeto											=new detalle_paciente();		
+	$objeto											=new detalle_fonoaudiologia();		
 	$objeto->__SESSION();
 	#$objeto->__PRINT_R($_SESSION);
 	

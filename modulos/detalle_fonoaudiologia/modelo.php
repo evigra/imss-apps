@@ -1,5 +1,5 @@
 <?php
-	class detalle_paciente extends general
+	class detalle_fonoaudiologia extends general
 	{   
 		##############################################################################	
 		##  Propiedades	
