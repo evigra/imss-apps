@@ -1,5 +1,5 @@
 <?php
-	class seet_asegurado extends general
+	class fonoaudiologia extends general
 	{   
 		##############################################################################	
 		##  Propiedades	
