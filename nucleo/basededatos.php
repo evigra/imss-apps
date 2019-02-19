@@ -5,18 +5,19 @@
 		var $OPHP_database=array(
 			"user"		=>"admin_evigra",
 			"pass"		=>"EvG30JiC06",
-			#"name"		=>"admin_soles",			
 			"name"		=>"admin_imss",
-			"host"		=>"localhost",
-			#"host"		=>"imss_apps.com",
+			"host"		=>"solesgps.com",
+			#"host"		=>"localhost",
 			"type"		=>"mysql",
 		);
+
+
 		#*/		
 		function abrir_conexion()
 		{
 			if($this->OPHP_database["type"]=="mysql")	        	
 			{			
-				$this->OPHP_conexion = @mysqli_connect($this->OPHP_database["host"], $this->OPHP_database["user"], $this->OPHP_database["pass"], $this->OPHP_database["name"]) OR $this->reconexion();
+				$this->OPHP_conexion = @mysqli_connect("localhost", $this->OPHP_database["user"], $this->OPHP_database["pass"], $this->OPHP_database["name"]) OR $this->reconexion();
 			}
 		}
 
@@ -24,7 +25,7 @@
 		{
 			if($this->OPHP_database["type"]=="mysql")	        	
 			{
-				$this->OPHP_conexion = @mysqli_connect("localhost", $this->OPHP_database["user"], $this->OPHP_database["pass"], $this->OPHP_database["name"]);
+				$this->OPHP_conexion = @mysqli_connect("solesgps.com", $this->OPHP_database["user"], $this->OPHP_database["pass"], $this->OPHP_database["name"]);
 			}
 		}
 		
