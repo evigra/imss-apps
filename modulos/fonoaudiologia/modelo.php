@@ -19,17 +19,11 @@
 		var $sys_fields		=array( 
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"nss"	    =>array(
 			    "title"             => "NSS",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(		
 					"required",					
 			    ),				
@@ -38,10 +32,7 @@
 			"nombre"	    =>array(
 			    "title"             => "Nombre",
 				"title_filter"      => "Nombre",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",
   			    "style"             => array(			    	
 					"color"=>array("red"=>"1==1"),
 					"font-size"=>array("25px"=>"1==1"),					
@@ -50,19 +41,14 @@
 			),		
 			"agregado"	    =>array(
 			    "title"             => "Agregado",				
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",		
 			),
 			
-			
+/*			
 			"conceptos_ids"	    =>array(
 			    "title"             => "Horario",
 			    "showTitle"         => "si",
 			    "type"              => "form",
-			    "default"           => "",
-			    "value"             => "",
 			    "relation"          => "many2one",			    
 			    "class_name"       	=> "incapacidad",			    
 				#"class_template"  	=> "many2one_lateral",			    
@@ -70,7 +56,8 @@
 			    "class_field_o"    	=> "id",
 			    "class_field_m"    	=> "asegurado_id",				
 				#"class_field_l"    	=> "horario",	
-			),							
+	
+	*/		),							
 		);				
 		##############################################################################	
 		##  Metodos	
@@ -86,30 +73,6 @@
    		public function __SAVE($datas=NULL,$option=NULL)
     	{
     		## GUARDAR USUARIO
-    		#$datas["total"]		=count(explode(",",$datas["dias"]));
-			#$datas["registro"]=$this->sys_date;
-			/*
-			if($datas["estatus"]=="APROVADO")
-			{
-				$datas["autorizo"]		=$_SESSION["user"]["nombre"];
-				$datas["m_autorizo"]	=$_SESSION["user"]["matricula"];								
-			}				
-			
-			
-    		if($this->sys_section_personal_calculo=="create")
-			{
-				$datas["registro"]		=$this->sys_date;
-				$datas["elaboro"]		=$_SESSION["user"]["nombre"];
-				$datas["m_elaboro"]		=$_SESSION["user"]["matricula"];				
-			}
-			
-			
-			$datas["cpto_1vez"]			=count($datas["conceptos_ids"]);		
-			*/
-			#$option["echo"]=$datas["total"];
-			
-			#$this->__PRINT_R($datas);
-    		
     	    return parent::__SAVE($datas,$option);
 		}
 		#*/		
