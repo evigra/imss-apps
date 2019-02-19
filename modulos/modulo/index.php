@@ -320,8 +320,7 @@
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
 		$option["template_title"]	                = $objeto->sys_module . "html/report_title";
 		$option["template_body"]	                = $objeto->sys_module . "html/report_body";
-		
-				
+						
 		$data										= $objeto->__REPORTE($option);		
 		$objeto->words["module_body"]				=$data["html"];
 		

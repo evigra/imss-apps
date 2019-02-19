@@ -10,25 +10,16 @@
 		var $sys_fields		=array( 
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"clase"	    =>array(
 			    "title"             => "Clase",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"Descripcion"	    =>array(
 			    "title"             => "Descripcion",
 				"title_filter"      => "Nombre",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",
 			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    			    
