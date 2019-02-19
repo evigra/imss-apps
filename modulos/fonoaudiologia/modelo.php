@@ -55,6 +55,8 @@
 			    "default"           => "",
 			    "value"             => "",		
 			),
+			
+			
 			"conceptos_ids"	    =>array(
 			    "title"             => "Horario",
 			    "showTitle"         => "si",
