@@ -38,7 +38,7 @@
 			    ),			    			    
 				
 			),		
-	
+			/*
 			"campos"	    =>array(
 			    "title"             => "Horario",
 			    "showTitle"         => "si",
@@ -53,7 +53,7 @@
 			    "class_field_m"    	=> "modulo_id",				
 				#"class_field_l"    	=> "horario",	
 			),
-
+*/
 			
 			
 				
