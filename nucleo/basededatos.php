@@ -8,7 +8,7 @@
 			#"name"		=>"admin_soles",			
 			"name"		=>"admin_imss",
 			"host"		=>"localhost",
-			"host"		=>"imss_apps.com",
+			#"host"		=>"imss_apps.com",
 			"type"		=>"mysql",
 		);
 		#*/		
