@@ -5,9 +5,8 @@
 		##  Propiedades	
 		##############################################################################
 		var $mod_menu=array();
+		var $sys_table			="detalle_paciente";
 
-
-		
 		var $sys_fields		=array( 
 			"id"	    =>array(
 			    "title"             => "id",
