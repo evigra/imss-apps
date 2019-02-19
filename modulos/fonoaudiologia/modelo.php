@@ -65,7 +65,7 @@
 			    "default"           => "",
 			    "value"             => "",
 			    "relation"          => "many2one",			    
-			    "class_name"       	=> "detalle_paciente",			    
+			    "class_name"       	=> "detalle_fonoaudiologia",			    
 				#"class_template"  	=> "many2one_lateral",			    
 				"class_report" 		=> "kanban",			    
 			    "class_field_o"    	=> "id",
