@@ -1,7 +1,5 @@
 <?php
 	include('basededatos.php');
-#	require_once('class.phpmailer.php');
-#	require_once('class.smtp.php');
 	
 	class auxiliar extends basededatos 
 	{   
