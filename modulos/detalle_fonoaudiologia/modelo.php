@@ -36,7 +36,7 @@
 			),		
 			"char100_2"	    =>array(
 				"title"             => "Material",			    			    		   
-			    "type"              => "textarea",								
+			    "type"              => "input",								
 			),		
 			"char100_3"	    =>array(
 				"title"             => "Avance",			    			    		   
