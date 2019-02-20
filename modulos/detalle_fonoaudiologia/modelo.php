@@ -31,16 +31,16 @@
 			    */								
 			),		
 			"char100_1"	    =>array(
-				"title"             => "char100",			    			    		   
-			    "type"              => "input",								
+				"title"             => "Actividades",			    			    		   
+			    "type"              => "textarea",								
 			),		
 			"char100_2"	    =>array(
-				"title"             => "char100",			    			    		   
-			    "type"              => "input",								
+				"title"             => "Material",			    			    		   
+			    "type"              => "textarea",								
 			),		
 			"char100_3"	    =>array(
-				"title"             => "char100",			    			    		   
-			    "type"              => "input",								
+				"title"             => "Avance",			    			    		   
+			    "type"              => "textarea",								
 			),		
 			"char100_4"	    =>array(
 				"title"             => "char100",			    			    		   
@@ -51,7 +51,7 @@
 			    "type"              => "input",								
 			),		
 			"fecha_1"	    =>array(
-				"title"             => "fecha1",			    			    
+				"title"             => "Citado",			    			    
 				"type"              => "date",			
 			),		
 			"fecha_2"	    =>array(
