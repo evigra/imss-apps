@@ -50,23 +50,23 @@
 				"title"             => "char100",			    			    		   
 			    "type"              => "input",								
 			),		
-			"fecha_1"	    =>array(
+			"fecha1"	    =>array(
 				"title"             => "Citado",			    			    
 				"type"              => "date",			
 			),		
-			"fecha_2"	    =>array(
+			"fecha2"	    =>array(
 				"title"             => "fecha1",			    			    
 				"type"              => "date",			
 			),			
-			"fecha_3"	    =>array(
+			"fecha3"	    =>array(
 				"title"             => "fecha1",			    			    
 				"type"              => "date",			
 			),			
-			"fecha_4"	    =>array(
+			"fecha4"	    =>array(
 				"title"             => "fecha1",			    			    
 				"type"              => "date",			
 			),			
-			"fecha_5"	    =>array(
+			"fecha5"	    =>array(
 				"title"             => "fecha1",			    			    
 				"type"              => "date",			
 			),											
