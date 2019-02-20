@@ -1,6 +1,6 @@
 <table>	
 	<tr>
-		<td>{incapacidad}</td>		
+		<td>{fecha_1}</td>		
 	</tr>	
 </table>
 			<div id="tabs" class="form">
@@ -10,40 +10,9 @@
 					<li  class="form"><a href="#tabs-3">Calificacion del paciente</a></li>
 					<li  class="form"><a href="#tabs-4">Cartas</a></li>
 				</ul>
-				<div id="tabs-1" class="form">
-					<table>	
-						<tr>							
-							<td>{fecha_1}</td>
-							<td>{char100_1}</td>
-							<td>{char100_2}</td>
-						</tr>	
-					</table>
-				</div>		
-				<div id="tabs-2" class="form">
-					<table>	
-						<tr>	
-							<td>{char100_3}</td>		
-							<td>{fecha_atencion}</td>								
-							<td>{fecha_recepcion}</td>
-							<td>{fecha_devolucion}</td>
-						</tr>	
-					</table>
-
-				</div>
-				<div id="tabs-3" class="form">
-					<table width="100%">	
-						<tr><td width="33%">{fecha_calificacion}</td><td colspan="2">{texto_calificacion}</td></tr>	
-						<tr><td colspan="3">&nbsp;</td></tr>	
-						<tr><td colspan="3">{botones_calificacion_si}</td></tr>	
-						<tr><td colspan="3">{botones_calificacion_no}</td></tr>	
-					</table>
-				</div>
-				<div id="tabs-4" class="form">
-					<table width="100%">					
-						<tr><td width="17%">{registro_patronal}</td><td width="16%">{f_carta_realizada}</td><td colspan="2">{patron}</td></tr>	
-						<tr><td width="33%" colspan="2">{patron_locacion}</td><td colspan="2">{patron_domicilio}</td></tr>							
-					</table>
-				</div>			
+				<div id="tabs-1" class="form">{char100_1}</div>		
+				<div id="tabs-2" class="form">{char100_2}</div>
+				<div id="tabs-3" class="form">{char100_3}</div>				
 			</div>
   <script>
   $(function() {
