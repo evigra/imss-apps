@@ -3,13 +3,16 @@
 	$option				=array();	
 	$option["name"]		="p_txt";	
 	
-	$objeto				=new seet_asegurado($option);	
+	$objeto				=new fonoaudiologia($option);	
 	#$objeto->__PRINT_R($option);
 	#$objeto->__PRINT_R($objeto);
 
 	
 	$option["actions"]	="false";
-	$option["where"]	=array("nss='{$_GET["nss"]}'");
+	$option["where"]	=array(
+		"nss='{$_GET["nss"]}'",
+		"agregado='{$_GET["agregado"]}'"
+	);
 				
 	$data										= $objeto->__BROWSE($option);
 	

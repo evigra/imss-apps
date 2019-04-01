@@ -195,11 +195,11 @@
 			{	
 				foreach($this->request["id"] as $this->sys_primary_id => $dias_solicitados)			
 				{
-					$this->sys_primary_field="id";
-						
-					$datas["dias"]=$dias_solicitados;
+					$this->sys_primary_field	="id";						
+					$datas["dias"]				=$dias_solicitados;					
 					
-					$id=parent::__SAVE($datas);			
+					if($dias_solicitados>0)
+						$id	=parent::__SAVE($datas);			
 				}
 			}	
 			if($this->sys_action=="__SAVE_PROCESS")

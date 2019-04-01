@@ -6,13 +6,10 @@
 			"user"		=>"admin_evigra",
 			"pass"		=>"EvG30JiC06",
 			"name"		=>"admin_imss",
-			"host"		=>"solesgps.com",
-			#"host"		=>"localhost",
+			#"host"		=>"solesgps.com",
+			"host"		=>"localhost",
 			"type"		=>"mysql",
 		);
-
-
-		#*/		
 		function abrir_conexion()
 		{
 			if($this->OPHP_database["type"]=="mysql")	        	

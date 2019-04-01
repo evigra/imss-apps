@@ -10,15 +10,17 @@
 				$("form").submit();									
 			});			
 		}		
-			
-		$("#nss").focusout(function() 		
+		/*
+		$("#nss").focusout(function() 				
+		*/
+		$("#agregado").focusout(function() 		
 		{		
 			
 			$.ajax({
 				type: 'GET',
 				url: '../modulos/' + var_modulo +'/ajax/index.php',
 				contentType:"application/json",
-				data:"&nss="+$(this).val(),				
+				data:"&nss="+$("#nss").val() +"&agregado="+$(this).val(),				
 				success: function (response) 
 				{
 					var obj = $.parseJSON( response);
