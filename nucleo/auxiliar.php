@@ -822,11 +822,11 @@
 		    		$return 						= @file_get_contents("../../../../".$archivo);		    		    				    		
 		    	else	
 		    		$return							="<br>NO EXISTE EL ARCHIVO: ".$archivo;
-				
-				
-									#__TEMPLATE
+								
+				#__TEMPLATE
 				if(in_array(@$this->request["sys_action"],$this->sys_print))
 				{	
+									
 					$archivo = $form.'_pdf.html';
 					if(file_exists($archivo))			    			
 						$return 						= @file_get_contents($archivo);		    
@@ -838,11 +838,9 @@
 						$return 						= @file_get_contents("../../../".$archivo);		    		    		
 					elseif(file_exists("../../../../".$archivo))			    			
 						$return 						= @file_get_contents("../../../../".$archivo);		    		    				    		
+						
+					$return="AAAAAA";	
 				}		
-				
-				
-				
-				
 		    }	
 		    else	$return							="";		    		
 		    return $return;
