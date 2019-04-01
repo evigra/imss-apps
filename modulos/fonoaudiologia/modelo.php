@@ -155,7 +155,8 @@
 			$option["order"]="a.id desc";
 			
 			return $this->__VIEW_REPORT($option);
-		}						
+		}	
+		/*						
    		public function __BROWSE($option = Array())
     	{			
 			$option["select"]							="a.*, i.*";
@@ -163,7 +164,7 @@
 		
 			return parent::__BROWSE($option);
 		}						
-		
+		*/
    		public function __VIEW_REPORT($option="")
     	{			
 			$option["template_asunto_pdf"]	            = $this->sys_module . "html/report_asunto_pdf";
@@ -173,6 +174,7 @@
 		}						
    		public function __FORMATO_CARTA($id)
     	{
+    		/*
 			$option["where"]=array("i.id=$id");	
 			$template="";	
 			
@@ -190,9 +192,11 @@
 			$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");							
 			$template								=$this->__REPLACE($template,$words);
 			return                  				$template;
+			*/
 		}	
    		public function __FORMATO_SOBRE($id)
-    	{
+    	{	
+    	/*
 			$option["where"]=array("i.id=$id");	
 			$template="";	
 			
@@ -210,6 +214,7 @@
 			$template								.="{sys_asunto}{sys_modulo}{sys_pie}";							
 			$template								=$this->__REPLACE($template,$words);
 			return                  				$template;
+			*/
 		}	
 
 	}
