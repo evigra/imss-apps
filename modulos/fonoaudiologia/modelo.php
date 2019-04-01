@@ -152,7 +152,7 @@
 				$option["where"][]="left(trabajador_departamento,6)=left('{$_SESSION["user"]["departamento_id"]}',6)";				
 			}
 			*/
-			$option["order"]="a.id desc";
+			$option["order"]="id desc";
 			
 			return $this->__VIEW_REPORT($option);
 		}	
