@@ -114,37 +114,7 @@
 	   	$data										=$objeto->__BROWSE();
     	$objeto->words["module_body"]               =$objeto->__VIEW_KANBAN($template_body,$data["data"]);	
     }    
-    elseif($objeto->sys_section=="report_especifico")
-    {
-		#BOTONES SECCION DERECHA
-		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
-		);
-
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_ESPECIFICO();		
-		$objeto->words["module_body"]				=$data["html"];
-		$module_title								="Reporte Especifico de ";
-    }    
-    elseif($objeto->sys_section=="report_general")
-    {
-		#BOTONES SECCION DERECHA
-		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
-		);
-
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_GENERAL();		
-		$objeto->words["module_body"]				=$data["html"];
-		$module_title								="Reporte General de ";
-    }
-
+	/*
     elseif($objeto->sys_section=="sobres_patrones")
     {
 		#CARGANDO VISTA PARTICULAR Y CAMPOS			
@@ -162,27 +132,8 @@
 			);			
 		}
 		
-		
-		#$objeto->__PRINT_R($data);
-
-		/*
-
-		$module_title								="Devolucion de ";
-		$_SESSION["pdf"]["template"]			=array(
-			array(
-				"format"		=>array(104,241),					
-				"html"			=>$objeto->__FORMATO_SOBRE($objeto->sys_primary_id),					
-				"orientation"	=>"L",					
-			),						
-			array(
-				"format"		=>"A4",					
-				"html"			=>$objeto->__FORMATO_CARTA($objeto->sys_primary_id),					
-				"orientation"	=>"P",					
-			),						
-		);
-*/		
     }    
-
+	*/
     else
     {
 		#BOTONES SECCION DERECHA
