@@ -838,8 +838,7 @@
 						$return 						= @file_get_contents("../../../".$archivo);		    		    		
 					elseif(file_exists("../../../../".$archivo))			    			
 						$return 						= @file_get_contents("../../../../".$archivo);		    		    				    								
-					if($this->sys_object=="fonoaudiologia")
-						$return							="{$this->sys_object} ::$archivo $return";	
+					$return.="<br>aaa"	
 				}		
 		    }	
 		    else	$return							="";		    		
