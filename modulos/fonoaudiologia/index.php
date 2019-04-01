@@ -144,138 +144,7 @@
 		$objeto->words["module_body"]				=$data["html"];
 		$module_title								="Reporte General de ";
     }
-    elseif($objeto->sys_section=="report_pendiente")
-    {
-		#BOTONES SECCION DERECHA
-		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
-		);
 
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_PENDIENTE();
-		$objeto->words["module_body"]				=$data["html"];
-		$module_title								="Reporte de Pendientes de ";
-    }
-    elseif($objeto->sys_section=="report_si")
-    {
-		#BOTONES SECCION DERECHA
-		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
-		);
-
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_SI();
-		$objeto->words["module_body"]				=$data["html"];
-		$module_title								="Calificadas SI en ";
-    }
-    elseif($objeto->sys_section=="report_no")
-    {
-		#BOTONES SECCION DERECHA
-		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
-		);
-
-		
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_NO();
-		$objeto->words["module_body"]				=$data["html"];
-
-		$objeto->words["asunto_titular"]			="<b>C. MARTIN LUPERCIO CHAVEZ</b>";
-		$objeto->words["asunto_puesto"]				="ENC,. DEL DEPTO DE PRESTACIONES ECONOMICAS";		
-		$objeto->words["asunto_descripcion"]		="ENTREGO DEVUELTA INCAPACIDAD ORIGINALCON COPIA ST7  ATENDIDO Y CALIFICADO COMO DE NO TRABAJO/TRAYECTO/RECAIDA";
-		
-		
-		$module_title								="Calificadas NO en ";
-    }
-	
-    elseif($objeto->sys_section=="report_sol")
-    {
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_SOL();		
-		$objeto->words["module_body"]				=$data["html"];
-		
-		$objeto->words["asunto_titular"]			="<b>C. MARTIN LUPERCIO CHAVEZ</b>";
-		$objeto->words["asunto_puesto"]				="ENC,. DEL DEPTO DE PRESTACIONES ECONOMICAS";		
-		$objeto->words["asunto_descripcion"]		="SOLICITO A USTED INCAPACIDADES DEL PACIENTE QUE DETALLO A CONTINUACION PARA TRAMITE EN ESTE DEPARTAMENTO.";
-
-		$module_title								="Solicitud de ";
-    }    
-
-    elseif($objeto->sys_section=="report_fs")
-    {
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_FS();		
-		$objeto->words["module_body"]				=$data["html"];
-		
-		$objeto->words["asunto_titular"]			="<b>C.LUIS FERNANDO MUÑOZ BERNAL</b>";
-		$objeto->words["asunto_puesto"]				="ENC DEPTO. DE AFILIACION Y VIGENCIA";		
-		$objeto->words["asunto_descripcion"]		="POR MEDIO DEL PRESENTE  SOLICITO A USTED F1 Y F3 DE LOS PACIENTES QUE A CONTINUACION DETALLO.";
-
-		$module_title								="F1 y F3 de ";
-    }    
-
-    elseif($objeto->sys_section=="report_dev")
-    {
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_DEV();		
-		$objeto->words["module_body"]				=$data["html"];
-		
-		$objeto->words["asunto_titular"]			="<b>C. MARTIN LUPERCIO CHAVEZ</b>";
-		$objeto->words["asunto_puesto"]				="ENC,. DEL DEPTO DE PRESTACIONES ECONOMICAS";		
-		$objeto->words["asunto_descripcion"]		="DEVUELVO A USTED INCAPACIDADES DE PACIENTES QUE NO SE HAN PRESENTADO PARA REALIZAR SU CALIFICACION, MISMAS QUE DETALLO A CONTINUACION. ";
-
-		$module_title								="Devolucion de ";
-    }    
-	
-    elseif($objeto->sys_section=="report_carta_realizada")
-    {
-		$module_center=array(		    
-			array("cartas_patrones"=>"CARTAS"),	
-			array("sobres_patrones"=>"SOBRES"),						
-		);		
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		$data										= $objeto->__REPORT_CAR_REALIZADA();		
-		$objeto->words["module_body"]				=$data["html"];
-		
-		$objeto->words["asunto_titular"]			="<b>C. MARTIN LUPERCIO CHAVEZ</b>";
-		$objeto->words["asunto_puesto"]				="ENC,. DEL DEPTO DE PRESTACIONES ECONOMICAS";		
-		$objeto->words["asunto_descripcion"]		="DEVUELVO A USTED INCAPACIDADES DE PACIENTES QUE NO SE HAN PRESENTADO PARA REALIZAR SU CALIFICACION, MISMAS QUE DETALLO A CONTINUACION. ";
-
-		$module_title								="Devolucion de ";
-    }    
-    elseif($objeto->sys_section=="carta_patron")
-    {
-		#CARGANDO VISTA PARTICULAR Y CAMPOS			
-		
-		#$objeto->words["module_body"]				=$data["html"];
-		
-		$objeto->words["asunto_titular"]			="<b>C. MARTIN LUPERCIO CHAVEZ</b>";
-		$objeto->words["asunto_puesto"]				="ENC,. DEL DEPTO DE PRESTACIONES ECONOMICAS";		
-		$objeto->words["asunto_descripcion"]		="DEVUELVO A USTED INCAPACIDADES DE PACIENTES QUE NO SE HAN PRESENTADO PARA REALIZAR SU CALIFICACION, MISMAS QUE DETALLO A CONTINUACION. ";
-
-		$module_title								="Devolucion de ";
-		$_SESSION["pdf"]["template"]			=array(
-			array(
-				"format"		=>array(104,241),					
-				"html"			=>$objeto->__FORMATO_SOBRE($objeto->sys_primary_id),					
-				"orientation"	=>"L",					
-			),						
-			array(
-				"format"		=>"A4",					
-				"html"			=>$objeto->__FORMATO_CARTA($objeto->sys_primary_id),					
-				"orientation"	=>"P",					
-			),						
-		);		
-    }    
     elseif($objeto->sys_section=="sobres_patrones")
     {
 		#CARGANDO VISTA PARTICULAR Y CAMPOS			
@@ -330,12 +199,14 @@
 	$module_right=array(
 		array("create"=>"Crear"),			
 		array("report"=>"Reporte"),		    
+	/*	
 		array("report_sol"=>"","icon"=>"ui-icon-caret-1-s", "title"=>"Solicitud de Incapacidades"),	
 		array("report_dev"=>"","icon"=>"ui-icon-caret-1-n", "title"=>"Devolucion de Incapacidades"),	
 		array("report_fs"=>"FS", "title"=>"Solicitud de F1 y F3 para calificacion"),		    		    
 		array("report_no"=>"","icon"=>"ui-icon-closethick" , "title"=>"Calificada NO"),
 		array("report_si"=>"","icon"=>"ui-icon-check" , "title"=>"Calificada SI"),
 		array("report_carta_realizada"=>"","icon"=>"ui-icon-mail-closed" , "title"=>"Cartas Realizadas"),
+	*/	
 	);
 
 	$boton_calificacion_si=array(		    

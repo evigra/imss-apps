@@ -95,31 +95,6 @@
 		#/*
    		public function __SAVE($datas=NULL,$option=NULL)
     	{
-    		## GUARDAR USUARIO
-    		#$datas["total"]		=count(explode(",",$datas["dias"]));
-			#$datas["registro"]=$this->sys_date;
-			/*
-			if($datas["estatus"]=="APROVADO")
-			{
-				$datas["autorizo"]		=$_SESSION["user"]["nombre"];
-				$datas["m_autorizo"]	=$_SESSION["user"]["matricula"];								
-			}				
-			
-			
-    		if($this->sys_section_personal_calculo=="create")
-			{
-				$datas["registro"]		=$this->sys_date;
-				$datas["elaboro"]		=$_SESSION["user"]["nombre"];
-				$datas["m_elaboro"]		=$_SESSION["user"]["matricula"];				
-			}
-			
-			
-			$datas["cpto_1vez"]			=count($datas["conceptos_ids"]);		
-			*/
-			#$option["echo"]=$datas["total"];
-			
-			#$this->__PRINT_R($datas);
-    		
     	    return parent::__SAVE($datas,$option);
 		}
 		#*/		
@@ -152,89 +127,8 @@
 			*/
 			
 		}		
-   		
-   		public function __REPORT_DEV()
-    	{
-			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/dev/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/dev/report_body";
-						
-			$option["actions"]							="false";			
-						
-			$option["where"][]="fecha_devolucion !='0000-00-00'";	
-			$option["date"]="fecha_devolucion";	
-			
-			return $this->__VIEW_REPORT($option);
-		}				
-		public function __REPORT_CAR_REALIZADA()
-    	{
-			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/car_r/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/car_r/report_body";
-						
-			$option["actions"]							="false";			
-						
-			$option["where"][]="f_carta_realizada !='0000-00-00'";	
-			$option["date"]="f_carta_realizada";	
-			
-			return $this->__VIEW_REPORT($option);
-		}
 		
-   		public function __REPORT_FS()
-    	{
-			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/fs/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/fs/report_body";
-						
-			$option["actions"]							="false";			
-			
-			$option["where"][]="fecha_fs !='0000-00-00'";	
-			$option["date"]="fecha_fs";			
-			
-			return $this->__VIEW_REPORT($option);
-		}				
-   		public function __REPORT_SI()
-    	{
-			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/dev/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/dev/report_body";
-						
-			$option["actions"]							="false";			
-						
-			$option["where"][]="fecha_calificacion !='0000-00-00'";	
-			$option["where"][]="texto_calificacion LIKE '%SI%'";	
-			$option["date"]="fecha_calificacion";			
-			
-			return $this->__VIEW_REPORT($option);
-		}				
-   		public function __REPORT_NO()
-    	{
-			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/cal/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/cal/report_body";
-						
-			$option["actions"]							="false";			
-						
-			$option["where"][]="fecha_calificacion !='0000-00-00'";	
-			$option["where"][]="texto_calificacion LIKE '%NO%'";	
-			$option["date"]="fecha_calificacion";			
-			
-			return $this->__VIEW_REPORT($option);
-		}		
 		
-   		public function __REPORT_SOL()
-    	{
-			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/dev/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/dev/report_body";
-						
-			#$option["actions"]							="false";			
-						
-			$option["where"][]="solicitud_incapacidad !='0000-00-00'";	
-			$option["date"]="solicitud_incapacidad";			
-			
-			return $this->__VIEW_REPORT($option);
-		}				
 
    		public function __REPORTE($option="")
     	{			
@@ -251,13 +145,13 @@
 				$option["actions"]["check"]					="false";
 				$option["actions"]["delete"]				="false";
 			}	
-			
+			/*			
 			if($this->__NIVEL_SESION(">=20")==true)	 // NIVEL ADMINISTRADOR 			
 			{					
 				$option["where"]=Array();
 				$option["where"][]="left(trabajador_departamento,6)=left('{$_SESSION["user"]["departamento_id"]}',6)";				
 			}
-			
+			*/
 			$option["order"]="a.id desc";
 			
 			return $this->__VIEW_REPORT($option);
