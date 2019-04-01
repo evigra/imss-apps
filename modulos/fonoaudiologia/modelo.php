@@ -159,7 +159,7 @@
    		public function __BROWSE($option = Array())
     	{			
 			$option["select"]							="a.*, i.*";
-			$option["from"]								="asegurado a left join incapacidad i on a.id=i.asegurado_id";
+			$option["from"]								="asegurado a left join detalle_paciente i on a.id=i.asegurado_id";
 		
 			return parent::__BROWSE($option);
 		}						
