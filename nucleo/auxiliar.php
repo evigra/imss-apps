@@ -837,9 +837,7 @@
 					elseif(file_exists("../../../".$archivo))			    			
 						$return 						= @file_get_contents("../../../".$archivo);		    		    		
 					elseif(file_exists("../../../../".$archivo))			    			
-						$return 						= @file_get_contents("../../../../".$archivo);		    		    				    		
-						
-					$return="AAAAAA";	
+						$return 						= @file_get_contents("../../../../".$archivo);		    		    				    								
 				}		
 		    }	
 		    else	$return							="";		    		
