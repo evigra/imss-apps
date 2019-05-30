@@ -243,9 +243,7 @@
 					$words["sys_subtitulo"]					="";		
 					$words["sys_titulo2"]					="";		
 					$words["sys_subtitulo2"]				="";		
-					$words["sys_pie"]						="Nota: Para considerarse el pase como oficial o medico, este debera contar con el correspondiente sello o documento anexo 
-																comprobatorio que certifica la presencia del trabajador en la dependencia oficial de destino
-					";		
+					$words["sys_pie"]						="1A72-009-027";		
 					
 				
 					if(@$dato["trabajador_departamento_id"])
