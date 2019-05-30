@@ -10,16 +10,12 @@
 			    "title"             => "id",
 			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"trabajador_nombre"	    =>array(
 			    "title"             => "Nombre",
 				"title_filter"		=> "Trabajador",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",
 			    "attr"             => array(				
 			    	"readonly"=>"readonly"
 			    ),			    			    
@@ -29,8 +25,6 @@
 				"title_filter"		=> "Matricula",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(
 					"required",
 			    ),			    			    
@@ -63,8 +57,6 @@
 				"title_filter"		=> "Departamento",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(
 					
 			    	"readonly"=>"readonly"
@@ -74,8 +66,6 @@
 			    "title"             => "ID Departamento",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    
@@ -85,8 +75,6 @@
 			    "title"             => "Fecha",
 			    "showTitle"         => "si",
 			    "type"              => "date",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"tipo"	    =>array(
 			    "title"             => "Tipo",
@@ -125,36 +113,26 @@
 			    "title"             => "a Ocurrir a",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"objeto"	    =>array(
 			    "title"             => "con Objeto de",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"hora"	    =>array(
 			    "title"             => "Hora",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"estatus"	    =>array(
 			    "title"             => "Estatus",
 			    "showTitle"         => "si",
 			    "type"              => "hidden",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"folio"	    =>array(
 			    "title"             => "Folio",
 			    "showTitle"         => "si",
 			    "type"              => "hidden",
-			    "default"           => "",
-			    "value"             => "",			    
 			),				
 		);				
 		##############################################################################	
