@@ -34,8 +34,6 @@
 			    "title"             => "Horario",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",
   			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    			    
@@ -45,8 +43,6 @@
 			    "title"             => "Puesto",
 			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    			    
@@ -109,13 +105,13 @@
 					"Salida"		=>"Salida"					
 				),			    
 			),			
-			"ocurrir"	    =>array(
-			    "title"             => "a Ocurrir a",
+			"medico"	    =>array(
+			    "title"             => "Medico",
 			    "showTitle"         => "si",
 			    "type"              => "input",
 			),			
-			"objeto"	    =>array(
-			    "title"             => "con Objeto de",
+			"matricula_medico"	    =>array(
+			    "title"             => "Matricula",
 			    "showTitle"         => "si",
 			    "type"              => "input",
 			),			
