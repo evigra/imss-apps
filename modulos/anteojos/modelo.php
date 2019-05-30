@@ -156,6 +156,8 @@
 				$datas["folio"]=$this->__FOLIOS($option_folio);
 			}	
 
+			$this->__PRINT_R($_SESSION);
+
     	    $user_id=parent::__SAVE($datas,$option);
 		}				
    		public function __GENERAR_PDF()
