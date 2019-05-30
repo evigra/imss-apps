@@ -189,7 +189,7 @@
 			$_SESSION["pdf"]	=array();	
 			
 			$_SESSION["pdf"]["title"]				="INSTITUTO MEXICANO DEL SEGURO SOCIAL";
-			$_SESSION["pdf"]["subject"]				="";
+			$_SESSION["pdf"]["subject"]				="ANTEOJOS";
 			$_SESSION["pdf"]["save_name"]			="";
 			$_SESSION["pdf"]["PDF_MARGIN_TOP"]		=10;
 			
@@ -240,7 +240,7 @@
 					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_module . "html/PDF_FORMATO")),$words);
 					
 					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
-					$words["sys_subtitulo"]					="";		
+					$words["sys_subtitulo"]					="ANTEOJOS 2222222";		
 					$words["sys_titulo2"]					="CONSTANCIA DE PASE";		
 					$words["sys_subtitulo2"]				="";		
 					$words["sys_pie"]						="Nota: Para considerarse el pase como oficial o medico, este debera contar con el correspondiente sello o documento anexo 
