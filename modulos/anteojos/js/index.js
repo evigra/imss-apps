@@ -41,7 +41,7 @@
 	}
 	$(document).ready(function()
 	{		
-		$("img.module").hide();
+		//$("img.module").hide();
 		$("select#tipo").change(function(){
 			if($(this).val()=="Particular")
 			{	
