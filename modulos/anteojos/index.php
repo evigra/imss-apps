@@ -43,6 +43,7 @@
     }	
     elseif($objeto->sys_section=="write")
 	{
+		$objeto->__PRINT_R($_SESSION);
 		#BOTONES SECCION IZQUIERDA
 		$module_left=array(
 		    array("action"=>"Guardar"),
