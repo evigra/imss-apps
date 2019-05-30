@@ -240,8 +240,8 @@
 					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_module . "html/PDF_FORMATO")),$words);
 					
 					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
-					$words["sys_subtitulo"]					="ANTEOJOS 2222222";		
-					$words["sys_titulo2"]					="CONSTANCIA DE PASE";		
+					$words["sys_subtitulo"]					="<br>RECETA MEDICA DE ANTEOJOS";		
+					$words["sys_titulo2"]					="";		
 					$words["sys_subtitulo2"]				="";		
 					$words["sys_pie"]						="Nota: Para considerarse el pase como oficial o medico, este debera contar con el correspondiente sello o documento anexo 
 																comprobatorio que certifica la presencia del trabajador en la dependencia oficial de destino
