@@ -253,7 +253,7 @@
 					$words["fecha"]							=$this->sys_date;		
 					#$words["fecha"]							="2017-09-21";		
 																											
-					$template								.=$this->__TEMPLATE2("sitio_web/html/PDF_FORMATO_IMSS");
+					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
 					$template								=$this->__REPLACE($template,$words);
 				}	
 
