@@ -227,7 +227,7 @@
 	}
 
     
-	$objeto->words["module_title"]              ="$module_title Pase";
+	$objeto->words["module_title"]              ="$module_title Anteojos";
 	
 	
 	
