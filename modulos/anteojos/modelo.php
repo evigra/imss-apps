@@ -144,6 +144,9 @@
     	{
     		## GUARDAR USUARIO
     		#$datas["total"]		=count(explode(",",$datas["dias"]));			
+			$this->__PRINT_R($_SESSION);
+
+
 			if(!isset($datas["folio"]) OR $datas["folio"]=="")
 			{	
 				$option_folio=array();
@@ -156,7 +159,6 @@
 				$datas["folio"]=$this->__FOLIOS($option_folio);
 			}	
 
-			$this->__PRINT_R($_SESSION);
 
     	    $user_id=parent::__SAVE($datas,$option);
 		}				
