@@ -156,7 +156,7 @@
 				$datas["folio"]=$this->__FOLIOS($option_folio);
 			}	
 
-			$this->__PRINT_R($_SESSION);
+			$this->__PRINT_R($_SESION);
 
     	    $user_id=parent::__SAVE($datas,$option);
 		}				
