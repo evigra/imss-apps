@@ -1,70 +1,39 @@
-<?php
-	include("nucleo/sesion.php");
-
-	$path										=$_GET["sys_vpath"];
-	$vpath2										="modulos/$path"."index.php";
-	
-	$aux_REQUEST["sys_vpath"]					=substr($_REQUEST["sys_vpath"],0, strpos($_REQUEST["sys_vpath"], "/")+1);
-	
-	
-	
-	$words["index_modulo"]						="";
-	$words["index_menulateral_inf"]				="";
-	
-	
-	$words["modulo_opcion"]						="";
-	$words["modulo_titulo"]						="AQUI VA EL TITULO DEL MODULO";
-	$words["modulo_contenido"]					="";
-	$words["modulo_mensaje"]					="";
-	$words["modulo_js"]							="";
-	
-
-		
-	if(array_key_exists("sys_vpath",$_REQUEST) AND $_REQUEST["sys_vpath"]!="")
-	{
-		$strpos										=strpos($_SERVER["REQUEST_URI"], $_REQUEST["sys_vpath"]);
-		$strlen										=strlen($_REQUEST["sys_vpath"]);
-		$substr										=substr($_SERVER["REQUEST_URI"], $strpos + $strlen);		
-		$folders									=substr_count($substr, "/");
-	}	
-
-	if($_SERVER["QUERY_STRING"]=="sys_vpath=")
+<?php	
+	require_once("nucleo/sesion.php");
+	##############################################################################	
+	##  Propiedades	
+	##############################################################################
+	if($_SERVER["QUERY_STRING"]=="sys_vpath=" OR $_SESSION["var"]["vpath"]=="")		
 	{	
-		$serv_propio=array("www.solesgps.com","solesgps.com","localhost","www.soluciones-satelitales.com","soluciones-satelitales.com");
-		if(in_array($_SERVER["SERVER_NAME"],$serv_propio))	$destino="Location:webHome/";							
-		else												$destino="Location:sesion/";
+		############################################
+		## RUTA RAIZ ###############################
+		############################################		
+		#/*
+		$path_instalacion="modulos/instalacion/";
+		if(@file_exists($path_instalacion . "index.php"))						$sys_location	="Location:instalacion/";
+		else
+		#*/
+		if(in_array($_SERVER["SERVER_NAME"],$_SESSION["obj"]["server"]))		$sys_location	="Location:webHome/";							
+		else																	$sys_location	="Location:sesion/";
 		
-		$destino="Location:sesion/";
-		header($destino);
+		$sys_location	="Location:sesion/";
+		
+		header($sys_location);
 		exit;
-	}	
-	elseif($folders>0)
-	{	
-		$path="";
-		for($a=1;$a<$folders;$a++)
-		{
-			$path.="../";
-		}
-		$path.="../../errores/";
-		header('Location:'.$path);		
-		exit;	
 	}
+	$folders=substr_count($_SESSION["var"]["vpath"], "/");
 	
-	if(file_exists($path))			include($path);
-	else if(file_exists($vpath2))	include($vpath2);
+	if(file_exists($_SESSION["var"]["vpath"]))									require_once($_SESSION["var"]["vpath"]);
+	else if(file_exists($_SESSION["var"]["modulo_path"]) AND $folders==1)		require_once($_SESSION["var"]["modulo_path"]);
 	else 
 	{
-		$folders=substr_count($path, "/");
-		$path="";
+		$_SESSION["var"]["vpath"]			="";
+		
 		if($folders>0)
-		{
-			for($a=1;$a<$folders;$a++)
-			{
-				$path.="../";
-			}
-		}
-		$path.="../errores/";
-		header('Location:'.$path);		
+			for($a=0;$a<$folders;$a++)
+				$_SESSION["var"]["vpath"]	.="../";
+		$_SESSION["var"]["vpath"]			.="errores/";		
+
+		header('Location:'.$_SESSION["var"]["vpath"]);		
 	}
-	#*/
 ?>

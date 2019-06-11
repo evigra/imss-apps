@@ -1,20 +1,18 @@
 <?php
-	require_once("../../../nucleo/sesion.php");
-	require_once("../../../nucleo/general.php");
+	require_once("../../../nucleo/sesion.php");	
+	$option				=array();	
+	$option["name"]		="p_txt";	
 	
-	$objeto				=new general();		
-	
-	$retun=array();
-	$comando_sql        ="
-        select 
-            u.*
-        from 
-            usuario u 
-        where  1=1
-			AND clave LIKE '{$_REQUEST["matricula"]}'
-	";	
-	#echo $comando_sql;
-	$data =$objeto->__EXECUTE($comando_sql, "DEVICE MODELO");	
+	$objeto				=new personal_txt($option);	
+	#$objeto->__PRINT_R($option);
+	#$objeto->__PRINT_R($objeto);
 
-	echo json_encode($data);
+	
+	$option["actions"]	="false";
+	$option["where"]	=array("trabajador_clave='{$_GET["matricula"]}'","dias LIKE '%/". date("n")."/%'");
+				
+	$data										= $objeto->__REPORT_SUSTITUTO($option);
+	
+	echo $data["html"];
+	
 ?>

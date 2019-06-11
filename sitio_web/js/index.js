@@ -1,11 +1,12 @@
 
-	var grupo;
+
 	var map;
 	var geocoder;
 	var gMEvent				=undefined;
 
-	var flightPath			=undefined;	
-	var lineas				=new Array();
+	var Polyline				=undefined;	
+	var Polygon					=undefined;	
+	var lineas					=new Array();
 	var linea;
 	
 	var localizacion;		
@@ -20,12 +21,17 @@
 	var coordinate_active		=undefined;
 	var simulation_action		="stop";
 	var simulation_time			=100;
+	var simulation_stop			=0;
 	var waypts					=new Array();
-	var devices_all				=new Array();	
-	var many2one_data			=new Array();
+	var devices_all				=new Array();
+	var labels					=new Array();		
+
+	var ida						=new Array();
+	var vuelta					=new Array();
+	var points_route			="";
+	
+	var isimulacion				=1;
 	var row						={};
-	
-	
 
 
 	/*
@@ -69,16 +75,17 @@
 		class_one		=options["class_one"];
 		class_one_id	=options["class_one_id"];
 		class_field		=options["class_field"];
+		class_section	=options["class_section"];
 		class_field_id	=options["class_field_id"];
 		class_id		=options["id"];
 		class_many		=options["class_many"];
 		object			=options["object"];		
 				
-		
 		var require="";				
 		$("." + class_field).each(function()
 		{
 			var id			=$(this).attr("id");			
+
 			row[id]		=$(this).val();	 			
 			
 			if($(this).val()== "")
@@ -89,6 +96,7 @@
 				}			
 			}		
 		});
+				
 		if(require=="")		
 		{	
 			$("div#create_"+ class_field +" ."+class_field).val("");
@@ -99,6 +107,7 @@
 				"class_one":		class_one, 	
 				"class_one_id":		class_one_id, 	
 				"class_field":		class_field, 			
+				"class_section":	class_section,
 				"class_field_id":	class_field_id, 
 				"class_id":			class_id, 
 				"class_many":		class_many,									
@@ -159,64 +168,73 @@
 			{
 				$(".sys_report_memory").click(function()
 				{					
-					
 					var class_field_id			=$(this).attr("class_field_id"); 
-					var id						=$(this).attr("id"); 
-					
-					var class_field				=$(this).attr("class_field"); 
-					
+					var id						=$(this).attr("id"); 					
+					var class_field				=$(this).attr("class_field"); 					
 					var data        			=$(this).attr("data");               
+										
 					var variables				=serializar_url(data);
-					
 					var class_one 				=$(this).attr("class_one");     
 
 					var options					={};				
-					options["class_one"]		=class_one;
-					//options["class_one_id"]		=class_one_id;
+					options["class_one"]		=class_one;					
 					options["class_field"]		=class_field;
 					options["class_field_id"]	=class_field_id;
-					options["id"]				=id;
-					
+					options["id"]				=id;					
 					options["object"]			=class_one;
 					options["class_many"]		=class_one;						
 										
-					many2one_get(options);
-					
-					
-					
-					$("div#create_"+ class_field).dialog({
-						open: function(event, ui){
-							var dialog = $(this).closest('.ui-dialog');
-						},
-						buttons: {
-							"Registrar y Cerrar": function() {																			
-								many2one_post(options);
-								$( this ).dialog("close");
-							},
-							"Cerrar": function() {
-								$( this ).dialog("close");
-							}
-						},										
-						width:"700px"
-					});				
-					
-				
+					many2one_get(options);													
+					for(ivariables in variables)
+					{
+						options["class_section"]	=variables[ivariables];	
+						if(variables[ivariables]=="write")
+						{
+							$("div#create_"+ class_field).dialog({
+								open: function(event, ui){
+									var dialog = $(this).closest('.ui-dialog');
+								},
+								buttons: {
+									"Registrar y Cerrar": function() {								
+										many2one_post(options);
+										$( this ).dialog("close");
+									},
+									"Cerrar": function() {
+										$( this ).dialog("close");
+									}
+								},										
+								width:"700px"
+							});							
+						}
+						if(variables[ivariables]=="delete")
+						{
+							many2one_post(options);	
+						}
+					}					
+					/*					
 					for(ivariables in variables)
 					{
 						var input="";
 						if($("input#"+ivariables).length>0) {}
 						else	
 						{	
-							input="<input id=\""+ivariables+"\" name=\""+ivariables+"\" type=\"hidden\">";						
+							input="<input id=\""+ivariables+"\" name=\""+ivariables+"\" value=\"" + variables[ivariables] + "\" type=\"hidden1\">";						
 							$("form").append(input);
 						}			
-					}	
+					}
+					*/	
 
 				});
 			}	   		
 		}	
-	
-		
+
+
+	function render(origen, destino,diferencia)
+	{			
+		destino.height(1);
+		var alto  =origen.height() + diferencia;
+		destino.height(alto);	   
+	}	
 	function tracert(origen, destino,puntos)
 	{			
 		var directionsDisplay;
@@ -244,17 +262,27 @@
 			{
 				if (status == google.maps.DirectionsStatus.OK) 
 				{
+					
 						directionsDisplay.setMap(map);
 						//directionsDisplay.setPanel($("div#text").get(0));
 						directionsDisplay.setDirections(response);
-								
-						if($("div#text.instrucciones").length>0) 
+						
+						//foreach_anidado2(directionsDisplay["directions"]["routes"][0]["legs"]);
+						var instrucciones=ruta_pasos(directionsDisplay["directions"]["routes"][0]["legs"]);
+						
+						if($("#inegi1").length>0) 
 						{
+							$("#inegi1").val(linea_inegi({make:"IL",punto:origen}));
+							$("#inegi2").val(linea_inegi({make:"IL",punto:destino}));														
+							//var inegi	=linea_inegi({make:"CR",p1:lineaO,p2:lineaD});
+						}	
+												
+						if($("div#text.instrucciones").length>0) 
+						{										
 							setTimeout(function()
 							{  				
-								$("div#text.instrucciones").html(ruta_pasos(directionsDisplay["directions"]["routes"][0]["legs"]));
-								$("input#description").val($("div#text.instrucciones").html());
-								
+								$("div#text.instrucciones").html(instrucciones);
+								$("input#description").val($("div#text.instrucciones").html());																
 								
 							},200);	
 						}	
@@ -262,24 +290,64 @@
 				else 	alert("No existen rutas entre ambos puntos");
 			});
 		}	
+	}	
+	function linea_inegi(option)
+	{					
+		var url;
+		if(option.make=="IL") 	
+		{
+			type	="html";
+			url		='http://gaia.inegi.org.mx/sakbe/wservice?make=IL&x='+option.punto.lng()+'&y='+option.punto.lat()+'&escala=100000&type=json&key=nDZVnLaZ-vhnO-5V6d-55uO-lwq5Pu6JR65Z'
+		}	
+		if(option.make=="CR") 	
+		{
+			type	="json";
+			url='http://gaia.inegi.org.mx/sakbe/wservice?make=CR&id_i='+option.p1[0]["id_routing_net"]+'&source_i='+option.p1[0]["source"]+'&target_i='+option.p1[0]["target"]+'&id_f='+option.p2[0]["id_routing_net"]+'&source_f='+option.p2[0]["source"]+'&target_f='+option.p2[0]["target"]+'&p=1&v=1&e=0&type=json&key=nDZVnLaZ-vhnO-5V6d-55uO-lwq5Pu6JR65Z'
+		}	
+	
+		var puntos_inegi=null;		
+		$.ajax({
+			type: 'GET',
+			dataType:type,
+			async: false, 
+			url: url,
+		    success: function(data)   {		puntos_inegi= data;	    }		    
+		});	
+		return puntos_inegi;
 	}
 	function ruta_pasos(datos)
-	{		
+	{	
 		var tr="";
 		var distancia=0;
 		var tiempo=0;
 		for(d in datos)
-		{				
-			pasos=datos[d]["steps"];
+		{		
+			pasos		=datos[d]["steps"];
 			distancia	=distancia + datos[d]["distance"]["value"];
 			tiempo		=tiempo + datos[d]["duration"]["value"];
-			tr=tr+"<tr><td colspan='3' height='20'></td></tr>";
-			tr=tr+"<tr><td colspan='2' height='40'>"+datos[d]["start_address"]+"</td><td colspan='1'>"+datos[d]["distance"]["text"]+"</td><td>"+datos[d]["duration"]["text"]+"</td><td></td></tr>";
+			tr			=tr+"<tr><td colspan='3' height='20'></td></tr>";
+			tr			=tr+"<tr><td colspan='2' height='40'>"+datos[d]["start_address"]+"</td><td colspan='1'>"+datos[d]["distance"]["text"]+"</td><td>"+datos[d]["duration"]["text"]+"</td><td></td></tr>";
+			
+			if($("#datos_ruta").length>0) 
+			{
+				var costo=datos[d]["distance"]["value"]*40/1000;
+				var datos_ruta=datos[d]["distance"]["text"] + " RECORRIDOS EN " + datos[d]["duration"]["text"] + " DEPENDIENDO DE TRAFICO<br>COSTO APROXIMADO " +costo;
+				$("#datos_ruta").html(datos_ruta);
+			}						
+			
 			for(p in pasos)
 			{
 				var instruccion=parseInt(p)+1;
 				tr=tr+"<tr><td width='50'>"+instruccion+"</td><td>"+pasos[p]["instructions"]+"</td><td  width='80'>"+pasos[p]["distance"]["text"]+"</td><td width='140'>"+pasos[p]["duration"]["text"]+"</td></tr>";
 			}
+			if($("#points_route").length>0) 
+			{		
+				if(typeof datos[d]=="object")
+				{
+					foreach_anidado2(datos);
+				}	
+				
+			}	
 		}	
 		var metros		=distancia;
 		var kilometros	="";
@@ -290,48 +358,153 @@
 		{
 			kilometros	=parseInt(distancia/1000);
 			var metros	=distancia % 1000;
-			kilometros= kilometros + " Km(s) ";			
+			kilometros	= kilometros + " Km(s) ";			
 		}
-		recorrido= kilometros + metros + " Metro(s)";
+		recorrido		= kilometros + metros + " Metro(s)";
 		
 		if(minutos>59)
 		{
-			var horas=minutos/60;	
-			var minutos=(minutos % 60);
-			horas=parseInt(horas);			
-			duracion= horas + " Hora(s) ";
+			var horas	=minutos/60;	
+			var minutos	=(minutos % 60);
+			horas		=parseInt(horas);			
+			duracion	=horas + " Hora(s) ";
 		}
 		duracion= duracion + minutos + " Minuto(s)";
-		
-		$("input#tiempo.formulario").val(duracion);
-		$("input#distancia.formulario").val(recorrido);
-		
-		
+		//alert(duracion);
+		$("input#campo2.formulario").val(duracion);
+		$("input#campo3.formulario").val(recorrido);
 		return "<table width='100%'>"+tr+"</table>";
 	}
 	
-	function foreach_anidado(datos)
+	function foreach(datos)
 	{
-		var ret="";
 		for(i in datos)
-		{	
-			//path,lat_lngs,instructions,distance,text,value,duration
-			//if(i=="path" || i=="lat_lngs" || i=="instructions" || i=="distance" || i=="text" || i=="value" || i=="duration")
-			
-						
-			if(i=="instructions" || i=="text")
+		{				
+			alert(i + " ===>>> "+ datos[i]);			
+			if(typeof datos[i]=="object")
 			{
-				ret=ret + "<td>" + datos[i] +"</td>";			
+				foreach(datos[i]);
+			}	
+		}		
+	}
+	function foreach_anidado2(datos)
+	{
+		var anterior;
+		var nuevo;
+		var medio1;
+		var medio2;
+
+		for(i in datos)
+		{							
+			if(i=="path")
+			{			
+				var data=datos[i];
+				for(ii in data)
+				{	
+					if(points_route=="")	points_route	=data[ii].lat()+" "+data[ii].lng();
+					else					points_route	=points_route + ","+data[ii].lat()+" "+data[ii].lng();							
+
+					/*
+					if(anterior==undefined)		
+					{
+						anterior=data[ii];
+					}
+					else
+					{
+						nuevo	=data[ii];
+						
+						medio1	=LatLng({latitude:nuevo.lat(),longitude:anterior.lng()});
+						medio2	=LatLng({latitude:anterior.lat(),longitude:nuevo.lng()});
+						
+						if(nuevo.lat()>anterior.lat() && nuevo.lng()>anterior.lng()) 				
+						{
+							ida.push(medio2);
+							vuelta.unshift(medio1);
+						}	
+						else if(nuevo.lat()>anterior.lat() && nuevo.lng()<anterior.lng())
+						{
+							ida.push(medio1);
+							vuelta.unshift(medio2);
+						}	
+						else if(nuevo.lat()<anterior.lat() && nuevo.lng()>anterior.lng()) 			
+						{
+							ida.push(medio1);
+							vuelta.unshift(medio2);
+						}							
+						else if(nuevo.lat()<anterior.lat() && nuevo.lng()<anterior.lng()) 			
+						{
+							ida.push(medio2);
+							vuelta.unshift(medio1);
+						}													
+						anterior=nuevo;
+					}
+					*/
+					
+				}		
 			}	
 			if(typeof datos[i]=="object")
 			{
-				var dat=foreach_anidado(datos[i]);
-				if(dat!="")
-					ret=ret + "<tr>" + dat + "</tr>";
+				foreach_anidado2(datos[i]);
 			}	
+		}
+		if($("#points_route").length>0) 
+		{				
+			$("#points_route").val(points_route);
 		}		
-		return ret;		
+		
+		//var geofence = ida.concat(vuelta);
+		//poligono(geofence,{color:"blue",geofence:"Ocupa fondeport"});	
 	}
+
+	function filter_html(field,title,term,name,where)
+	{			
+		var v_option={
+			"LIKE":		"Contiene", 	
+			"=":		"Es igual a", 	
+			"mayor":	"Mayor", 
+			"menor":	"Menor" 			
+		};				
+		var t_option="";
+		for(i_option in v_option)
+		{
+			var selected="";
+			if(where==i_option)		selected="selected";
+			t_option	=t_option + "<option " + selected + " value=\"" + i_option + "\">" + v_option[i_option] + "</option>";
+		}
+		var select="\
+			<select id=\"sys_where_" + name +"_" + field + "\" name=\"sys_where_" + name +"_" + field + "\">\
+				" + t_option +" \
+			</select>\
+		";	
+	
+		var filter="\
+			<td id=\"" + field + "_" + term + "\" class=\"total\" valign=\"middle\">\
+				<table height=\"28\">\
+					<tr>\
+						<td id=\"" + field + "_" + term + "\" class=\"mostrar\" style=\"background-color:#555; color:#fff; padding-left:5px; padding-right:5px;\">" + title + "</td>\
+						<td style=\"background-color:#555; color:#fff; padding-left:5px; padding-right:5px;\"><div id=\"" + field + "_" + term + "\">" + select + "</div></td>\
+						<td style=\"background-color:#aaa; padding-left:5px;\">" + term + "</td>\
+						<td id=\"" + field + "_" + term + "\" class=\"filter_close\" style=\"background-color:#aaa;  padding-right:5px;\"><font class=\"ui-icon ui-icon-close\"></font></td>\
+					</tr>\
+				</table>\
+				<input class=\"sys_filter\" type=\"hidden\"id=\"sys_filter_" + name +"_" + field + "\"  name=\"sys_filter_" + name +"_" + field + "\" value=\"" + term + "\">\
+				<script>\
+					$(\"td#" + field + "_" + term + ".filter_close\").click(function()\
+					{\
+						$(\"td#" + field + "_" + term + ".total\").remove();\
+					});\
+					$(\"div#" + field + "_" + term + "\").hide();\
+					$(\"td#" + field + "_" + term + ".mostrar\").click(function() {\
+						if(	$(\"div#" + field + "_" + term + "\").is(':visible')  ) 	$(\"div#" + field + "_" + term + "\").hide();\
+						else $(\"div#" + field + "_" + term + "\").show();\
+					});\
+				</script>\
+			</td>\
+		";
+		return filter;
+	}
+
+
 	function serializar_url(url)
 	{
 		var arrUrl 	= url.split("&");
@@ -340,7 +513,7 @@
 		var urlObj	={};   
 		for(var i=0; i<arrUrl.length; i++)
 		{
-			var x			= arrUrl[i].split("=");			
+			var x			= arrUrl[i].split("=");
 			urlObj[x[0]]	=x[1]
 		}
 		return urlObj;	
@@ -355,16 +528,13 @@
 		
 		var urlObj	={};   
 		for(var i=0; i<arrUrl.length; i++)
-		{			
-			if(arrUrl[i].indexOf('=') != -1)
-			{
-				var x			= arrUrl[i].split("=");
-				urlObj[x[0]]	=x[1]
-			}
-
+		{
+			var x			= arrUrl[i].split("=");
+			urlObj[x[0]]	=x[1]
 		}
 		return urlObj;		
-		/*
+		
+/*
 		$("#action").button({
 			icons: {	primary: "ui-icon-document" },
 			text: true
@@ -383,7 +553,7 @@
 					.submit();		        
 		    }
 	    );
-		*/
+	    */	
 	}
 	function showGeofence()
 	{
@@ -422,35 +592,11 @@
 			text: true
 		    })
 		    .click(function(){
-
-
+		        //window.location="&sys_section=report&sys_action=";
+		        //responsiveVoice.speak("Nissan Versa FTS 41, Exceso de velocidad","Spanish Latin American Female");
 		    }
 	    );
 	}
-	
-	function filter_html(field,title,term,name)
-	{			
-		var filter="\
-			<td id=\"" + field + "_" + term + "\" valign=\"middle\">\
-				<table height=\"28\">\
-					<tr>\
-						<td style=\"background-color:#555; color:#fff; padding-left:5px; padding-right:5px;\">" + title + "</td>\
-						<td style=\"background-color:#aaa; padding-left:5px;\">" + term + "</td>\
-						<td class=\"filter_close\" style=\"background-color:#aaa;  padding-right:5px;\"><font class=\"ui-icon ui-icon-close\"></font></td>\
-					</tr>\
-				</table>\
-				<input class=\"sys_filter\" type=\"hidden\"id=\"sys_filter_" + name +"_" + field + "\"  name=\"sys_filter_" + name +"_" + field + "\" value=\"" + term + "\">\
-			</td>\
-			<script>\
-				$(\"#" + field + "_" + term + "\").click(function()\
-				{\
-					$(this).remove();\
-				});\
-			</script>\
-		";
-		return filter;
-	}
-	
 	function link_report(link)
 	{	
 		link_base(link,"report","note");
@@ -472,31 +618,42 @@
 		    }
 	    );		
 	}
- 	function render()
+ 	function ajustar_menu()
  	{
-	    if($(".render_h_origen").length>0)
-	    {					
-			$(".render_h_origen").each(function(){
-				var diferencia	=$(this).attr("diferencia_h");
-				var id			=$(this).attr("id");			
+ 		if($("td#system_submenu2").length>0 && $("div#devices_all").length>0) 
+	 		render($("td#system_submenu2"), $("div#devices_all"),-50);
 				
-				var destino		=$("#" + id + ".render_h_origen").children(".render_h_destino");
-				
-				destino.height(1);
-				var alto  =$(this).height() + parseInt(diferencia);
-				
-				destino.height(alto);				
-			});	
-		}
  	}
- 	function ajustar_device()
+
+ 	function ajustar_display()
  	{
-	    setTimeout(function()
-	    {  
-			$("div#devices_all").height(1);
-			var height  =$("td#system_submenu2").height() - 50;
-			$("div#devices_all").height(height);
-		},50);
+ 		if($("td#module_body").length>0 && $("div#module_body").length>0) 
+ 		{
+ 			//alert(1);
+	 		render($("td#module_body"), $("div#module_body"),0);
+		}
+ 		if($("div.report_class").length>0) 
+ 		{
+ 			var obj	=$("div.report_class").attr("obj"); 		
+	 		{
+	 			//alert(2);
+	 			render($("div#div_"+obj), $("div#div2_"+obj),-38);		 		
+	 		}
+			var alto  =$("div#div_"+obj).height() -38;
+			//if(alto>60)
+			{
+				//alert(3);
+				$("div#div_"+obj).height(alto);	   
+			}	
+		}
+	 	else
+	 	{
+	 		//if(alto>60)
+	 			//alert(4);
+		 		render($("td#module_body"), $("div#module_body"),-20);
+		 		
+	 	}
+
  	}
 	
 	/*
@@ -526,17 +683,156 @@
 				if(position!="")	            	mapOptions.center		=position;
 				if(iMap!="")		            	mapOptions.mapTypeId	=tMap;	            
 				
+				mapOptions.ScaleControlOptions		={position: google.maps.ControlPosition.TOP_RIGHT}
+				mapOptions.RotateControlOptions		={position: google.maps.ControlPosition.TOP_RIGHT}
 				mapOptions.zoomControlOptions		={position: google.maps.ControlPosition.TOP_RIGHT};
 				mapOptions.streetViewControlOptions	={position: google.maps.ControlPosition.TOP_RIGHT}
 				
-				map 							= new google.maps.Map(document.getElementById(object), mapOptions);        
-				geocoder 		   				= new google.maps.Geocoder();      
-				var trafficLayer 				= new google.maps.TrafficLayer();
+				
+				mapOptions.styles					=	[
+				/*
+				{
+					"elementType":"geometry",
+					"stylers":[
+						{"hue":"#ff4400"},
+						{"saturation":-68},
+						{"lightness":-4},
+						{"gamma":0.72}
+					]
+				},
+				*/
+				{
+					"featureType":"water",
+					"stylers":[
+						{"hue":"#000066"},
+					]
+				},
+				{
+					"featureType":"water",
+					"elementType":"labels.text.fill",
+					"stylers":[
+						{"hue":"#007fff"},
+						{"gamma":0.77},
+						{"saturation":65},
+						{"lightness":99}
+					]
+				},
+				{
+					"featureType":"water",
+					"elementType":"labels.text.stroke",
+					"stylers":[
+						{"gamma":0.11},
+						{"weight":5.6},
+						{"saturation":99},
+						{"hue":"#0091ff"},
+						{"lightness":-86}
+					]
+				},
+				{
+					"featureType":"poi.park",
+					"stylers":[
+						{"hue":"#00ff00"}
+					]
+				},
+				
+
+			];
+				
+				
+/*				
+styles: 
+	[
+				{
+					"elementType":"geometry",
+					"stylers":[
+						{"hue":"#ff4400"},
+						{"saturation":-68},
+						{"lightness":-4},
+						{"gamma":0.72}
+					]
+				},
+				{
+					"featureType":"road",
+					"elementType":"labels.icon"
+				},
+				{
+					"featureType":"landscape.man_made",
+					"elementType":"geometry",
+					"stylers":[
+						{"hue":"#0077ff"},
+						{"gamma":3.1}
+					]
+				},
+				{
+					"featureType":"water",
+					"stylers":[
+						{"hue":"#00ccff"},
+						{"gamma":0.44},
+						{"saturation":-33}
+					]
+				},
+				{
+					"featureType":"poi.park",
+					"stylers":[
+						{"hue":"#44ff00"},
+						{"saturation":-23}
+					]
+				},
+				{
+					"featureType":"water",
+					"elementType":"labels.text.fill",
+					"stylers":[
+						{"hue":"#007fff"},
+						{"gamma":0.77},
+						{"saturation":65},
+						{"lightness":99}
+					]
+				},
+				{
+					"featureType":"water",
+					"elementType":"labels.text.stroke",
+					"stylers":[
+						{"gamma":0.11},
+						{"weight":5.6},
+						{"saturation":99},
+						{"hue":"#0091ff"},
+						{"lightness":-86}
+					]
+				},
+				{
+					"featureType":"transit.line",
+					"elementType":"geometry",
+					"stylers":[
+						{"lightness":-48},
+						{"hue":"#ff5e00"},
+						{"gamma":1.2},
+						{"saturation":-23}
+					]
+				},
+				{
+					"featureType":"transit",
+					"elementType":"labels.text.stroke",
+					"stylers":[
+						{"saturation":-64},
+						{"hue":"#ff9100"},
+						{"lightness":16},
+						{"gamma":0.47},
+						{"weight":2.7}
+					]
+				}
+			]				
+*/				
+				
+				
+				
+				map 								= new google.maps.Map(document.getElementById(object), mapOptions);        
+				geocoder 		   					= new google.maps.Geocoder();      
+				var trafficLayer 					= new google.maps.TrafficLayer();
 				
 				
 	  			trafficLayer.setMap(map);
 	  					    
-				gMEvent                         = google.maps.event;
+				gMEvent                         	= google.maps.event;
 				
 				$("#buscar_address").button({
 					text: false
@@ -545,21 +841,6 @@
 						codeAddress($("#address").val());
 					}
 				);
-				//status_device();
-				$.ajax(
-				{
-					async:true,
-					cache:false,
-					dataType:"html",
-					type: "POST",  
-					url: "../modulos/geofences/ajax/index.php",
-					success:  function(res)
-					{					
-						$("div#script").html(res);
-					},
-					beforeSend:function(){},
-				});
-			//} ,200);
 		}		
     }
 	function polilinea(LocationsLine,color)
@@ -567,7 +848,7 @@
 		if(color==undefined)	var color="#FF0000";
 		if(color=="") 			var color="#FF0000";
 		
-		flightPath = new google.maps.Polyline({
+		Polyline = new google.maps.Polyline({
 			path: LocationsLine,
 			geodesic: true,
 			strokeColor: color,
@@ -575,44 +856,69 @@
 			strokeOpacity: 1.0,
 			strokeWeight: 2
 		});		
-		flightPath.setMap(map);
-		lineas.push(flightPath);
+		Polyline.setMap(map);
+		lineas.push(Polyline);
 	} 
 	function poligono(LocationsLine,option) 
 	{	
-		if(option==undefined)		option={};
-		if(option.color==undefined)	option.color="#FF0000";
+		if(option==undefined)			option={};
+		if(option.color==undefined)		option.color="#FF0000";		
+		if(option.color=="") 			option.color="#FF0000";
 		
-	
-		//if(color==undefined)	var color="#FF0000";
-		if(option.color=="") 		option.color="#FF0000";
-		flightPath = new google.maps.Polygon({
+		if(option.opacity==undefined)	option.opacity=0.8;		
+		if(option.opacity=="") 			option.opacity=0.8;
+		
+		
+		
+		Polygon = new google.maps.Polygon({
 			paths: LocationsLine,
 			strokeColor: option.color,
-			strokeOpacity: 0.8,
+			strokeOpacity: option.color,
 			strokeWeight: 2,
 			fillColor: option.color,
 			fillOpacity: 0.35
 		});	
-
-
+				
+	
 		if(option.geofence!=undefined)
 		{
-		    var infowindow = new google.maps.InfoWindow({
-		      content: option.geofence,
-		      position: LocationsLine[1]
-		    });		
-		    infoGeofences.push({info:infowindow,geofence:flightPath});		    
-			flightPath.addListener('click', function() 
-			{
-				infowindow.open(map,flightPath);
+			var total_lat=0;
+			var total_lng=0;
+			var may_lat=0;
+			for(iLocationsLine in LocationsLine)
+			{	
+				if(LocationsLine[iLocationsLine].lat>may_lat)
+				{ 
+					may_lat= LocationsLine[iLocationsLine].lat
+					may_lng= LocationsLine[iLocationsLine].lng
+				}	
+				
+				total_lat =total_lat + LocationsLine[iLocationsLine].lat;
+				total_lng =total_lng + LocationsLine[iLocationsLine].lng;																						
+			}
+			
+			may_lat=may_lat - 0.00005;
+			
+			iLocationsLine			=parseInt(iLocationsLine)+1;
+			
+			var t_lat				=(total_lat / (iLocationsLine));
+			var t_lng				=total_lng / (iLocationsLine);
+
+			var posicion 		    = LatLng({latitude:t_lat,longitude:t_lng});						    	
+		
+			var mapLabel = new MapLabel({
+				text: 			option.geofence,
+				position: 		posicion,
+				map: 			map,
+				fontSize: 		14,
+				fontColor:		"#000000",
+				align: 			"center",
+				strokeWeight:	5,
 			});
-			//infowindow.close();
-		}
+
+		}			
 		
-		
-		flightPath.setMap(map);
-		//lineas.push(flightPath);
+		Polygon.setMap(map);
 	} 	   
 	function map_info(objeto)  
 	{
@@ -629,19 +935,55 @@
 	}
 	function hablar(item)
 	{
-		if(!(item["ev"]==undefined || item["ev"]==false || item["ev"]=="false" || item["ev"]=="REPORTE DE TIEMPO"))
+		var evento;
+		if(!(item["ev"]==undefined || item["ev"]==false || item["ev"]=="false"))
+        {        	
+			evento 		= item["ev"];
+			event		=evento.substring(0, 6);
+		}			
+		if(!(item["ev"]==undefined || item["ev"]==false || item["ev"]=="false" || event=="REPORT" || event=="Report"))
         {        
+        	//var res = str.substring(1, 4);
+
+			var obj=$("table.select_devices[device="+item["de"]+"]");
+
+			device_active			=obj.attr("device");	
+			
+			ajax_positions_now("../sitio_web/ajax/map_online.php");
+			$(".select_devices").removeClass("device_active");
+			$(obj).addClass("device_active");
+		
+			var actualiza="no";
+		    status_device(actualiza, obj);
+
+        
             var fechaactual = item["ti"].split(" ");  
             	
-        	var voz=item["na"] + " reporta " + fechaactual[1];
+        	var voz=item["dn"] + " reporta " + fechaactual[1];
         	if(!(item["ev"]==undefined || item["ev"]==false || item["ev"]=="false"))
         		voz=voz + ", " + item["ev"];
 		    if(!(item["ad"]==undefined || item["ad"]==false || item["ad"]=="false"))       
-				voz=voz + ", " + item["ad"];		                		
+				voz=voz + ", " + item["ad"];
+				
+				
+		    	$("#message").html(voz)
+		    	.dialog({
+					show: {
+						effect: "shake",
+						duration: 750
+					},		    			    	
+		    		width:"350",
+		    		modal: true,
+		    	});
+				setTimeout(function() 
+				{
+					$("#message").dialog("close")
+				}, 2500 );
+
         	responsiveVoice.speak(voz,"Spanish Latin American Female");            	
         }		
 	}
-
+	
     function odometro(item)	 
     {    	
 
@@ -650,6 +992,22 @@
     	else								item["ba"]  =0;
     	if(item["al"])						item["al"]  =item["al"];
     	else								item["al"]  =0;
+    	
+		//if(item["ot"]["battery"])			item["ga"]  =item["ot"]["battery"];
+		var gas;
+    	if(item["ot"]["io3"])				
+    	{
+    		gas								=item["ot"]["io3"];
+    		item["ga"]  					=parseInt(gas.substring(0,3));
+    		
+    		//item["ga"]  					gas.substring(1,3);
+    	}	
+    	else								item["ga"]  =0;
+		
+		
+		
+    	//if(item["ot"]["io3"])				item["ga"]  =item["ot"]["io3"];
+    	//else								item["ga"]  =0;
 
     	if(item["ot"]["ip"])				item["ip"]  =item["ot"]["ip"];
     	else								item["ip"]  =undefined;
@@ -675,7 +1033,7 @@
         var vel=item["sp"]*item["ts"]*12/10-110;  // 
         $("path.velocidad").attr({"transform":"rotate("+ vel +" 250 250)"});
         
-        var alt=item["al"]*12/40-15;
+        var alt=item["ga"]*12/10-38;
         $("path.altitude").attr({"transform":"rotate("+ alt +" 250 250)"});            
 
         $("#millas").html(item["mi"]);
@@ -699,9 +1057,9 @@
         {
 			var tablero="\
 				<table>\
-					<tr><td width=\"40\"  style=\"color:#fff;\"><a href=\"#\"onclick=\"command_device('Bloquear motor'," + item["de"] +")\"><img width=\"32\" src=\"../sitio_web/img/button_red.png\"></a></td>\
+					<tr><td width=\"40\"  style=\"color:#fff;\"><a href=\"#\"onclick=\"command_device('Bloquear motor'," + item["de"] +")\"><img width=\"32\" src=\"../sitio_web/img/swich_off.png\"></a></td>\
 					<td style=\"color:#fff;\">" + tablero1 + "</td></tr>\
-					<tr><td width=\"40\"  style=\"color:#fff;\"><a href=\"#\"onclick=\"command_device('Activar motor'," + item["de"] +")\"><img width=\"32\" src=\"../sitio_web/img/button_green.png\"></a></td>\
+					<tr><td width=\"40\"  style=\"color:#fff;\"><a href=\"#\"onclick=\"command_device('Activar motor'," + item["de"] +")\"><img width=\"32\" src=\"../sitio_web/img/swich_on.png\"></a></td>\
 					<td style=\"color:#fff;\">" +tablero2 + "</td></tr>\
 				</table>\
 			";	
@@ -727,10 +1085,12 @@
 
 		if(vehicle["st"]==undefined)	vehicle["st"]="1";
 		if(vehicle["st"]=="")			vehicle["st"]="1"; 
-	    
+	    //alert(vehicle["st"]);		
 		if(vehicle["st"]=="1")
 		{		
 			var device_id=vehicle["de"];
+			
+			
 			if(localizacion_anterior==undefined)	
 			{
 				localizacion_anterior=new Array();				
@@ -752,6 +1112,26 @@
 				$("table.select_devices[device="+ vehicle["de"] +"]")
 					.attr("lat", vehicle["la"])
 					.attr("lon", vehicle["lo"]);
+					
+				icon_status="";	
+				
+				if(vehicle["ty"]=="alarm")				icon_status="sirena.png";
+				if(vehicle["ty"]=="deviceStopped")		icon_status="stop.png";
+				if(vehicle["ty"]=="deviceMoving")		icon_status="car_signal1.png";
+				if(vehicle["ty"]=="deviceOnline")		icon_status="car_signal1.png";
+				if(vehicle["ty"]=="deviceOffline")		icon_status="car_signal0.png";
+				if(vehicle["ty"]=="ignitionOn")			icon_status="swich_on.png";
+				if(vehicle["ty"]=="ignitionOff")		icon_status="swich_off.png";
+				
+				if(vehicle["sp"]<5 && vehicle["ty"]=="deviceOnline")	icon_status="stop.png";
+				if(vehicle["sp"]>5 && vehicle["ty"]=="deviceOnline")	icon_status="car_signal1.png";
+				
+				
+				if(icon_status!="")
+				{
+					img_icon="<img width=\"20\" title=\""+ vehicle["ty"] +"\" src=\"../sitio_web/img/"+ icon_status +"\" >";
+					$("table.select_devices[device="+ vehicle["de"] +"] tr td.event_device").html(img_icon);
+				}	
 			
 				var icon        		=undefined;
 				
@@ -783,6 +1163,22 @@
 					else	icon	="../sitio_web/img/marker/stop.png";
 					*/	
 
+
+					if(labels[device_id]==undefined)	
+					{
+						labels[device_id]=new MapLabel({
+							text: 			vehicle["dn"],
+							position: 		posicion,
+							map: 			map,
+							fontSize: 		14,
+							fontColor:		"#8B0000",
+							align: 			"center",
+							strokeWeight:	5,
+						});
+					}
+					labels[device_id].set('position', posicion);
+
+					
 					if(device_active==vehicle["de"] && vehicle["se"]==undefined || vehicle["se"]=="simulator") 
 					{	        
 					    centerMap(posicion);			
@@ -790,6 +1186,7 @@
 					} 
 				}
 				var marcador 		    = markerMap(posicion, icon);		
+					
 				var infowindow 		    = messageMap(marcador, vehicle);
 		
 				fn_localizaciones(marcador, vehicle);
@@ -797,8 +1194,7 @@
 			else
 			{
 				//alert(vehicle["ti"] + ">"+ localizacion_anterior[device_id]["ti"]);
-			}	
-				
+			}					
 		}
 		else 
 		{
@@ -809,13 +1205,17 @@
 		}
 		return marcador;
 	}
-	function markerMap(position, icon) 
+	function markerMap(position, icon, markerOptions) 
 	{
-		var markerOptions 			= new Object();
+		if(markerOptions==undefined)	var markerOptions 			= new Object();
+		
 		markerOptions.position		=position;
 		markerOptions.map			=map;
 		if(icon!=undefined)
 			markerOptions.icon		=icon;
+
+
+
 
 		return new google.maps.Marker(markerOptions);
 	}
@@ -843,7 +1243,8 @@
 
     function ajax_positions_now(link,time)
     {    	
-    	if(link==undefined)		link="../modulos/position/ajax/index.php?refresh=";
+    
+    	if(link==undefined)		link="../sitio_web/ajax/map_online.php?refresh=";
     	if(time==undefined)		time=0;
     	
 	    setTimeout(function()
@@ -865,7 +1266,7 @@
     function ajax_positions(link,time)
     {
     	if(time==undefined)		time="15000";
-    	if(link==undefined)		link="../modulos/position/ajax/index.php?refresh=";
+    	if(link==undefined)		link="../sitio_web/ajax/map_online.php?refresh=";
 
         timer_position=setInterval(function()
         {     
@@ -928,19 +1329,39 @@
 	}
 	function paint_history(iposiciones, section)
 	{			    
-        if(vehicle_data[device_active].length>iposiciones)                
+        if(vehicle_data[device_active].length>isimulacion)                
         {        	
         	localizacion_anterior=undefined;
-	    	var vehicle			=vehicle_data[device_active][iposiciones];	    	
+	    	var vehicle			=vehicle_data[device_active][isimulacion];	    	
+	    		    	
+	    	if(vehicle["sp"]>4)	
+	    	{
+	    		simulation_stop=0;
+	    		simulation_time=600;
+	    	}	
+	    	else	
+	    	{
+					if(simulation_stop<20)
+					{
+						simulation_stop=simulation_stop+1;
+						if(simulation_time==600)    simulation_time=300;
+					}	
+					else
+					{
+						if(simulation_time==300)	simulation_time=5;
+					}	
+	    	}	
+	    	
 	    	vehicle["se"]		="simulator";
 	    	locationsMap(vehicle); 
 	    	if(section=="historyStreet")			execute_streetMap(vehicle);
             setTimeout(function()
-            {                                               		    	
-            	del_locations();
-            	iposiciones=iposiciones+1;
+            {   
+            	if(simulation_action!="pause")		                                            		    	
+	            	del_locations();
+            	isimulacion=isimulacion+1;
             	if(simulation_action=="play")		
-            		paint_history(iposiciones, section);
+            		paint_history(isimulacion, section);
             },simulation_time);
         }
 	}
@@ -985,6 +1406,7 @@
 		var butons_html=" \
 			<font id=\"back\"> -- </font>\
 			<font id=\"play\">Play</font>\
+			<font id=\"pause\">Pause</font>\
 			<font id=\"stop\">Stop</font>\
 			<font id=\"next\"> ++ </font>\
 		";
@@ -1004,10 +1426,22 @@
 				    simulation_action="play";
 				    del_locations();
 				    $("div#odometro").show();
-					paint_history(1, historyMap);
+					paint_history(isimulacion, historyMap);
 				}    					
 			}
 		);
+	    $("#pause").button({
+			icons: {
+				primary: "ui-icon-pause"
+			},
+			text: false
+			})
+			.click(function()
+			{			    
+			    simulation_action="pause";
+			}
+		);
+		
 	    $("#next").button({
 			icons: {
 				primary: "ui-icon-seek-next"
@@ -1039,6 +1473,7 @@
 			})
 			.click(function()
 			{
+				isimulacion=1;
 				simulation_action="stop";
 			}
 		);		
@@ -1062,6 +1497,7 @@
         }    
 		if(device_active==0)	
 		{
+			$("div#map_search").show();
 			$("div#odometro").hide();
 			$("#tablero").html("Estatus : Seleccionar un vehiculo");			
 			$("#tablero").animate({				
@@ -1077,69 +1513,63 @@
 			$("#tablero").html("<h4>Cargando...</h4> <img id=\"loader1\" src=\"../sitio_web/img/loader1.gif\" height=\"30\" width=\"30\"/>");	
 			//status_device2();
 			$("#odometro").show(); 
+			$("div#map_search").hide();
 		}	  			
 	}
 	
 	function execute_streetMap(vehicle)
 	{
-		var coordinates						={latitude:vehicle["la"],longitude:vehicle["lo"]};
+		if($("div#street").length>0)
+		{
+			var coordinates						={latitude:vehicle["la"],longitude:vehicle["lo"]};
 		
-		if(coordinate_active==undefined)	coordinate_active={};
-		var txt_active						=coordinate_active["latitude"]+","+coordinate_active["longitude"];
-		var txt_history						=coordinates["latitude"]+","+coordinates["longitude"];
+			if(coordinate_active==undefined)	coordinate_active={};
+			var txt_active						=coordinate_active["latitude"]+","+coordinate_active["longitude"];
+			var txt_history						=coordinates["latitude"]+","+coordinates["longitude"];
 
-		var txt 							= txt_active + " " +txt_history;
-		//$("#pie").html(txt);
+			var txt 							= txt_active + " " +txt_history;
+			//$("#pie").html(txt);
 		
-		if(txt_active!=txt_history)
-		{	
-			coordinate_active				=coordinates;
-		    var posicion					=LatLng(coordinates);
-		    
-		    centerMap(posicion);
-		    var curso           			=vehicle["co"];		        
-		    var panoramaOptions = {
-		        position: posicion,
-		        pov: {
-		          heading:  curso,
-		          pitch:    10
-		        }
-		    };
-		    
-		    var panorama = new google.maps.StreetViewPanorama(document.getElementById('street'), panoramaOptions);
-		    map.setStreetView(panorama);	                		    
-		}        
+			if(txt_active!=txt_history)
+			{	
+				coordinate_active				=coordinates;
+				var posicion					=LatLng(coordinates);
+				
+				centerMap(posicion);
+				var curso           			=vehicle["co"];		        
+				var panoramaOptions = {
+				    position: posicion,
+				    pov: {
+				      heading:  curso,
+				      pitch:    10
+				    }
+				};
+				
+				var panorama = new google.maps.StreetViewPanorama(document.getElementById('street'), panoramaOptions);
+				map.setStreetView(panorama);	                		    
+			}        
+		}	
 	}
 
 
 	
 	$(document).ready(function()
 	{
+		setTimeout(function()
+		{  	
+			ajustar_display();
+			ajustar_menu();			
+			
+		},1000);
+		
+	
 		var vURL = window.location.href
 		var aURL = vURL.split("/");
 		var	vURL = aURL[aURL.length-2]+"/"+aURL[aURL.length-1];
-		render();
-		
-
-		
-		
-		if($("[tabindex='1']").length>0)
-			$("[tabindex='1']").focus();
-		
-        $("input[type!='hiden|checkbox'][tabindex], select[tabindex] ").on('keydown', function (e) 
-		{			
-            if (e.keyCode == 13) 
-			{						
-				e.preventDefault();
-				
-				var tabindex =parseInt($(this).attr("tabindex")) + 1;
-				$("input[tabindex="+tabindex+"], select[tabindex="+tabindex+"]").focus();
-			}	
-        });		
-		
 		
 		$(".submenu2").removeClass("submenu2_active");
 		
+		/*
 		$(".submenu2").click(function(e)
 		{				
 			vLINK = $(this).parents( "a" ).attr('href');
@@ -1151,8 +1581,15 @@
 			    e.preventDefault();			
 			}					    					    			
 		});
-
-
+		*/
+	    if($(".base_report").length>0)
+	    {
+	    	var origen=$(".base_report");	    	
+	    	var id=origen.attr("id");	    	
+	    	var destino=$(".base_report").children(".div_report");
+	    
+			render(origen, destino,-39);
+		}
 	    if($("div.submenu").length>0)
 	    {
 			$("div.submenu").click(function()
@@ -1161,15 +1598,11 @@
                 $("div.option").removeClass("d_block");                
 				$("div.option[active='"+active+"']").addClass("d_block");
 				
-				ajustar_device();
+				ajustar_menu();
 			});
 		}
 	    if($("font.show_form").length>0)
 	    {
-			$("font.show_form").button({	    
-				icons: {	primary: "ui-icon-extlink" },
-				text: false
-				})
 			$("font.show_form").click(function()
 			{
                 var active	=$(this).attr("active");                
@@ -1208,65 +1641,50 @@
 				}
 			);			    
 		}	    
+	    if($("#varias_hojas.form").length>0)
+	    {
 	    
+
+				$( "#varias_hojas.form" ).tabs();
+		}
 	    $("font#setting").click(function(){
 	        $("div#setting").dialog({
 	        	width:"700px"
 	        });
-	    
 	    });
 	    if($("img#excel").length>0)
 	    {
 			$("img#excel").click(function()
 			{
-				var url=location.href;
-				var arrUrl=url.split("/");
+				var url		= location.href;		
+				var arrUrl 	= url.split("/");
 				
-				var clase =arrUrl[ arrUrl.length -2];
-				
+				var clase	=arrUrl[ arrUrl.length -2 ];				
+
 				$("form")
 					.attr("target","_blank")
 					.attr("action","&sys_action=print_excel")
 					.submit();
-				$("form")				
-					.attr("action","")
-					.removeAttr("target");					
+				$("form").attr("action","");
+					
 		    });	        
 	    }	    
 	    if($("img#pdf").length>0)
 	    {
 			$("img#pdf").click(function()
 			{
-				var url=location.href;
+				var url		= location.href;		
+				var arrUrl 	= url.split("/");
 				
-				var arrUrl=url.split("/");
-				
-				var clase =arrUrl[ arrUrl.length -2];
-				
+				var clase	=arrUrl[ arrUrl.length -2 ];				
+
 				$("form")
 					.attr("target","_blank")
 					.attr("action","&sys_action=print_pdf")
 					.submit();
-				$("form")				
+				$("form")
 					.attr("action","")
-					.removeAttr("target");					
-				/*
-				var variables=getVarsUrl();
-				var str_url="";
-				var sys_action=0;
-				for(ivariables in variables)
-				{
-					if(ivariables=="sys_action")	
-					{
-						sys_action=1;
-						str_url+="&"+ivariables+"=print_pdf";
-					}	
-					else	str_url+="&"+ivariables+"="+ variables[ivariables];
-				}		        
-				if(sys_action==0)	str_url+="&sys_action=print_pdf";
-				
-				window.open(str_url);
-				*/
+					.removeAttr("target");
 		    });	        
 	    }	    
 
@@ -1274,72 +1692,63 @@
 	    {
 			$("img#print").click(function()
 			{
-				var url=location.href;				
-				var arrUrl=url.split("/");
+				var url		= location.href;		
+				var arrUrl 	= url.split("/");
 				
-				var clase =arrUrl[ arrUrl.length -2];
-				
+				var clase	=arrUrl[ arrUrl.length -2 ];				
+
 				$("form")
 					.attr("target","_blank")
 					.attr("action","&sys_action=print_report")
 					.submit();
-				$("form")				
+				$("form")
 					.attr("action","")
-					.removeAttr("target");									
-				
+					.removeAttr("target");
+
 		    });
 	    }	    
 	   
-	    if($("td#system_submenu2").length>0)
-	    {
-	    	ajustar_device();
-			$( window ).resize(function() 
-			{
-				ajustar_device();
-			});	   	   
-	    }
-		
     	if($(".sys_report").length>0) 
     	{
             $(".sys_report").click(function()
             {
-				var data        =$(this).attr("data");               
-				envio_var(data);	
+            	var enviar		=true;
+            	var data        =$(this).attr("data");               
+            	var variables	=serializar_url(data);
+            	var path		="";
+				for(ivariables in variables)
+				{
+					path=set_var(ivariables, variables[ivariables]);
 				
+					if(variables[ivariables]=="delete")							
+					{
+						enviar = confirm("Borrar datos");														
+					}	
+				}	
+				if(enviar==true)
+				{
+					if(path!="")	$("form").attr({"action":path});					
+					$("form").submit(); 	        
+				}		
 			});
-		}
-		
-        if($(".report_title_action").length>0)
-        {
-            $(".report_title_action").click(function()
-            {		
-				$(this).children("div.filter_window").dialog({
-					width:"700px"
-				});
-
-             });               
-		 }
-
-
-		
-		
+		}	    
         if($(".sys_order").length>0)
         {
             $(".sys_order").click(function()
             {
+            	
                 var name        =$(this).attr("name");
-                var sys_order   =$(this).attr("sys_order");
+                var sys_order   =$(this).attr("sys_order");                
                 var sys_torder  =$(this).attr("sys_torder");
-				
-				
+                
                                 
-	            $("input#sys_order_"+name).val(sys_order);
-	            $("input#sys_torder_"+name).val(sys_torder);
+	            $("#sys_order_"+name).val(sys_order);
+	            $("#sys_torder_"+name).val(sys_torder);
 	            
 	            $("form").submit(); 
-            });               
+             });               
         }
-		
+      
 
 		if($(".cKanban").length>0) 
 		{
@@ -1350,7 +1759,7 @@
 			$(".cKanban").mouseover(function()
 			{					
 				$(this).find(".cBotones").css("display", "block");
-				/*
+
 				if($(this).find("[type=checkbox]").is(':checked'))
 				{
 				}
@@ -1360,7 +1769,7 @@
 					$(this).css("background-color", "#EFEFFB");
 					colorHover	=$(this).css("background-color");
 				}
-				*/
+				
 			});
 			$(".cKanban").mouseout(function()
 			{				
@@ -1381,29 +1790,31 @@
 				$(this).css("background-color", colorAction);
 			});		   
 		
-			/*
 			$("[type=checkbox]").click(function() {  //input.myclass[type=checkbox]   
-			
-				if($(this).is(':checked')) { 
-					$(this).parents( ".cKanban" ).css( "background","#58FAF4"); 
-				} else {  
-					$(this).parents( ".cKanban" ).css( "background", colorKanban); 
-				}  
-			});
-			*/
+	        if($(this).is(':checked')) { 
+	            $(this).parents( ".cKanban" ).css( "background","#58FAF4"); 
+	        } else {  
+	            $(this).parents( ".cKanban" ).css( "background", colorKanban); 
+	        }  
+	    	});
 
 		}
 	    if($(".echo").length>0)
 	    {
 			$(".echo").dialog();
 		}		
+	    if($(".developer").length>0)
+	    {
+			$(".developer").dialog();
+		}		
+
 		if($(".cBodyReport").length>0) 
 		{
 			var colorAction;
 			var colorRowOdd = $(".odd").css( "background-color");	
 			var colorRowEven = $(".even").css( "background-color");
 			var classRow;
-			/*
+
 			$(".cAction").mouseover(function()
 			{
 				colorAction	=$(this).css("background-color");
@@ -1414,8 +1825,8 @@
 			{
 				$(this).css("background-color", colorAction);
 			});		   
-			
-			$("[type=checkbox]").click(function() 
+		
+			$(".view_report:checkbox").click(function() 
 			{  
 			    if($(this).is(':checked')) 
 			    { 	        	
@@ -1436,63 +1847,54 @@
 		        	};	            
 			    }  
 	    	});
-			*/
 
 		}
-		if($(".sys_report_blank").length>0) 
-		{
-				
-			$(".sys_report_blank").click(function()
-			{					
-				var obj        =$(this).attr("obj");
-				var section		=$("#sys_section_" + obj).val();					
-				
-            	var data        =$(this).attr("data");               
-				generacion_var(data);
-				
-				$("form")
-					.attr({"target":"_blank"})					
-					.submit()					
-					.removeAttr("target");
-					
-				$("#sys_section_" + obj).val(section);									
-				$("#sys_action").val("");													
-			});			
-		}		
 		
+		/*
+		if( isMobile.any() ) alert('Mobile');		
+		else	alert('NO Mobile');
+		
+		/*
+		if($.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())))
+		{
+			alert("CELULAR");
+			$("form").attr({"style":"width:700px;"});
+		}
+		*/		
+
+
+	    if($("td#system_submenu2").length>0)
+	    {
+	    	ajustar_menu();
+			$( window ).resize(function() 
+			{
+				ajustar_menu();
+				ajustar_display();
+			});	   	   
+	    }
+
     });	
-	function generacion_var( data ) 
-	{	
-		var variables	=serializar_url(data);	
-		for(ivariables in variables)
-		{
-				var input="";
-				if($("input#"+ivariables).length>0) {}
-				else	
-				{	
-					input="<input id=\""+ivariables+"\" name=\""+ivariables+"\" type=\"hidden\">";						
-					$("form").append(input);
-				}			
-				$("input#"+ivariables).val(variables[ivariables]);	
-		}			
-	}	
-	
-	
-	
-	function envio_var( data ) 
-	{	
-		generacion_var( data ); 
-		$("form").submit(); 	    
-	}
-	
-	
 		
-	function split( val ) {
-		return val.split( /,\s*/ );
+	function set_var(variables, ivariables)
+	{
+		var path="";
+		if($("select#"+variables).length>0)
+		{
+			if($("select#"+variables+" option[value='"+ivariables+"']").length==0) 
+				$("select#"+variables).append("<option value=\"" + ivariables + "\">"+ivariables+"</option>");							
+			$("select#"+variables).val(ivariables);						
+		}	
+		else if($("input#"+variables).length>0) 
+		{
+			$("input#"+variables).val(ivariables);
+		}
+		else
+		{
+			path=path+"&"+variables+"="+ivariables;
+		}
+		return path;
 	}
-	function extractLast( term ) {
-		return split( term ).pop();
-	}
+
 
 	
 	function page(sys_page,sys_row)
@@ -1527,16 +1929,4 @@
 
 		} 				
 	}	
-	
-	/*
-	$(function() 
-	{
-    	if($(document).length>0) 
-    	{
-	
-			$(document).tooltip();
-		}	
-	});
-	*/
-	
-	
+

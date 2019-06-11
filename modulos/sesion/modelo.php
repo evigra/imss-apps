@@ -1,79 +1,66 @@
 <?php
+	
 	class sesion extends general
 	{   
 		##############################################################################	
 		##  Propiedades	
 		##############################################################################
 		var $mod_mensaje="";
+		var $sys_recursive=2;
+		
 		var $sys_fields	=array(
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
+			
 			"user"	    =>array(
 			    "title"             => "Usuario",
-			    "showTitle"         => "si",
+			    "titleShow"         => "no",			    
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
+			    "attr"				=>array("placeholder"=>"Usuario"),
+			    "br"         		=> "",			   			   
+			    "class_name"       	=> "users",			    
+			),
+			"company"	    =>array(
+			    "class_name"       	=> "company",			    
 			),
 			"pass"	    =>array(
 			    "title"             => "Password",
-			    "showTitle"         => "si",		
 			    "type"              => "password",
-			    "default"           => "",
-			    "value"             => "",			    
+			    "titleShow"         => "no",
+			    "attr"				=>array("placeholder"=>"Password"),
+			    "br"         		=> "",			    			    			    
 			),
 			
 			"user_id"	    =>array(
 			    "title"             => "Nombre",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"server_addr"	    =>array(
 			    "title"             => "Servidor",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"date"	    =>array(
 			    "title"             => "Fecha",
-			    "showTitle"         => "si",
 			    "type"              => "password",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"remote_addr"	    =>array(
 			    "title"             => "Servidor",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"http_user_agent"	    =>array(
 			    "title"             => "Agente",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 		);				
 		##############################################################################	
 		##  Metodos	
 		##############################################################################
-
-        
-
-
-		public function __CONSTRUCT()
+		public function __CONSTRUCT($option=null)
 		{
-			parent::__CONSTRUCT();			
+			$return = parent::__CONSTRUCT($option);			
+			return $return;
 		}        
 		public function huso_horario($option)
 		{
@@ -92,10 +79,9 @@
 			
 			return $return;
 		}        
-		/*
+		
 		public function sesion($option=NULL)		
     	{	
-			
     		if(is_null($option))	$option=array();
     		
 			$option["select"]	=array(				
@@ -111,16 +97,14 @@
 			$option["order"]		="date desc";
 			
 			if(!isset($option["where"]))
-				#$option["where"]=" and u.company_id={$_SESSION["company"]["id"]} or u.id={$_SESSION["user"]["id"]}";
-				$option["where"]=" and u.id={$_SESSION["user"]["id"]}";
-			#$option["echo"]="";
+				$option["where"]=" and u.company_id={$_SESSION["company"]["id"]} or u.id={$_SESSION["user"]["id"]}";
 			$return =$this->__VIEW_REPORT($option);    				
 			return $return;
 		}				
-		*/
+
 		public function __SAVE($datas=NULL,$option=NULL)
-    	{    		
-    		$this->words["mensaje_sesion"]	= 	"
+    	{
+	   		$this->words["mensaje_sesion"]	= 	"
     			<div id=\"messajeSesion\" class=\"messajeSesion borderRed\">
 					<table>
 						<tr>
@@ -134,24 +118,18 @@
 					</table>    												
 				</div>
 			";
-			$this->obj_user   		=new usuario();
-			
+    		
     		if(array_key_exists("user",$datas) AND array_key_exists("pass",$datas))
     		{
-				$user       								=$this->obj_user->session($datas["user"],$datas["pass"]);								
+				$user       								=$this->sys_fields["user"]["obj"]->session($datas["user"],$datas["pass"]);
+					
+				#$this->__PRINT_R($user);	
 				if(count($user)>0)
-				{
-					#$this->__PRINT_R($user);			
-					#$this->__PRINT_R($user["matricula"]."=".$datas["user"]);
-					if($user["matricula"]==$datas["user"])
+				{	
+					if($user["email"]==$datas["user"])
 					{
-						#$this->__PRINT_R($user);		
 						if($user["password"]==md5($datas["pass"]))						
 						{
-							
-							#$this->__PRINT_R($user);	
-									
-							
 							$comando_sql="
 								SELECT * 
 								FROM 
@@ -161,55 +139,43 @@
 									AND user_id={$user["id"]}
 									AND active>0
 							";		
+
+							$option_conf					=array();
+
+							$option_conf["open"]			=1;
+							$option_conf["close"]			=1;
+						
+							$data_usergroup 				=$this->__EXECUTE($comando_sql,$option_conf);						
+							
+							$option_company					=array("where"=>array("id=1"));
+							$data_company					=$this->sys_fields["company"]["obj"]->__BROWSE($option_company);												
 					
-							$data_usergroup 				=$this->__EXECUTE($comando_sql);						
-							
-							
-							/*
-							$option_company					=array("where"=>array("company.id={$user["company_id"]}"));
-							$data_company					=$this->obj_company->companys($option_company);
-							*/
+							#$this->__PRINT_R($data_company);
+					
 							$data_sesion					=array();
-							
 							$data_sesion["user_id"]			=$user["id"];
-							$data_sesion["date"]			=$this->sys_date;
+							$data_sesion["date"]			=$_SESSION["var"]["datetime"];
 							$data_sesion["server_addr"]		=$_SERVER["SERVER_ADDR"];
 							$data_sesion["remote_addr"]		=$_SERVER["REMOTE_ADDR"];
 							$data_sesion["http_user_agent"]	=$_SERVER["HTTP_USER_AGENT"];
 						
+							$option							=array("message"=>"");
 							parent::__SAVE($data_sesion,$option);
 						    $_SESSION["user"]       		=$user;		
-						    $_SESSION["session"]    		=@$data_sesion;							
-							$_SESSION["system_company"]		=$user["departamento"];
-							$_SESSION["departamento_id"]	=$user["departamento_id"];
-							$_SESSION["departamento"]		=$user["departamento"];
-							
-							
-							
-							$_SESSION["system_company"]		="";
-							$_SESSION["system_user"]		=$user["nombre"];
-						   						    
-						    
-						    #$huso_horario					=$_SESSION["company"]["huso_horario"];
-						    #$_SESSION["user"]["huso_h"]		=$this->huso_horario($huso_horario);
-						    $_SESSION["user"]["huso_h"]		=5;
-						    
+						    $_SESSION["session"]    		=@$data_sesion;						    						    						    						    
 						    $_SESSION["group"]				=@$data_usergroup;
+						    $_SESSION["company"]			=@$data_company["data"][0];
 						    
-						    if(@$_SESSION["user"]["sesion_start"]!="")	$sesion_start	=@$_SESSION["user"]["sesion_start"];
+						    
+						    if($_SESSION["user"]["sesion_start"]!="")	$sesion_start	=$_SESSION["user"]["sesion_start"];
 						    else										$sesion_start	="";
 						    
-						    if(@$user["sesion_start"]!="")   $locacion	=@$user["sesion_start"];
-						    else							$locacion	="../personal_txt/&sys_menu=1";
+						    if($user["sesion_start"]!="")   $locacion	=$user["sesion_start"];
+						    else							$locacion	="../anteojos/";
 						    
-						    setcookie("solesgps", $user["id"]);
-							
-						      
-							$nombre=str_replace("/", " ", $user["nombre"]);
-						    $this->__SAVE_JS        		="
-								//responsiveVoice.speak(\"Bienvenido $nombre\",\"Spanish Latin American Female\");            	
-								window.location =\"$locacion\";  
-							";
+						    #setcookie("solesgps", $user["id"]);
+						    
+						    $this->__SAVE_JS        		=" window.location =\"$locacion\";  ";
 						    $this->__SAVE_MESSAGE   		="";
 						    
 						    $this->words["mensaje_sesion"]	=	"

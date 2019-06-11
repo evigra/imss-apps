@@ -1,5 +1,5 @@
 	$(document).ready(function()
-	{	/*
+	{
 		$("#action").button({
 			icons: {	primary: "ui-icon-document" },
 			text: true
@@ -18,7 +18,7 @@
 		        
 		    }
 	    );		
-		
+
 		$("#cancel").button({
 			icons: {	primary: "ui-icon-closethick" },
 			text: true
@@ -61,5 +61,4 @@
 		    
 		    }
 	    );
-		*/
     });

@@ -1,30 +1,23 @@
-<?php
-	$objeto	=new errores();
+<?php	
+	#require_once("modelo.php");
+	$objeto	= new errores();
+ 
+	$objeto->words["html_head_description"]	=	"EN LA EMPRESA SOLESGPS, CONTAMOS CON UN MODULO PARA ADMINISTRAR EL REGISTRO DE SESION.";
+	$objeto->words["html_head_keywords"] 	=	"GPS, RASTREO, MANZANILLO, SATELITAL, CELULAR, VEHICULAR, VEHICULO, TRACTO, LOCALIZACION, COLIMA, SOLES, SATELITE, GEOCERCAS, STREET VIEW, MAPA";
+	$objeto->words["html_head_title"]           ="SOLES GPS :: Error";
 
-	$objeto->words["html_head_description"]			="SolesGPS desarrollo su propia plataforma de rastreo vehicular y celular, con la finalidad de satisfacer las nececidades de sus clientes";
-	$objeto->words["html_head_keywords"] 			="GPS, RASTREO, MANZANILLO, SATELITAL, CELULAR, VEHICULAR, VEHICULO, TRACTO, LOCALIZACION, COLIMA, SOLES, SATELITE, GEOCERCAS, STREET VIEW, MAPA";
-	$objeto->words["html_head_title"]           	="SOLES GPS :: Iniciar sesion";
-
-	$objeto->words["html_head_css"]					= $objeto->__FILE_CSS(array("../".$objeto->sys_module."css/index",));		
+	$objeto->words["html_head_css"]		= $objeto->__FILE_CSS(array(
+		"../".$objeto->sys_var["module_path"]."css/index",		
+		));	
 	
-	$objeto->words["html_head_js"]              	=$objeto->__FILE_JS(
-		array("responsivevoice","../".$objeto->sys_module."js/index")
-	);
+	$objeto->words["html_head_js"] 		= $objeto->__FILE_JS();	
 
+	$objeto->words["system_module"]		= $objeto->__VIEW_CREATE($objeto->sys_var["module_path"] . "html/show");		
+	$objeto->words                 		= $objeto->__INPUT($objeto->words,$objeto->sys_fields);    
+	$objeto->words["system_menu"]   	= $objeto->__TEMPLATE($objeto->sys_html."system_menu");    
+	$view	="front_end";
 
-	$objeto->words["system_module"]					=$objeto->__VIEW_CREATE($objeto->sys_module . "html/create");		
-	$objeto->words                 					=$objeto->__INPUT($objeto->words,$objeto->sys_fields);    
-	$objeto->words["system_menu"]   				=$objeto->__TEMPLATE($objeto->sys_html."system_menu");    
-		
-	$objeto->html                  					= $objeto->__VIEW_TEMPLATE("front_end", $objeto->words);
-	$objeto->words["module_title"]					="Sesiones registradas";
-	$objeto->words["module_left"]					="";
-	$objeto->words["module_center"]					="";
-	$objeto->words["module_right"]					="";
-	
-	if(!array_key_exists("mensaje_sesion",$objeto->words))
-		$objeto->words["mensaje_sesion"]			="";
+    $objeto->html                  		= $objeto->__VIEW_TEMPLATE($view, $objeto->words);
 	
 	$objeto->__VIEW($objeto->html);    
 ?>
-

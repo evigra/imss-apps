@@ -1,6 +1,4 @@
 <?php
-	#if(file_exists("../device/modelo.php")) require_once("../device/modelo.php");
-	
 	class menu extends general
 	{   
 		##############################################################################	
@@ -9,31 +7,25 @@
 		var $sys_fields		=array(
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"name"	    =>array(
 			    "title"             => "Menu",
-			    "showTitle"         => "si",
-			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
+			    "type"              => "input",		    
 			),
 			"link"	    =>array(
 			    "title"             => "Link",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "holder"           => "algo",
-			    "value"             => "",			    
 			),
+			"variables"	    =>array(
+			    "title"             => "variables",
+			    "type"              => "input",
+			    "htmlentities"      => "false",
+			),
+
 			"type"	    =>array(
 			    "title"             => "Tipo",
-			    "showTitle"         => "si",
 			    "type"              => "select",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "source"			=>array(
 			    	"menu"			=>	"Menu",
 			    	"submenu"		=>	"SubMenu",
@@ -42,35 +34,34 @@
 			),
 			"parent"	    =>array(
 			    "title"             => "Padre",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),											
 		);				
 		##############################################################################	
 		##  Metodos	
 		##############################################################################
-
-        
-		public function __CONSTRUCT()
+		public function __CONSTRUCT($option=NULL)
 		{
-			#echo "<br>MENU :: CONSTRUC INI"; 
-			parent::__CONSTRUCT();
-			
-			#echo "<br>MENU :: CONSTRUC FIN"; 
+			parent::__CONSTRUCT($option);
 		}
         #/*		
 		public function __SAVE($datas=NULL,$option=NULL)
     	{
-    		#echo "SAVE MODULO";
-    		#$this->__PRINT_R($this);
-    	
+    		$this->__PRINT_R($datas);
     		parent::__SAVE($datas,$option);
-    		#$this->__PRINT_R($this->sys_sql);    		
 		}		
 		#*/
 	
+		public function autocomplete()		
+    	{	
+    		$option					=array();
+    		$option["where"]		=array();    		
+    		$option["where"][]		="name LIKE '%{$_GET["term"]}%'";
+    		$option["where"][]		="type='menu'";
+    		
+			$return =$this->__BROWSE($option);    				
+			return $return;			
+		}				
 
 		public function grupos()
     	{
@@ -161,49 +152,52 @@
 		public function menu($option=NULL)
     	{
     		$data	=array();
-    		
-    		if(!is_array($option))
+    		#$this->__PRINT_R($option);
+    		if(!is_null($option))
     		{	  		
     			$menus	=$this->data_menu($option);
     			$option=array();
     		}
     		else	  						
-    		$menus	=$this->data_menu();
-    		
-    		#$this->__PRINT_R($menus);
+    			$menus	=$this->data_menu();
+    		    		
 			foreach($menus as $imenu => $menu)
 			{
 			    $data[]					=$menu;
 				$submenus 				= $this->data_submenu($menu["id"]);
-				
-				#$this->__PRINT_R($submenus);
 								
 				foreach($submenus as $isubmenu => $submenu)
 				{
-				    $submenu["name"]	=" &nbsp; ".$submenu["name"];
+				    $submenu["name"]	=" - &nbsp;".$submenu["name"];
 					$data[]				=$submenu;
 					$opciones 			= $this->data_opcion($submenu["id"]);
 					
 					foreach($opciones as $iopcion => $opcion)
 					{
-					    $opcion["name"]	=" &nbsp; &nbsp; ".$opcion["name"];
+					    $opcion["name"]	=" = &nbsp; &nbsp;".$opcion["name"];
 						$data[]			=$opcion;
 					}
 				}				
 			}
-			
-			#$this->__PRINT_R($data);
-			
-			
+						
 	    	if(!isset($option["name"]))    	$option["name"]	=$this->sys_object;
 
-			$option["data"]		=$data;
-			$option["total"]	=count($data);
-			$option["inicio"]	=1;
-			$option["fin"]		=count($data);
-			
+			$option["data"]								=$data;
+			$option["total"]							=count($data);
+			$option["inicio"]							=1;
+			$option["fin"]								=count($data);
+			$option["actions"]							=array("write"=>"1==1");
+		
+			$option["actions"]	                		= array();
+			$option["actions"]["write"]           		= "true";
+			$option["actions"]["delete"]           		= "true";
+			$option["actions"]["show"]           		= "false";
+			$option["actions"]["check"]           		= "false";
+						
 			return $this->__VIEW_REPORT($option);
 		}		
+		
+		
 		public function data_menu($option=NULL)
     	{
 			$option_conf=array();
@@ -211,15 +205,15 @@
 			$option_conf["open"]	=1;
 			$option_conf["close"]	=1;    	
     	
-    		$retun=array();
-    		$filtro="";
+    		$retun					=array();
+    		$filtro					="";
     		
     		if(!(is_null($option) OR is_array($option)))
     			$filtro=" AND id=$option";
     			    			
-			$comando_sql        ="SELECT * FROM menu WHERE type='menu' $filtro";
+			$comando_sql        	="SELECT * FROM menu WHERE type='menu' $filtro";			
+			$return 				=$this->__EXECUTE($comando_sql, $option_conf);			
 			
-			$return =$this->__EXECUTE($comando_sql, $option_conf);			
 			return $return;
 		}		
 		public function data_submenu($menu)
@@ -246,6 +240,7 @@
 		
 		public function option()
     	{
+
 		}				
 		public function view_opction()
     	{

@@ -51,7 +51,7 @@ echo "/<pre>";
 	
 	
 	
-	$pdf->SetAuthor(base64_decode($_SESSION["pdf"]["PDF_system_ophp1"]));
+	$pdf->SetAuthor(base64_decode(@$_SESSION["pdf"]["PDF_system_ophp1"]));
 	#$pdf->SetTitle($_SESSION["pdf"]["title"]);
 	#$pdf->SetTitle('algo');
 	#$pdf->SetSubject($_SESSION["pdf"]["subject"]);

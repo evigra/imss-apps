@@ -1,6 +1,4 @@
 <?php
-	#if(file_exists("../menu/modelo.php")) require_once("../menu/modelo.php");
-	
 	class groups extends general
 	{   
 		##############################################################################	
@@ -9,46 +7,53 @@
 		var $sys_fields		=array(
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"name"	    =>array(
 			    "title"             => "Perfil",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
+			"nivel"	    =>array(
+			    "title"             => "Nivel",
+			    "type"              => "select",
+			    "source"            => array(
+			    	"0"              => "Dios",
+			    	"10"              => "Super Administrador",
+			    	"20"              => "Administrador",
+			    	"30"              => "Usuario",
+			    	"40"              => "Usuario2",
+			    	"50"              => "Usuario3",
+			    	"60"              => "Usuario4",
+			    	"70"              => "Usuario5",
+			    	"80"              => "Usuario6",
+			    	"90"              => "Usuario7",
+			    	"100"             => "No activo",
+			    ),
+			),
+
 			"menu_id"	    =>array(
 			    "title"             => "Menu",
 			    "showTitle"         => "si",
 			    "type"              => "autocomplete",
-			    "source"            => "../modulos/menu/ajax/index.php",
-			    
-			    "relation"          => "one2many",			    
+			    "procedure"         => "autocomplete",			    
+			    #"relation"          => "one2many",
+			    "relation"          => "many2one",
 			    "class_name"       	=> "menu",
-			    #"class_path"        => "modulos/menu/modelo.php",
 			    "class_field_l"    	=> "name",				# Label
 			    "class_field_o"    	=> "menu_id",			# Origen
 			    "class_field_m"    	=> "id",				# Destino
 			    "value"             => "",			    
 			),
-
 			"permiso_ids"	    =>array(
 			    "title"             => "Menu",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "relation"          => "one2many",			    
+			    #"relation"          => "one2many",
+			    "relation"          => "many2one",
 			    "class_name"       	=> "permiso",
-			    #"class_path"        => "modulos/permiso/modelo.php",
-			    #"class_field_l"    	=> "name",				# Label
 			    "class_field_o"    	=> "id",					# Origen
-			    "class_field_m"    	=> "usergroup_id",			# Destino
-			    "value"             => "",			    
+			    "class_field_m"    	=> "usergroup_id",			# Destino	    
 			),			
-
+			
 		);				
 		##############################################################################	
 		##  Metodos	
@@ -62,32 +67,17 @@
 
 		}
 		public function __VIEW_REPORT($option=NULL)		
-		{		
-    		if(is_null($option))	$option=array();
-    		#/*
-			$option["select"]	=array(
-				"g.*",
-				"m.name"=>"menu_name",
-			);
-			#*/
-			$option["from"]		="groups g join menu m on m.id=g.menu_id";
-			$option["order"]	="menu_name asc, nivel asc";
-			
-			#$option["echo"]		="GRUPO";
-			return parent::__VIEW_REPORT($option);
-		}
-		public function groups($option=NULL)		
     	{	
     		if(is_null($option))	$option=array();
     		
 			$option["select"]	=array(
 				"g.*",
-				"m.name"=>"menu_name",
+				"m.name"=>"menu_id",
 			);
-			$option["from"]		="groups g join menu m on m.id=g.menu_id";
-			$option["order"]	="menu_name asc, nivel asc";
+			$option["from"]		="menu m join groups g on m.id=g.menu_id";
+			$option["order"]	="m.id asc, nivel asc";
 			
-			$return =$this->__VIEW_REPORT($option);
+			$return =parent::__VIEW_REPORT($option);    				
 			return $return;
 		}
    		public function __SAVE($datas=NULL,$option=NULL)
@@ -101,7 +91,7 @@
     	    $usergroup_datas=array();
     	    if(isset($datas["permiso_ids"]))
     	    {
-    	    	#$this->__PRINT_R($datas["permiso_ids"]);
+    	    	#$this->__PRINT_R($datas);
 			    foreach($datas["permiso_ids"] as $index => $data)
 			    {
 					$usergroup_option=array();
@@ -110,13 +100,15 @@
 					## SI NO, LO CREA
 					#$usergroup_option["echo"]="PERFILES";
 					$usergroup_option["where"]=array(
-						"usergroup_id=$group_id",
-						"menu_id={$index}",
+						"usergroup_id	=$group_id",
+						"menu_id		={$index}",
 					);    	    		    	    		
-					$usergroup_data						=$this->permiso_ids_obj->groups($usergroup_option);
+					$usergroup_data						=$this->sys_fields["permiso_ids"]["obj"]->__BROWSE($usergroup_option);
+					
+					#$this->__PRINT_R($usergroup_data);
 
-					if($usergroup_data["total"]>0)		$this->permiso_ids_obj->sys_primary_id=$usergroup_data["data"][0]["id"];
-					else								$this->permiso_ids_obj->sys_primary_id=NULL;
+					if($usergroup_data["total"]>0)		$this->sys_fields["permiso_ids"]["obj"]->sys_private["id"]=$usergroup_data["data"][0]["id"];
+					else								$this->sys_fields["permiso_ids"]["obj"]->sys_private["id"]=NULL;
 
 					$usergroup_save=array(
 						"usergroup_id"	=>"$group_id",
@@ -127,9 +119,8 @@
 					if(isset($data["c"]))			$usergroup_save["c"]="{$data["c"]}";
 					if(isset($data["w"]))			$usergroup_save["w"	]="{$data["w"]}";
 					if(isset($data["d"]))			$usergroup_save["d"]="{$data["d"]}";
-					
-					$this->permiso_ids_obj->__SAVE($usergroup_save);
 
+					$this->sys_fields["permiso_ids"]["obj"]->__SAVE($usergroup_save);
 			    }	
 			}    
 		}				

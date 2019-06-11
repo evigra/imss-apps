@@ -8,18 +8,12 @@
 		var $sys_fields		=array( 
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"trabajador_nombre"	    =>array(
 			    "title"             => "Nombre",
 				"title_filter"		=> "Trabajador",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",
 			    "attr"             => array(				
 			    	"readonly"=>"readonly"
 			    ),			    			    
@@ -27,10 +21,7 @@
 			"trabajador_clave"	    =>array(
 			    "title"             => "Matricula",
 				"title_filter"		=> "Matricula",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(
 					"required",
 			    ),			    			    
@@ -38,10 +29,7 @@
 			),
 			"trabajador_horario"	    =>array(
 			    "title"             => "Horario",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",
   			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    			    
@@ -49,10 +37,7 @@
 			),
 			"trabajador_puesto"	    =>array(
 			    "title"             => "Puesto",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    			    
@@ -61,21 +46,14 @@
 			"trabajador_departamento"	    =>array(
 			    "title"             => "Departamento",
 				"title_filter"		=> "Departamento",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
-			    "attr"             => array(
-					
+			    "attr"             => array(					
 			    	"readonly"=>"readonly"
 			    ),			    
 			),										
 			"trabajador_departamento_id"	    =>array(
 			    "title"             => "ID Departamento",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    
@@ -83,15 +61,11 @@
 
 			"dias"	    =>array(
 			    "title"             => "Fecha",
-			    "showTitle"         => "si",
 			    "type"              => "date",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"tipo"	    =>array(
 			    "title"             => "Tipo",
 				"title_filter"		=> "Tipo",
-			    "showTitle"         => "si",
 			    "type"              => "select",
 			    "default"           => "Personal",
 			    "attr"             => array(
@@ -108,7 +82,6 @@
 			"entrada_salida"	    =>array(
 			    "title"             => "Registro",
 				"title_filter"		=> "Registro",
-			    "showTitle"         => "si",
 			    "type"              => "select",
 			    "default"           => "",
 			    "attr"             => array(
@@ -123,38 +96,23 @@
 			),			
 			"ocurrir"	    =>array(
 			    "title"             => "a Ocurrir a",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"objeto"	    =>array(
 			    "title"             => "con Objeto de",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"hora"	    =>array(
 			    "title"             => "Hora",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"estatus"	    =>array(
 			    "title"             => "Estatus",
-			    "showTitle"         => "si",
 			    "type"              => "hidden",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"folio"	    =>array(
 			    "title"             => "Folio",
-			    "showTitle"         => "si",
 			    "type"              => "hidden",
-			    "default"           => "",
-			    "value"             => "",			    
 			),				
 		);				
 		##############################################################################	
@@ -182,7 +140,7 @@
 				$datas["folio"]=$this->__FOLIOS($option_folio);
 			}	
 
-    	    $user_id=parent::__SAVE($datas,$option);
+    	    return parent::__SAVE($datas,$option);
 		}				
    		public function __GENERAR_PDF()
     	{
@@ -193,21 +151,20 @@
 			$_SESSION["pdf"]["save_name"]			="";
 			$_SESSION["pdf"]["PDF_MARGIN_TOP"]		=10;
 			
-			$_SESSION["pdf"]["template"]			=$this->__FORMATO($this->sys_primary_id);
+			$_SESSION["pdf"]["template"]			=$this->__FORMATO($this->sys_private["id"]);
 		}		
    		public function __FORMATO($option)
     	{
 			$template="";	
 			$datos										=$this->__BROWSE($option);
 			
+			$this->__PRINT_R($datos);
+			
 			if(@$datos["data"])							$datos=$datos["data"];			
-
-
 			
 			foreach($datos as $dato)
 			{
 				$words									=$dato;			
-
 				
 				$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
 				$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
@@ -218,8 +175,6 @@
 				$words["ocurrir"]						=str_replace("-","&nbsp;",str_pad($words["ocurrir"], 140,"-"));
 				$words["hora"]							=str_replace("-","&nbsp;",str_pad($words["hora"], 20,"-"));
 				#$words["hora"]							=str_pad($words["hora"], 15,"");
-				
-				
 				
 				
 				$words["Entrada"]						=" &nbsp;  &nbsp; ";
@@ -237,7 +192,7 @@
 				
 				if(is_array($words) AND count($words)>0)
 				{	
-					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_module . "html/PDF_FORMATO")),$words);
+					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_FORMATO")),$words);
 					
 					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
 					$words["sys_subtitulo"]					="";		
@@ -245,8 +200,7 @@
 					$words["sys_subtitulo2"]				="";		
 					$words["sys_pie"]						="Nota: Para considerarse el pase como oficial o medico, este debera contar con el correspondiente sello o documento anexo 
 																comprobatorio que certifica la presencia del trabajador en la dependencia oficial de destino
-					";		
-					
+					";							
 				
 					if(@$dato["trabajador_departamento_id"])
 						$words["lugar"]						=$this->lugar(substr($dato["trabajador_departamento_id"],0,6));		
@@ -265,9 +219,6 @@
    		public function __REPORT_PENDIENTE()
     	{
 			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/report_body";
-			
 			$option["actions"]							= array();
 			
 			$option["actions"]["write"]					="true";
@@ -292,8 +243,6 @@
    		public function __REPORT_APROVADO()
     	{
 			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/report_body";
 			
 			$option["where"]=array("estatus = 'APROVADO'");
 
@@ -314,8 +263,6 @@
    		public function __REPORT_CANCELADOS()
     	{
 			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/report_title";
-			$option["template_body"]	                = $this->sys_module . "html/report_body";
 			
 			$option["where"]=array("estatus = 'CANCELADO'");
 
@@ -331,9 +278,6 @@
     	{
 			
 			if($option=="")	$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/report_estatus_title";
-			$option["template_body"]	                = $this->sys_module . "html/report_estatus_body";
-			
 			
 			if(!isset($option["actions"]))	
 			{	
@@ -363,8 +307,8 @@
 
 				## GUARDAR USUARIO
 			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/report_especifico_title";
-			$option["template_body"]	                = $this->sys_module . "html/report_especifico_body";
+			$option["template_title"]	                = $this->sys_var["module_path"] . "html/report_especifico_title";
+			$option["template_body"]	                = $this->sys_var["module_path"] . "html/report_especifico_body";
 			
 			$option["select"]=array(				
 				"trabajador_clave",
@@ -414,8 +358,8 @@
 			
 				## GUARDAR USUARIO
 			$option=array();			
-			$option["template_title"]	                = $this->sys_module . "html/report_general_title";
-			$option["template_body"]	                = $this->sys_module . "html/report_general_body";
+			$option["template_title"]	                = $this->sys_var["module_path"] . "html/report_general_title";
+			$option["template_body"]	                = $this->sys_var["module_path"] . "html/report_general_body";
 			
 			$option["select"]=array(
 				"trabajador_puesto",

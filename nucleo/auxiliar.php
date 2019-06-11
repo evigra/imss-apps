@@ -1,13 +1,15 @@
 <?php
-	include('basededatos.php');
-	
 	class auxiliar extends basededatos 
 	{   
 		##############################################################################	
-		##  PROPIEDADES
+		##  Propiedades	
 		##############################################################################
-		var $request			=array();	# este arrat recibe las variables del POST		
-		var $sys_true			=array(1,"1","true", "si");
+		var $sys_fields_l18n	=NULL;
+		var $sys_enviroments	="PRODUCTION";
+		var $sys_private		=array(
+									"section"	=>"",
+									"action"	=>"",
+		);
 		var $sys_import			=array(
 									"type"		=>"replace",
 									"fields"	=>",",
@@ -15,11 +17,7 @@
 									"lines"		=>"\\n",
 									"ignore"	=>"1",
 								);
-		var $sys_false		    =array(0,"0","false", "no");
-		var $sys_print		    =array("print_report","print_excel", "print_pdf");
-		var $sys_modules	    =array("historico","menu","user_group", "group","modulos","permiso","sesion");
-		var $sys_section	    ="";
-		var $sys_action		    ="";
+								
 		var $html				="";
 		var $sitio_web			="";		
 		var	$jquery				="";
@@ -37,34 +35,26 @@
 		var $__PRINT_JS			="";
 		
 		var $sys_historico;
-		
-		
-		
-		
+					
 		var $words              =array(
 		    "html_head_title"           => "ESTE ES EL TITULO DE LA VENTANA :: words[html_head_title]",
 		    "html_head_description"     => "ESTA ES LA DESCRIPCION OCULTA DEL MODULO :: words[html_head_description]",		
 		);
 
-			
 		##############################################################################	
 		##  METODOS	
 		##############################################################################
 		
-
-   
 		public function __SESSION()
 		{  
-			$redireccionar= "<script>window.location=\"../sesion/\";</script>";
+			$redireccionar= "<script>window.location=\"../webHome/\";</script>";
 			if(is_array($_SESSION))
 			{
-				
 				if(array_key_exists("user",$_SESSION))
 				{
-					#$this->__PRINT_R($_SESSION);
 					if(is_array($_SESSION["user"]))
 					{
-						if(array_key_exists("clave",$_SESSION["user"]))
+						if(array_key_exists("name",$_SESSION["user"]) AND $_SESSION["user"]["name"]!="")
 							$redireccionar= "";					
 					}					
 				}			
@@ -73,11 +63,25 @@
 			{
 				$_SESSION=array();
 				$_SESSION["user"]="Invitado";
-				#echo $redireccionar;
+				echo $redireccionar;
 				exit();
 			}
 			
-    	}    	
+    	}
+    	/*    	
+		public function __SAVE_ALERT($option)
+		{  
+
+		} 
+		*/   	
+		public function __MENU_SEGUIMIENTO()
+		{  
+				$view			=$this->__TEMPLATE("sitio_web/html/menu_seguimiento");				
+				$words["a"]		=$_SESSION["seguimiento_md5"];
+				return	$this->__REPLACE($view,$words);
+		}    	
+
+
 		public function __FIND_FIELD_ID()
 		{  
 			# BUSCA EL CAMPO y VALOR PRIMARY KEY
@@ -88,68 +92,21 @@
 				{        			
 					if(@$valor["type"]=="primary key")
 					{    				
-						if(@$this->sys_vpath==$this->sys_object."/")
+						if(@$this->sys_var["module_path"]==$this->sys_name."/")
 						{
-					    	if(isset($this->request["sys_id"]))     $this->sys_primary_id       =$this->request["sys_id"];
-						    else                                    $this->sys_primary_id       =$valor["value"];
+					    	if(!isset($this->sys_private["id"]))     $this->sys_private["id"]       =@$valor["value"];
 						}   
-						$this->sys_primary_field                =$campo; 
+						$this->sys_private["field"]                =$campo; 
 					}	
 				}	
 			}	
     	}  
-    	#/*
-    	public function __FOLIOS($option)
-    	{								
-			
-			$sql    	="
-				SELECT * FROM configuracion 
-				WHERE 1=1 
-					AND variable='{$option["variable"]}' 
-					AND subvariable='{$option["subvariable"]}' 
-					AND tipo='{$option["tipo"]}' 
-					AND subtipo='{$option["subtipo"]}' 
-					AND objeto='{$option["objeto"]}' 
-			";
-			$datas   	= $this->__EXECUTE("$sql");
-			
-			if(count($datas)>0)
-				$sql    	="
-					UPDATE configuracion SET valor=valor+1						
-					WHERE 1=1 
-						AND variable='{$option["variable"]}' 
-						AND subvariable='{$option["subvariable"]}' 
-						AND tipo='{$option["tipo"]}' 
-						AND subtipo='{$option["subtipo"]}' 
-						AND objeto='{$option["objeto"]}' 
-				";
-			else	
-				$sql    	="
-					INSERT INTO configuracion SET 
-						valor=1,					 
-						variable='{$option["variable"]}', 
-						subvariable='{$option["subvariable"]}' ,
-						tipo='{$option["tipo"]}' ,
-						subtipo='{$option["subtipo"]}' ,
-						objeto='{$option["objeto"]}' 
-				";
-				
-			$datas   	= $this->__EXECUTE("$sql");
-
-			$sql    	="
-				SELECT * FROM configuracion 
-				WHERE 1=1 
-					AND variable='{$option["variable"]}' 
-					AND subvariable='{$option["subvariable"]}' 
-					AND tipo='{$option["tipo"]}' 
-					AND subtipo='{$option["subtipo"]}' 
-					AND objeto='{$option["objeto"]}' 
-			";
-			$datas   	= $this->__EXECUTE("$sql");
-			
-			return $datas[0]["valor"];		    	
+    	/*
+    	public function __FIND_FIELDS($id=NULL)
+    	{
+    	
     	}
-    	#*/
+    	*/
 		public function __FIND_FIELDS($id=NULL)
 		{
 		 	# ASIGNA EL ROW CON EL $id enviado
@@ -161,31 +118,11 @@
 					{					
 						if(isset($value["relation"]))
 						{														
+							#if($value["relation"]=="many2one")
 							if($value["relation"]=="one2many")
-							{
-								$eval="
-									$"."option=array(\"name\"=>\"$field"."_obj\");
-									$"."this->$field"."_obj			=new {$value["class_name"]}($"."option);
-								";
-								if(@eval($eval)===false)	
-									echo "$eval"; #$eval; ---------------------------								        			
-							}		
-							if($value["relation"]=="many2one")
-							{
-								
-								if(@$this->request["sys_action_" . $this->sys_object ]=="__clean_session")
-									unset($_SESSION["SAVE"][$this->sys_object]);			
-								#if(@$this->request["sys_action_" . $this->sys_object ]=="__SAVE")
-								#	unset($_SESSION["SAVE"][$this->sys_object][$field]);			
-								
-								
-								if($this->sys_section!="write")
-								{
-									#$this->__PRINT_R($this->request);
-									
-									#unset($_SESSION["SAVE"][$this->sys_object]);			
-									#$this->__PRINT_R($_SESSION["SAVE"]);	
-								}															
+							{						
+								if(@$this->sys_private["action"]=="__clean_session")
+									unset($_SESSION["SAVE"][$this->sys_object]);											
 							}			        									
 						}			        		
 					}
@@ -194,17 +131,15 @@
 				
 				if(isset($id) and $id>0)
 				{
-					#if(@$this->request["sys_action"]!="__SAVE")
+					#if(@$this->sys_private["action"]!="__SAVE")
 					{
 						$option_conf=array();
 						
 						$option_conf["open"]	=1;
 						$option_conf["close"]	=1;
 
-						$sql    	="SELECT * FROM {$this->sys_table} WHERE {$this->sys_primary_field}='{$id}'";
+						$sql    	="SELECT * FROM {$this->sys_table} WHERE {$this->sys_private["field"]}='{$id}'";
 						$datas   	= $this->__EXECUTE("$sql",$option_conf);
-						
-						#$this->__PRINT_R($datas);
 						
 						if(@is_array($datas[0]))
 						{
@@ -212,28 +147,29 @@
 							{			        	
 								if(isset($value["type"]) AND $value["type"]!="class")	
 								{
-									if(isset($value["relation"]) AND $value["relation"]=="one2many")
+									#if(isset($value["relation"]) AND $value["relation"]=="one2many" AND isset($value["class_field_m"]))
+									if(isset($value["relation"]) AND $value["relation"]=="many2one" AND isset($value["class_field_m"]))
 									{
-										
-										$eval="
-											$"."option=array();
-											#$"."option[\"echo\"]=array(\"CLASS {$value["class_name"]}\");
-											$"."option[\"where\"]=array(\"{$value["class_field_m"]}='{$datas[0][$value["class_field_o"]]}'\");
-											$"."$field=$"."this->$field"."_obj->__BROWSE($"."option);
-											$"."this->sys_fields[\"$field\"][\"values\"]=\"\";
-											$"."this->sys_fields[\"$field\"][\"values\"]=$"."$field"."[\"data\"];
-										";										
-										if(@eval($eval)===false)	
-											$this->__PRINT_R("$eval"); #$eval; ---------------------------								        			
+										if($this->sys_recursive<3)
+										{
+											$eval="
+												$"."option=array();
+												$"."option[\"where\"]		=array(\"{$value["class_field_m"]}='{$datas[0][$value["class_field_o"]]}'\");
+												
+												$"."$field					=$"."this->sys_fields[\"$field\"][\"obj\"]->__BROWSE($"."option);
+												$"."this->sys_fields[\"$field\"][\"values\"]		=\"\";
+												$"."this->sys_fields[\"$field\"][\"values\"]		=$"."$field"."[\"data\"];
+											";				
+											if(eval($eval)===false)	
+												$this->__PRINT_R("$eval"); #$eval; ---------------------------								        			
+										}	
 									}
 								}	
 							}
-							
+							// AQUI SI FUNCIONA!!!-------------------
 							foreach($datas[0] as $field =>$value)
 							{
-								$eval="$"."this->sys_fields[\"$field\"]"."[\"value\"]=\"$value\";";
-								if(@eval($eval)===false)	
-									echo ""; #$eval; ---------------------------					
+								$this->sys_fields["$field"]["value"]=$value;				        			
 							}
 						}
 					}    
@@ -246,12 +182,118 @@
 		public function __TABLE_MAIL($option)
 		{
 
-
+	
 		}
+		public function __curl($option)
+		{
+			$ch = curl_init();
+
+			curl_setopt($ch,CURLOPT_URL,$option["url"]);			
+			if(isset($option["post"]))
+			{
+				curl_setopt($ch,CURLOPT_POST, 1);                //0 for a get request
+				curl_setopt($ch,CURLOPT_POSTFIELDS,$option["post"]);
+			}	
+			
+			if(isset($option["user"]))
+			{
+				curl_setopt($ch, CURLOPT_USERPWD, $option["user"].":".$option["pass"]);
+				curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+			}
+						
+			if(isset($option["ssl"]))				curl_setopt($ch,CURLOPT_SSL_FALSESTART, $option["ssl"]);		# true or false
+			if(isset($option["location"]))			curl_setopt($ch,CURLOPT_FOLLOWLOCATION, $option["location"]);	# true or false
+			if(isset($option["referer"]))			curl_setopt($ch,CURLOPT_REFERER, $option["referer"]);			# true or false
+			if(isset($option["service"]))			curl_setopt($ch,CURLOPT_SERVICE_NAME, $option["service"]);		# true or false
+			
+			
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+			#curl_setopt($ch,CURLOPT_CONNECTTIMEOUT ,3);
+			#curl_setopt($ch,CURLOPT_TIMEOUT, 20);
+	
+			$resultado 	=curl_exec($ch);			
+			$info 		=curl_getinfo($ch);	
+
+			$error		="";
+			if(curl_errno($ch)) 					$error = curl_error($ch);
+
+			$return=array(				
+				"info"		=>$info,
+				"error"		=>$error,
+				"return"	=>$resultado,				
+			);
+			
+			
+			curl_close ($ch);
+			
+			return $return;
+		}
+		public function __WA($data)
+    	{    		    		    	
+			$sesion 			=array("apikey"=>"AO7K3A1BOEO8O0PX4KK4");
+
+			$url 				="https://panel.apiwha.com/send_message.php";
+			$vars 				=$sesion;				
+			$vars["number"]		=$data["telefono"];
+			$vars["text"]		=$data["mensaje"];
+
+			$option				=array("url"=>$url,"post"=>$vars);
+			
+			$respuesta			=$this->__curl($option);			
+    	}			
+		public function WS_TAECEL($data)
+    	{    		    		    	
+			$sesion 			=array("key"=>"6dce34dbc6cc3d6bd8de48fd011d0595", "nip"=>"7fbb2c3531d73ab26044fac7dfe1a503");
+			#$sesion 			=array("key"=>"25d55ad283aa400af464c76d713c07ad", "nip"=>"25d55ad283aa400af464");
+			$url 				="https://taecel.com/app/api/RequestTXN";
+			$vars 				=$sesion;				
+			$vars["producto"]	=$data["producto"];
+			$vars["referencia"]	=$data["referencia"];				
+			if(isset($data["monto"]))
+				$vars["monto"]=$data["monto"];				
+
+			$option				=array("url"=>$url,"post"=>$vars);
+			
+			$respuesta			=$this->__curl($option);			
+			$respuesta1			=json_decode($respuesta["return"]);
+			
+			
+			$url 				="https://taecel.com/app/api/StatusTXN";
+			$vars 				=$sesion;
+			$vars["transID"]	=$respuesta1->data->transID;
+					
+			$option				=array("url"=>$url,"post"=>$vars);
+
+			$respuesta			=$this->__curl($option);			
+			$respuesta2			=json_decode($respuesta["return"]);
+			
+			return array(
+				"producto"	=>$data["producto"],
+				"referencia"=>$data["referencia"],
+				"mensaje1"	=>$respuesta1->message,
+				"transID"	=>$respuesta1->data->transID,
+				"folio"		=>$respuesta2->data->Folio,
+				"mensaje2"	=>$respuesta2->message,
+				"status"	=>$respuesta2->data->Status,
+			);
+    	}			
+
+		public function __SHOW_FILE($id)
+		{			
+			$return="";
+			$this->sys_sql		="SELECT * FROM files WHERE id='$id'";
+    		$datas 	            = $this->__EXECUTE($this->sys_sql);
+    		
+    		if(count($datas)>0)
+    		{
+				$data				=$datas[0];			
+				$return ="<img width=\"200\" src=\"http://solesgps.com/modulos/files/file/$id.{$data['extension']}\">";
+			}
+			return 	$return;
+		}
+
 		public function __VIEW($template)
 		{ 
-	
-		
 			#/*
 			if (isset($_COOKIE)) 
 			{
@@ -259,26 +301,36 @@
 			}			
 			#*/
 			
-			if(!isset($words["system_user"]))		$words["system_user"]						="";
-			if(!isset($words["system_img"]))		$words["system_img"]						="";
-			if(!isset($words["system_company"]))	$words["system_company"]					="";
-			if(!isset($words["system_submenu"]))	$words["system_submenu"]					="";
-			
 			$words["system_message"]				="";
 			$words["system_js"]						="";
-			$words["sys_date"]						=$this->sys_date;
-			$words["system_ophp1"]					="";
-			$words["system_ophp1"]					.="QVVPIDk5MDY0N";
-			$words["system_ophp3"]					="";
-			if(isset($this->__JS))
-				$words["system_js"]     			.=$this->__JS;		
-			$words["system_ophp1"]					.="jE2IDo6IElTQy";		
-			if(@$this->sys_vpath==$this->sys_object."/" AND @$this->sys_action=="__SAVE" AND ($this->sys_section=="create" OR $this->sys_section=="write"))				
+			$words["sys_date"]						=$_SESSION["var"]["datetime"];
+
+			if(@$this->__MESSAGE_OPTION["text"]!="")
+			{				
+				$this->__SYSTEM_MESSAGE="
+					<div class=\"echo message\"  title=\"{$this->__MESSAGE_OPTION["title"]}\">
+						{$this->__MESSAGE_OPTION["text"]}				
+					</div>		    		
+				";	
+				if(@$this->__MESSAGE_OPTION["time"]>0)
+					@$this->__SAVE_JS.="				
+						setTimeout(function()
+						{  	
+							$(\".echo\").dialog(\"close\");							
+						},{$this->__MESSAGE_OPTION["time"]});					
+					";				
+			}									
+
+			if(@$this->sys_var["module"]==$this->sys_name."/" AND @$this->sys_private["action"]=="__SAVE" AND ($this->sys_private["section"]=="create" OR $this->sys_private["section"]=="write"))
 			{
-		        $words["system_message"]    		=@$this->__SAVE_MESSAGE;
+		        $words["system_message"]    		=@$this->__SYSTEM_MESSAGE;		        
 		        $words["system_js"]     			.=@$this->__SAVE_JS;		        
-		        
-			}			
+			}
+			if(isset($this->__PRINT_JS))
+			{        
+		        $words["system_js"]     			.=@$this->__PRINT_JS;		        
+			}
+			
 			if(array_key_exists("user",$_SESSION))
 			{ 				
 			    if(@$_SESSION["user"]!="Invitado" AND count($_SESSION["user"])>1)
@@ -286,12 +338,15 @@
 				    $words							=$this->__MENU($words);
 				    
 				    $words["system_logo"]           ="";
-				    
-				    if(isset($_SESSION["system_company"]))
+						    
+				    if(isset($_SESSION["company"]["razonSocial"]) AND isset($_SESSION["user"]["name"]))
 				    {
-					    $words["system_company"]        =$_SESSION["system_company"];
-					    $words["system_user"]           =$_SESSION["system_user"];
+					    $words["system_company"]        =$_SESSION["company"]["nombre"];
+					    $words["system_user"]           =$_SESSION["user"]["name"];
+					    $words["system_logo"]           =$this->__SHOW_FILE($_SESSION["company"]["files_id"]);
+					    $words["system_img"]           	=$this->__HTML_USER();
 					    $words["sys_page"]           	=@$this->request["sys_page"];
+					    $words["companys"]           	=@$this->__COMPANYS();
 					}
 			    }
 			    else
@@ -299,50 +354,18 @@
 			    	$_SESSION["company"]			=array("razonSocial");
 			    }	
             }
-			$words["system_ophp1"]					.="BFZHVhcmRvIFZ";			
 			if(!isset($words["system_submenu2"]))  	$words["system_submenu2"]		="";
-			if(!isset($words["html_head_css"]))  	$words["html_head_css"]			="";			
-			$words["system_ophp2"]					="Q3JlYXRlZCBieSBFVklHUkE=";
-			if(!isset($words["sys_historico"]))  	////////// HISTORICO 
-			{
-				if($this->__NIVEL_SESION("=11")==true)	 // NIVEL ADMINISTRADOR 			
-				{
-					if(@$this->sys_primary_id!="")
-					{	
-						$option=array();
-						$option["name"]="historico";					
-						$this->sys_historico			=new historico();										
-						$option=array();
-						$option["template_body"]	    = $this->sys_historico->sys_module . "html/report_historico_body";				
-						$option["order"]	    		= "id DESC";				
-						$option["where"]	    		= array();				
-						$option["where"][]				="clave=$this->sys_primary_id";
-						$option["where"][]				="objeto='$this->sys_object'";
-						$option["where"][]				="tabla='$this->sys_table'";
-						$reporte						=$this->sys_historico->__VIEW_REPORT($option);			
-						$words["sys_historico"]			="										
-										${reporte["html"]}
-						";
-					}		
-				}	
-			}
-			$words["system_ophp1"]					.="pemNhaW5vIEdy";
-			$words["system_ophp1"]					.="YW5hZG9z";						
-			
-			#if(!isset($this->words["sys_asunto"]))					$this->words["sys_asunto"]				="";
-			
-			$words=array_merge($this->words,$words);
-			$template                   			=$this->__REPLACE($template,$words); 			
-			if(@$this->request["sys_action"]=="print_pdf")
-		    {
-					
+			if(!isset($words["html_head_css"]))  	$words["html_head_css"]			="";
 				
+			$words									=array_merge($this->words,$words);			
+			$template                   			=$this->__REPLACE($template,$words); 			
+						
+			if(@$this->sys_private["action"]=="print_pdf")
+		    {
 				if(!isset($words["sys_titulo"]))						$words["sys_titulo"]					=$this->words["module_title"];
 				if(!isset($words["sys_subtitulo"]))						$words["sys_subtitulo"]					=$this->words["module_subtitle"];
 				if(!isset($words["sys_asunto"]))						$words["sys_asunto"]					="";
 				if(!isset($words["sys_pie"]))							$words["sys_pie"]						="";
-				
-				
 				
 				if(isset($_SESSION["pdf"]["sys_titulo"]))				$words["sys_titulo"]					=$_SESSION["pdf"]["sys_titulo"];
 				if(isset($_SESSION["pdf"]["sys_subtitulo"]))			$words["sys_subtitulo"]					=$_SESSION["pdf"]["sys_subtitulo"];
@@ -353,10 +376,9 @@
 				if(!isset($_SESSION["pdf"]["template"]))				
 				{	
 					$_SESSION["pdf"]["template"]				=$template;
-					
-					
+
 					$words										=array_merge(array("sys_modulo" => $template),$words);					
-					@$template									=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");														
+					@$template									=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO");														
 					$template_lab              					=$this->__REPLACE($template,$words); 			
 					
 					$_SESSION["pdf"]["template"]				=$template_lab;
@@ -380,68 +402,44 @@
 				exit;
 			}			
 			echo $template;	
-			$this->__PRINT();		
-			$this->__PRINT_JS();
     	}
-        ##############################################################################
-		public function __PRINT_JS()
-		{  
-			echo "
-				<script>
-					{$this->__PRINT_JS}
-				</script>
-			";
-		}		
+    	 
         ##############################################################################
 		public function __REPORT_TITLES($option)
 		{  
 			
-			#$this->__PRINT_R($option);
 			$sys_order	=$option["sys_order"];
 			$sys_torder	=$option["sys_torder"];
 			$font		=$option["font"];
 			$name		=$option["name"];
 			
-		
-
 			$iorder									="";			
 			$title									=@$this->sys_fields[$font]["title"];
-			
+						
         	if(isset($this->sys_fields_l18n) AND is_array($this->sys_fields_l18n) AND isset($this->sys_fields_l18n["$font"]))	
         	{			        	
         		$title								=$this->sys_fields_l18n["$font"];
         	}
 						
-			if($sys_order==@$this->request["sys_order_$name"])
+			if($sys_order==@$this->sys_private["order"])
 			{
 			     if($sys_torder=="ASC") 			$iorder 						="<font class=\"ui-icon ui-icon-caret-1-n\"></font>";
 			     else                   			$iorder 						="<font class=\"ui-icon ui-icon-caret-1-s\"></font>";
 			}
 
-			$base="";
-
-		    $sys_action     						=@$this->request["sys_action"];		   
-
-			if(@$this->request["sys_action"]=="print_excel")
-		    {
-				return "
-					<div name=\"title_$name\" style=\"height:25px;\">
-							<b><font class=\"sys_order\" name=\"$name\" sys_order=\"$sys_order\" sys_torder=\"$sys_torder\">$title</font></b>
-					</div>
-				";
-			}
-			else if(@$option["option"]=="pdf")
-		    {
-				#$this->__PRINT_R(	$this->request["sys_action"]);
-				return "					
-						<font class=\"sys_order\" name=\"$name\" sys_order=\"$sys_order\" sys_torder=\"$sys_torder\">$title</font>					
-				";
-			}			
-			else
+			$return=array();
+			
+			/*
+			if(@$this->sys_private["action"]=="")
 			{
-				#$this->__PRINT_R($title);
-				#<div class=\"report_title_action report_title_inactive\">	
-				return "
+			     if($sys_torder=="ASC") 			$iorder 						="<font class=\"ui-icon ui-icon-caret-1-n\"></font>";
+			     else                   			$iorder 						="<font class=\"ui-icon ui-icon-caret-1-s\"></font>";
+			}
+			#*/
+			if(@$this->sys_private["action"]=="print_pdf")
+				$return["html"]="<b>$title</b>";
+			else	
+				$return["html"]="
 					<div name=\"title_$name\">
 						<div class=\"report_title_action\">
 							<table width=\"100%\" class=\"sys_order\" name=\"$name\" sys_order=\"$sys_order\" sys_torder=\"$sys_torder\">
@@ -452,8 +450,8 @@
 							</table>
 						</div>
 					</div>
-				";			
-			}			
+				";
+			return $return;		
 		}	
 		public function __MENU($words)
 		{  			
@@ -462,41 +460,38 @@
 			$option_conf["open"]	=1;
 			$option_conf["close"]	=1;			
 
-			if(@$_SESSION["user"]["id"])
+			if(@$_SESSION["company"] AND @$_SESSION["company"]["id"] AND @$_SESSION["user"]["id"])
 			{
-				#$_SESSION["user"]["id"]=1;
 				$comando_sql        ="
 		            select
 		            	distinct(m.id) as id_m, 
-			            m.*
+			            m.*,
+			            count(a.menu_id) as c_menu_id
 		            from 
-			            usuario u join 
+			            users u join 
 			            user_group ug on u.id=ug.user_id join
 			            groups g on g.id=ug.active and g.name!='No activar' join
-			            menu m on m.id=g.menu_id			            
+			            menu m on m.id=g.menu_id
+			            left join alert a on m.id=a.menu_id AND a.company_id={$_SESSION["company"]["id"]} AND a.status !=0
 		            WHERE  1=1
 			            AND ug.active!=0
 			            AND u.id={$_SESSION["user"]["id"]}
 			        GROUP BY  m.id    
 				";
-
+				
 				$datas_menu =$this->__EXECUTE($comando_sql, $option_conf);			
 			
-				#$this->__PRINT_R($comando_sql);
-				
 				$menu_html								="";
 				foreach($datas_menu as $data_menu)
 				{
-					$link								=$data_menu["link"]."&sys_menu=".$data_menu["id"];				
+					$link								=$data_menu["link"]."&sys_menu=".$data_menu["id"] . $data_menu["variables"];				
 					$alertas="";
-					if(@$data_menu["c_menu_id"]>0)
-					{
+					if($data_menu["c_menu_id"]>0)
 						$alertas="
 							<div style=\"color:white; float:left; margin-left:5px; background-color:red; border-radius: 15px; width:15px; align:center; padding:0px 2px 0px 2px;\">
 								<center>{$data_menu["c_menu_id"]}</center>	
 							</div>					
 						";				
-					}	
 					$menu_html.="				
 						<a href=\"{$link}\">	
 						<div class = \"menuHorizontal\" style=\"margin-top:4px; float:left; padding:5px 10px 5px 10px;\">
@@ -510,18 +505,19 @@
 				}
 				$words["system_menu"]		    		=$menu_html;
 						
-				$sys_menu								=@$_SESSION["sys"]["menu"];			
+				$sys_menu								=@$_SESSION["var"]["menu"];			
 				$comando_sql        ="
 		            select 
 		            	m.id as id_m, 
-			            m.*
+			            m.*,
+			            count(a.submenu_id) as c_submenu_id
 		            from 
-			            usuario u join 
+			            users u join 
 			            user_group ug on u.id=ug.user_id join
 			            groups g on g.id=ug.active join
 			            permiso p on p.usergroup_id=ug.active AND p.s=1 join
 			            menu m on m.id=p.menu_id
-			            
+			            left join alert a on m.id=a.submenu_id AND a.company_id={$_SESSION["company"]["id"]}  AND a.status !=0
 		            WHERE  1=1
 			            AND ug.active!=0
 			            AND u.id={$_SESSION["user"]["id"]}
@@ -529,8 +525,10 @@
 			            AND m.type='submenu'
 			        GROUP BY  m.id        
 				";
+				
+				#echo $comando_sql;
+				
 				$datas_submenu =$this->__EXECUTE($comando_sql,$option_conf);
-				#$this->__PRINT_R($comando_sql);
 									
 				$submenu_html							="";
 			
@@ -548,7 +546,7 @@
 						$submenu_html
 						<div style=\"height:25px;\" class=\"submenu\" active=\"{$data_submenu["name"]}\">	
 							<div style=\"float:left;\">
-								<font style=\"padding-left:5px; color:#006857; font-size:13; font-weight:bold;\">
+								<font style=\"padding-left:5px; color:SteelBlue; font-size:13; font-weight:bold;\">
 									{$data_submenu["name"]}
 								</font>
 							</div>
@@ -561,18 +559,19 @@
 					$comando_sql        ="
 				        select
 				        	distinct(m.id) as id_m,  
-					        m.*
+					        m.*,
+					        count(a.opcion_id) as c_opcion_id
 				        from 
-					        usuario u join 
+					        users u join 
 					        user_group ug on u.id=ug.user_id join
 					        groups g on g.id=ug.active join
 					        permiso p on p.usergroup_id=ug.active join
 					        menu m on m.id=p.menu_id 
-					    
+					        left join alert a on m.id=a.opcion_id AND a.company_id={$_SESSION["company"]["id"]}  AND a.status !=0
 				        where  1=1
 					        AND ug.active!=0
-					        AND u.id='{$_SESSION["user"]["id"]}'
-					        AND parent='{$data_submenu["id"]}'
+					        AND u.id={$_SESSION["user"]["id"]}
+					        AND parent={$data_submenu["id"]}
 					        AND m.type='opcion'
 					    GROUP BY  m.id            
 					";
@@ -589,9 +588,9 @@
 								</div>					
 							";				
 
-
+						$link			=$data_opcion["link"]."&sys_menu={$sys_menu}" . $data_opcion["variables"];
 						$option_html	.="
-							<a href=\"{$data_opcion["link"]}&sys_menu={$sys_menu}\">
+							<a href=\"{$link}\">
 								<div class=\"submenu2\">
 									{$data_opcion["name"]}
 									$alertas
@@ -599,17 +598,15 @@
 							</a>
 						";
 					}	
-					#<div class=\"option d_none\"  active=\"{$data_submenu["name"]}\">
-					$submenu_html	="					
+					$submenu_html	="
 						$submenu_html
-						<div class=\"option\"  active=\"{$data_submenu["name"]}\">
+						<div class=\"option d_none\"  active=\"{$data_submenu["name"]}\">
 							$option_html
 						</div>
 					";
 				}
 				$words["system_submenu"]	    		=$submenu_html;
 			
-				#$this->__PRINT_R($words);
 			}			
 			return $words;
 		} 
@@ -624,11 +621,14 @@
 			$comando_sql = "
 				SELECT 
 					id, 
-					razonSocial 
+					nombre 
 				FROM 
 					company
-				WHERE 
-					razonSocial is not null"; 
+				WHERE 1=1
+					AND nombre is not null
+					AND estatus=1
+					AND tipo_company='GPS'
+			"; 
 
 		    $datas              =$this->__EXECUTE($comando_sql, $option_conf);
 			
@@ -637,74 +637,146 @@
 		    	$selected="";
 		    	if($_SESSION["company"]["id"]==$data["id"])
 		    		$selected="selected";
-		    	$vOption = $vOption."<option value=\"".$data["id"]."\"  $selected >".$data["id"]." :: ".$data["razonSocial"]."</option>";		    	
+		    	$vOption = $vOption."<option value=\"".$data["id"]."\"  $selected >".$data["id"]." :: ".$data["nombre"]."</option>";		    	
 		    }
 
 			$vRespuesta = "	<select id = \"setting_company\" system=\"yes\" name = \"setting_company\">".$vOption."</select>";
 
-			return $vRespuesta;
+			$permisos=$_SESSION["group"];
+			$return="";
+
+			foreach($permisos as $permiso)
+			{
+				if($permiso["menu_id"]==$_SESSION["var"]["menu"] AND $permiso["nivel"]<=10)
+				{
+					$return=$vRespuesta;
+				}
+			}
+
+			return $return;
 		} 
 
         ##############################################################################
+		public function __CREATE_OBJ()
+		{  
+			if(is_array(@$this->sys_fields))
+			{
+				foreach($this->sys_fields as $campo =>$valor)
+				{
+					if(isset($valor["class_name"]) AND $valor["class_name"]!="")
+					{				
+						$recursive=0;
+						if(isset($this->sys_fields["$campo"]["recursive"]) AND $this->sys_fields["$campo"]["recursive"]>$this->sys_recursive)
+							$recursive=$this->sys_fields["$campo"]["recursive"];
+						
+						if($this->sys_recursive<3)
+						{								
+							if($recursive==0)	$recursive=	$this->sys_recursive + 1;					
+							$eval="
+								$"."option"."_obj_$campo	=array(
+									\"recursive\"		=>{$recursive},
+									\"name\"			=>\"$campo"."_obj\",		
+									\"memory\"			=>\"$campo\",
+									\"class_one\"		=>\"{$this->sys_name}\",
+								);													
+								$"."this->sys_fields[\"$campo\"][\"obj\"]   =new {$valor["class_name"]}($"."option"."_obj_$campo);
+								
+								#$"."sys_table			=$"."this->sys_fields[\"$campo\"][\"obj\"]->sys_table;
+							";		
+							eval($eval);					
+/*
+							$comando_sql 			="CREATE TABLE IF NOT EXISTS temp_{$sys_table} LIKE {$sys_table};";						
+							$this->__EXECUTE($comando_sql);
 
+							$comando_sql 			="select * FROM temp_{$sys_table};";
+
+							$this->__PRINT_R($this->__EXECUTE($comando_sql));
+*/
+						}	
+
+
+					}
+				}
+			}	
+		} 
+		##############################################################################
+		public function __REQUEST_AUX($campo,$valor)
+		{  
+			if(isset($this->sys_fields["$campo"]) AND !isset($this->sys_fields["$campo"]["htmlentities"]) AND !is_array($valor))	
+				$this->sys_fields["$campo"]["htmlentities"]="true";
+								
+			if(isset($this->sys_fields["$campo"]["htmlentities"]) AND in_array($this->sys_fields["$campo"]["htmlentities"], $_SESSION["var"]["true"]))
+				$valor	=htmlentities($valor);
+													
+			if($campo=="sys_section_{$this->sys_name}")		$this->sys_private["section"]			=$valor;
+			elseif($campo=="sys_section" AND $_SESSION["var"]["modulo"]==$this->sys_object)
+			{
+				$this->sys_private["section"]			=$valor;
+			}
+			elseif($campo=="sys_action" AND $_SESSION["var"]["modulo"]==$this->sys_object)
+			{
+				$this->sys_private["action"]			=$valor;
+			}
+			elseif($campo=="sys_action_{$this->sys_name}" AND $this->sys_private["action"]=="")	$this->sys_private["action"]			=$valor;
+			elseif($campo=="sys_id_{$this->sys_name}")				$this->sys_private["id"]				=$valor;
+			elseif($campo=="sys_order_{$this->sys_name}")			$this->sys_private["order"]				=$valor;
+			elseif($campo=="sys_torder_{$this->sys_name}")			$this->sys_private["torder"]			=$valor;
+			elseif($campo=="sys_page_{$this->sys_name}")			$this->sys_private["page"]				=$valor;
+			elseif($campo=="sys_order_{$this->sys_name}")			$this->sys_private["order"]				=$valor;
+			elseif($campo=="sys_row_{$this->sys_name}")				$this->sys_private["row"]				=$valor;						
+			elseif($campo=="sys_rows_{$this->sys_name}")			$this->sys_private["rows"]				=$valor;
+			elseif(isset($this->sys_fields["$campo"])) 				$this->sys_fields["$campo"]["value"]	=$valor;
+			
+			return 	$valor;		
+		}
+		##############################################################################
 		public function __REQUEST()
 		{  
 			# ASIGNA TODAS LAS VARIABLES QUE CONTENGAN VALOR
 			# AL ARRAY DECLARADO $this->sys_fields EN EL MODEDLO
 			# O CREANDO UNA NUEVA PROPIEDAD 
 						
-			#$this->__PRINT_R($_REQUEST);
-			foreach($_REQUEST as $campo =>$valor)
-			{
-				#if(!($valor=="" OR $valor=="undefined"))
-				{					
-					#$this->__PRINT_R($campo . " = " . $valor);
-					$this->request["$campo"]		=$valor;
-					if(is_array($valor))
-					{
-						$eval="
-							if(is_array(@$"."this->sys_fields[\"$campo\"]))	
-							{
-								$"."this->sys_fields[\"$campo\"]"."[\"value\"]=$"."valor;
-							}									
-						";					
-					}
-					else
-					{					
-						$eval="
-							if(is_array(@$"."this->sys_fields[\"$campo\"]))	
-							{
-								$"."this->sys_fields[\"$campo\"]"."[\"value\"]=\"$valor\";
-							}		
-							else
-							{
-								$"."this->$campo=\"$valor\";
-							}
-							
-						";
-					}	
-					#echo "$eval"; #$eval; ---------------------------					
-				    if(eval($eval)===false)	
-						echo "$eval"; #$eval; ---------------------------					
-					#else	   	echo "$eval"; #$eval; ---------------------------					
-				}	
-			}
 			if(is_array(@$this->sys_fields))
 			{
-				foreach(@$this->sys_fields as $campo =>$valor)
-				{
-					if($this->sys_fields[$campo]["type"]=="checkbox" and @$this->sys_fields[$campo]["value"]=="")
-					{					
-						$eval="
-							$"."this->sys_fields[\"$campo\"][\"value\"]=\"0\";
-							$"."this->$campo=\"0\";
-							$"."this->request[\"$campo\"]=\"0\";
-						";
-						if(eval($eval)===false)	
-							echo ""; #$eval; ---------------------------					
+				foreach($this->sys_fields as $campo =>$valor)
+				{				
+					$request_campo		="{$this->sys_name}_$campo";
+					if(isset($_REQUEST[$request_campo]))
+					{
+						$valor					=$_REQUEST[$request_campo];
+						$valor					=$this->__REQUEST_AUX($campo,$valor);
+						$this->sys_fields["$campo"]["value"]	=$valor;
+						
+						unset($_REQUEST["$request_campo"]);
 					}
+					else if(isset($_REQUEST["sys_filter_". $request_campo]))
+					{
+						$valor					=$_REQUEST["sys_filter_". $request_campo];
+						$valor					=$this->__REQUEST_AUX($campo,$valor);						
+
+						$this->sys_fields["$campo"]["filter"]	=$valor;
+						unset($_REQUEST["sys_filter_" . $request_campo]);
+
+						$valor					=$_REQUEST["sys_where_". $request_campo];
+						$this->sys_fields["$campo"]["where"]	=$valor;
+						unset($_REQUEST["sys_where_" . $request_campo]);
+					}
+					
+					if(@$this->sys_fields[$campo]["type"]=="checkbox" and (@$this->sys_fields[$campo]["value"]=="" OR @$this->sys_fields[$campo]["value"]==0))
+					{								
+						if($this->sys_recursive<3)
+						{			
+							$this->sys_fields["$campo"]["value"]		="0";						
+						}		
+					}			
 				}
-			}			
+			}	
+			
+			foreach($_REQUEST as $campo =>$valor)
+			{
+				$this->__REQUEST_AUX($campo,$valor);
+			}
+			
 			if(is_array($_FILES))
 			{
 				$this->request["files"]=array();				
@@ -713,72 +785,41 @@
 					$this->request["files"]			=$valor;						
 				}	
 			}	
-			
-			if(isset($this->request["sys_menu"]))
-			{
-				$_SESSION["sys"]["menu"]			=$this->request["sys_menu"];
-			}	
-			
+						
 			if(!isset($this->request["sys_view"]))	$this->request["sys_view"]	="";	
+			
+			#if($this->sys_name=="orden_venta")
+			#	$this->__PRINT_R($this->sys_fields);
 		} 
 		##############################################################################
+
 		public function __VIEW_TEMPLATE($template,$words)
-		{  
+		{  		
 			# CON LA PLANTILLA BASE, 
 			# CARGA LA PLANTILLA INDICADA
 			# VERIFICANDO QUE LA SOLICITUD, NO SEA UNA, IMPRESION, EXCEL, O PDF
 			
-			
-			
+			if(!isset($words["module_title"]))	$words["module_title"]="";
+			if(!isset($words["module_left"]))	$words["module_left"]="";
+			if(!isset($words["module_center"]))	$words["module_center"]="";
+			if(!isset($words["module_right"]))	$words["module_right"]="";
 			
 		    $view   								=$this->__TEMPLATE("sitio_web/html/index");		    
-		    if(@$this->request["sys_action"]=="print_pdf")
+		    if(@$this->sys_private["action"]=="print_pdf")
 		    {
 				$view="{system_template}";
-			}	
+			}			    
+		    $sys_action     						=@$this->sys_private["action"];
 		    
-		    $sys_action     						=@$this->request["sys_action"];
-		    
-		    if(@$this->request["sys_action"]=="print_excel")
+		    if(@$this->sys_private["action"]=="print_excel")
 		    {
-				$template="";	
-				$view="{system_template}";
-				## Funciona con detalles
-				#/*
-				header("Content-Type: application/vnd.ms-excel");
-				header("Content-Disposition: attachment;filename=\"{$words["module_title"]}.xls\"");
-				header("Cache-Control: max-age=0");		    
-				#*/
-				
-				/*
 				header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 				header("Content-Disposition: attachment;filename=\"{$words["module_title"]}.xlsx\"");
 				header("Cache-Control: max-age=0");		    
-				*/
-				
-				#header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-				#header("Content-Disposition: attachment;filename=\"{$words["module_title"]}.xlsx\"");
-				
-				
-				
-				////////
-				/*
-				header('Content-type: application/vnd.ms-excel');
-				header("Content-Disposition: attachment; filename=\"{$words["module_title"]}.xls\"");
-				header("Pragma: no-cache");
-				header("Expires: 0");
-				#*/
-				
-				
 		    	$sys_action							="print_report";
 		    }
-		    if(@$this->request["sys_action"]=="print_pdf")
+		    if(@$this->sys_private["action"]=="print_pdf")
 		    {
-		    	/*
-				header("Content-Type: application/pdf");
-				header("Content-Disposition: attachment;filename=\"filename.pdf\"");
-				header("Cache-Control: max-age=0");		    
-				*/
 		    	$sys_action							="print_report";
 		    }		    
 		    $path           						="sitio_web/html/$sys_action";
@@ -786,19 +827,12 @@
 		    if(file_exists($path.".html"))			
 		    {
 		        $template="$sys_action";
-		        #if(@$this->request["sys_action"]!="print_excel")
+		        #if(@$this->sys_private["action"]!="print_excel")
 			        #$words["system_js"]				="window.print();";
 		    }    		    
 		    
 		    $array  								=array("system_template"=> $this->__TEMPLATE("sitio_web/html/$template"));
-			
-			if(!isset($words["sys_pie"]))	$words["sys_pie"]="";
-			
 		    $words									=array_merge($array,$words);
-			
-			if(!isset($this->words["sys_pie"]))	$this->words["sys_pie"]="";
-			
-			#$this->__PRINT_R($words);
 		    
             return $this->__REPLACE($view,$words);
     	} 
@@ -809,48 +843,43 @@
 			# DE LA RUTA ENVIADA		
 	    	if(!is_null($form))
 	    	{
+	    		$return="";
+	    		
 	    		$archivo = $form.'.html';
-	    		if(file_exists($archivo))			    			
-		    		$return 						= @file_get_contents($archivo);		    
-	    		elseif(file_exists("../".$archivo))			    			
-		    		$return 						= @file_get_contents("../".$archivo);		    		    		
-	    		elseif(file_exists("../../".$archivo))			    			
-		    		$return 						= @file_get_contents("../../".$archivo);		    		    		
-	    		elseif(file_exists("../../../".$archivo))			    			
-		    		$return 						= @file_get_contents("../../../".$archivo);		    		    		
-	    		elseif(file_exists("../../../../".$archivo))			    			
-		    		$return 						= @file_get_contents("../../../../".$archivo);		    		    				    		
-		    	else	
+	    		if(@file_exists($archivo))			    			
+		    		$return 						= file_get_contents($archivo);		    
+	    		elseif(@file_exists("../".$archivo))			    			
+		    		$return 						= file_get_contents("../".$archivo);		    		    		
+	    		elseif(@file_exists("../../".$archivo))			    			
+		    		$return 						= file_get_contents("../../".$archivo);		    		    		
+	    		elseif(@file_exists("../../../".$archivo))			    			
+		    		$return 						= file_get_contents("../../../".$archivo);		    		    		
+	    		elseif(@file_exists("../../../../".$archivo))			    			
+		    		$return 						= file_get_contents("../../../../".$archivo);		    		    				    		
+
+				#/*
+	    		if(@$this->sys_private["action"]=="print_pdf")
+	    		{
+	    			$archivo = $form.'_pdf.html';
+					if(@file_exists($archivo))			    			
+						$return 						= file_get_contents($archivo);		    
+					elseif(@file_exists("../".$archivo))			    			
+						$return 						= file_get_contents("../".$archivo);		    		    		
+					elseif(@file_exists("../../".$archivo))			    			
+						$return 						= file_get_contents("../../".$archivo);		    		    		
+					elseif(@file_exists("../../../".$archivo))			    			
+						$return 						= file_get_contents("../../../".$archivo);		    		    		
+					elseif(@file_exists("../../../../".$archivo))			    			
+						$return 						= file_get_contents("../../../../".$archivo);		    		    				    			    		
+					else $archivo = $form.'.html';	
+	    		}
+	    		#*/
+				if($return=="")	    				    	
 		    		$return							="<br>NO EXISTE EL ARCHIVO: ".$archivo;
-								
-				#__TEMPLATE
-				if(in_array(@$this->request["sys_action"],$this->sys_print))
-				{	
-									
-					$archivo = $form.'_pdf.html';
-					if(file_exists($archivo))			    			
-						$return 						= @file_get_contents($archivo);		    
-					elseif(file_exists("../".$archivo))			    			
-						$return 						= @file_get_contents("../".$archivo);		    		    		
-					elseif(file_exists("../../".$archivo))			    			
-						$return 						= @file_get_contents("../../".$archivo);		    		    		
-					elseif(file_exists("../../../".$archivo))			    			
-						$return 						= @file_get_contents("../../../".$archivo);		    		    		
-					elseif(file_exists("../../../../".$archivo))			    			
-						$return 						= @file_get_contents("../../../../".$archivo);		    		    				    								
-					
-				}		
 		    }	
 		    else	$return							="";		    		
 		    return $return;
 		}		
-		function __TEMPLATE2($form=NULL)
-		{
-			$return=$this->__TEMPLATE($form);
-			$return.="<br><br><br><br><br>";
-			$return.=$this->__TEMPLATE($form);					
-		    return $return;
-		}			
 		##############################################################################
 		function send_mail($option)
 		{
@@ -866,46 +895,55 @@
 			if(isset($option["bbc"]))		$headers .= "bbc: {$option["bbc"]}\r\n";
 			#if(isset($option["reply"]))		$headers .= "Reply-To: {$option["reply"]}\r\n";
 			
-			$boSend =  @mail($option["to"], $option["title"], $option["html"], $headers);
+			
+			$serv_propio=array("www.solesgps.com","solesgps.com","www.soluciones-satelitales.com","soluciones-satelitales.com");
+			if(in_array($_SERVER["SERVER_NAME"],$serv_propio))	
+				$boSend =  @mail($option["to"], $option["title"], $option["html"], $headers);
 
+			/*
 			if(!$boSend) 
 			{
 				throw new Exception('Email fail');
-			} 			
+			} 
+			*/			
 		}		
-		##############################################################################		
+		##############################################################################
 		public function __REPLACE($str,$words)
 		{  
 			# REMPLAZA Y RETORNA LAS PALABRAS CLAVE
 			# EN UNA CADENA, ESTA CADENA POR LO REGULAR ES UNA VISTA
-			
-					#if(substr($word, 0,11)=="system_ophp")
-			#$this->__PRINT_R(substr("system_ophp1", 0,11));
-			
 			if(is_array($words))
 			{
-				$str								=$this->__REPLACE_aux($str,$words);
-				$words								=array_merge($this->words,$words);
-				$return								=$this->__REPLACE_aux($str,$words);
+				$return								=$str;
+				foreach($words as $word=>$replace)
+				{
+					if(isset($words["auto_".$word]))
+						$replace=$words["auto_".$word];
+					
+		        	if(isset($this->sys_view_l18n) AND is_array($this->sys_view_l18n) AND isset($this->sys_view_l18n["$word"]))	
+		        		$replace					=$this->sys_view_l18n["$word"];
+		        	if(is_array($replace))	$replace="";	
+		        	
+					$return							=str_replace("{".$word."}", $replace, $return);     	    	
+				}
 			}	
 			else
 				$return								="ERROR:: La funcion __REPLACE necesita un array para remplazar";
 			return $return;
 		} 		
-		public function __REPLACE_aux($str,$words)
-		{  				
-			$return								=$str;
-			foreach($words as $word=>$replace)
-			{
-				if(isset($this->sys_view_l18n) AND is_array($this->sys_view_l18n) AND isset($this->sys_view_l18n["$word"]))	
-					$replace					=$this->sys_view_l18n["$word"];
-				if(is_array($replace))	$replace="";											
-				if(substr($word, 0,11)=="system_ophp")
-					$replace=base64_decode($replace);				
-				$return							=str_replace("{".$word."}", $replace, $return);     	    	
-			}				
-			return $return;
-		} 			
+		##############################################################################
+		public function __PRE_DELETE($id)
+    	{
+			# ENVIA UN ARRAY AL METODO DELETE
+			# DE LAS VARIABLES DECLARADAS EN EL MODELO 
+			# $this->sys_fields
+    					
+			$opcion=array(
+				"message"=>"DATOS GUARDADOS",
+			);	
+			$this->__DELETE($id);			
+    	}
+
 		##############################################################################
 		public function __PRE_SAVE()
     	{
@@ -914,11 +952,11 @@
 			# $this->sys_fields
 
 			$fields	=$this->__FIELDS();		
-    		#$this->__PRINT_R($fields);						
+    					
 			$opcion=array(
 				"message"=>"DATOS GUARDADOS",
-			);				
-			$this->__SAVE($fields, $opcion);
+			);	
+			$this->__SAVE($fields, $opcion);			
     	}
 		##############################################################################    
 		public function __FIELDS()
@@ -927,331 +965,28 @@
 			# DE LAS VARIABLES DECLARADAS EN EL MODELO 
 			# $this->sys_fields
     	
-			$this->__VARS();
 			$datas		=$this->sys_fields;
-			
-			#$this->__PRINT_R($datas);
 			
 			$return		=array();
     		foreach($datas as $campo=>$valor)
     		{
-    			#if(isset($valor["value"]) and $valor["value"]!="")
-				if(isset($valor["relation"]) AND $valor["relation"]=="many2one")
+				#if(isset($valor["relation"]) AND $valor["relation"]=="many2one")
+				if(isset($valor["relation"]) AND $valor["relation"]=="one2many")
 				{	
-					$return[$campo]=$_SESSION["SAVE"][$this->sys_object][$campo]["data"];
-					#$this->__PRINT_R($_SESSION["SAVE"][$this->sys_object]);
+					if(isset($_SESSION["SAVE"][$this->sys_object][$campo]["data"]))
+						$return[$campo]=$_SESSION["SAVE"][$this->sys_object][$campo]["data"];
 				}
 				else				
 				{					
-					if(isset($valor["request"]))
+					if(isset($valor["value"]))
 					{
-						$return[$campo]=$valor["request"];
+						$return[$campo]=$valor["value"];
 					}					
 				}			
     		}    		
-			
-			#$this->__PRINT_R($return);
     		return $return;
     	}
-		public function __IMPORT()
-    	{		
-			if(@$this->request["seccion_import"]=="subiendo_archivo")
-			{
-				
-				if(isset($this->request["files"]) AND $this->sys_table!="general")
-				{
-					if(isset($this->request["files"]["error"]) AND $this->request["files"]["error"]==0)
-					{
-						$uploads_dir 			= 'import/mysql-files';
-						$uploads_dir 			= 'C:/xampp/mysql/data/mysql-files';
-						$datas					=array();
-						
-						$tmp_name 				= $this->request["files"]["tmp_name"];
-						$name 					= $this->request["files"]["name"];
-						$type 					= $this->request["files"]["type"];
-						
-						$vtype					=explode(".",$name);
-						$ctype					=count($vtype) - 1;
-						$extencion				=$vtype[$ctype];
-						$path					="$uploads_dir/$name.{$this->sys_date}.$extencion";
-						$path					="$uploads_dir/$name";
 
-						move_uploaded_file($tmp_name, $path);		
-						echo json_encode(array("mensaje"=>"<br> > Archivo Cargado <b>$name</b>","name"=>"$name","path"=>"$path"));
-					}						
-					else 
-						echo json_encode(array("mensaje"=>"<br> > Error al cargar ","name"=>"","path"=>""));
-				}	
-			}
-			if(@$this->request["seccion_import"]=="preparar_tabla")
-			{
-				$option_conf=array();					
-				$option_conf["open"]	=1;
-				
-				#$comando_sql 			="call import_csv('{$this->sys_table}','$name')";
-				#$this->__EXECUTE($comando_sql,$option_conf);					
-				
-				if($this->sys_import["type"]=="restore_table")
-				{
-					$comando_sql 			="TRUNCATE TABLE {$this->sys_table};";					
-				}
-				else
-				{	
-					if($this->sys_import["type"]=="compare_table")
-					{
-						$comando_sql 			="DROP TABLE IF EXISTS t_{$this->sys_table};";
-						$this->__EXECUTE($comando_sql,$option_conf);					
-						$comando_sql 			="CREATE TABLE t_{$this->sys_table} LIKE {$this->sys_table};";						
-					}					
-				}
-				$this->__EXECUTE($comando_sql,$option_conf);					
-				echo "<br> > Preparando base de datos temporal <b>{$this->sys_table}</b>";					
-
-			}
-			if(@$this->request["seccion_import"]=="cargar_tabla")
-			{
-				$table="t_{$this->sys_table}";	
-				
-								
-				if($this->sys_import["type"]=="compare_table")
-				{
-					$table="t_{$this->sys_table}";					
-				}	
-				else
-				{
-					$table="{$this->sys_table}";					
-				}			
-				
-				/*
-				var $sys_import			=array(
-									"fields"=>",",
-									"enclosed", "\"",
-									"lines", "\\n",
-									"ignore", "1",
-								);				
-				*/
-				$option_conf=array();
-				$comando_sql ="
-					LOAD DATA INFILE 'C:/xampp/mysql/data/mysql-files/{$this->request["name"]}' 
-					INTO TABLE $table
-					FIELDS TERMINATED BY '{$this->sys_import["fields"]}' 
-					ENCLOSED BY '{$this->sys_import["enclosed"]}'
-					LINES TERMINATED BY '{$this->sys_import["lines"]}'
-					IGNORE {$this->sys_import["ignore"]} ROWS;					
-				";				
-				#echo $comando_sql;
-				$this->__EXECUTE($comando_sql);
-				echo "<br> > Cargando datos a tabla temporal <b>$table</b>
-					<div id=\"import_pendiente\"></div>
-					<div id=\"eliminar\"></div>
-				";			
-			}
-			if(@$this->request["seccion_import"]=="actualizando_datos")
-			{			
-				foreach($this->sys_fields as $field=>$data)
-				{
-					# compara 	10   11
-					# no update	01   11						
-					if(@$data["type"]=="primary key") 	$clave=$field;
-					
-					if(@$data["import"]=="11" or @$data["import"]=="10")   
-					{	#COMPARA
-						if(!isset($to)) 
-						{
-							@$to	="torg.$field";
-							@$tt	="tt.$field";
-						}	
-						else		
-						{
-							@$to	="CONCAT($to,torg.$field)";
-							@$tt	="CONCAT($tt,tt.$field)";
-						}							
-					}
-					if(@$data["import"]=="11" or @$data["import"]=="01")
-					{	#UPDATE
-						if(!isset($sto)) 
-						{
-							@$sto	="torg.$field as torg_$field";
-						}	
-						else		
-						{
-							@$sto	.=",torg.$field as torg_$field";
-						}							
-					}
-				}
-				$upd=0;
-				$add=0;
-				$maximo=83;
-				$script="";						
-				$pendientes=0;			
-				if(isset($clave))
-				{	
-					$comando_sql ="
-						select 
-							CASE 
-								when $to is NULL then 'add' 
-								when $tt != $to then 'upd'     
-							END as torg_status,
-							tt.*
-						from t_{$this->sys_table} tt left join {$this->sys_table} torg on tt.$clave=torg.$clave
-						WHERE
-							$tt <> $to
-							OR
-							$to is NULL							
-							
-						ORDER BY torg_status							
-					";
-					$datos_analizados	=$this->__EXECUTE($comando_sql);
-					$pendientes			=count($datos_analizados);			
-				}	
-				#$this->__PRINT_R($comando_sql);
-				
-				if($pendientes>0)
-				{	
-					$script="
-						<script>	
-							var datos={		
-								type: 'POST',													
-								async: true,
-								cache: false,
-								contentType: false,
-								enctype: 'multipart/form-data',
-								processData: false,
-							};
-							var actualizar=datos;
-							actualizar.url		='../sitio_web/ajax/general.php&seccion_import=actualizando_datos&sys_name={$this->sys_name}&date=".date("YmdHis")."';										
-							actualizar.success	=function (response) 
-							{
-								$(\"#import_pendiente\").html(response);												
-							};											
-							$.ajax(actualizar);								
-						</script>						
-					";
-			
-					if($pendientes<$maximo)	$bloque	=$datos_analizados;
-					else					$bloque =array_slice($datos_analizados, 0, $maximo-1);					
-
-					foreach($bloque as $data)
-					{
-						$id="";							
-						foreach($data as $field=>$value)
-						{							
-							if(@$field==$clave) 	$id							=$value;
-
-							if(@$data["torg_status"]=="upd" AND @in_array(@$this->sys_fields["$field"]["import"],array("01","11")))
-							{																	
-								$fields["$field"]	="$value";
-							}	
-						}
-						if(@$data["torg_status"]=="add")
-						{
-							@$add++;
-							$this->sys_primary_field	="";
-							$this->sys_primary_id		="";
-						
-							unset($data["torg_status"]);
-							$fields=$data;
-						}						
-						if(@$data["torg_status"]=="upd")
-						{
-							@$upd++;
-							$this->sys_primary_field	=$clave;
-							$this->sys_primary_id		=$id;																				
-						}								
-						if(is_array(@$fields))
-						{								
-							$this->__SAVE($fields);
-						}	
-						if($id!="")
-						{	
-							$comando_sql="DELETE FROM t_{$this->sys_table} WHERE $clave='$id'";
-							$this->__EXECUTE($comando_sql);								
-						}	
-					}
-					
-					echo "	
-						<br>
-						$pendientes :: Registros pendientes<br> 
-						$script
-					";
-				}
-				else
-				{							
-					echo "
-						<script>	
-							var datos={		
-								type: 'POST',													
-								async: true,
-								cache: false,
-								contentType: false,
-								enctype: 'multipart/form-data',
-								processData: false,
-							};
-							var eliminar=datos;
-							eliminar.url		='../sitio_web/ajax/general.php&seccion_import=eliminar_tabla&sys_name={$this->sys_name}&date=".date("YmdHis")."';										
-							eliminar.success	=function (response) 
-							{
-								$(\"#eliminar\").html(response);	
-							};											
-							$.ajax(eliminar);								
-						</script>						
-					";
-				}							
-				
-			}			
-			if(@$this->request["seccion_import"]=="eliminar_tabla")
-			{
-				$comando_sql ="truncate t_{$this->sys_table}";
-				$this->__EXECUTE($comando_sql);
-				echo "<br><br> > Eliminando tabla temporal <b>{$this->sys_table}</b>
-						<script>								
-							setTimeout(function()
-							{  				
-									$(\"form\").submit();									
-							},500);								
-						</script>				
-				";
-			}
-		}
-
-
-    	##############################################################################    
-		public function __VARS()
-		{	
-			# RECOGE LAS VARIABLES ENVIADAS DESDE EL FORM, 
-			# ASIGNANDO UNICAMENTE LAS DECLARADAS EN EL MODELO 
-			# $this->sys_fields
-			#$this->__PRINT_R($this->sys_fields);
-			foreach($this->sys_fields as $campo=>$valor)
-			{
-				if(!isset($this->request["$campo"]))		$this->request["$campo"]="";
-				else
-				{	
-					$this->sys_fields["$campo"]["value"]	=$this->request["$campo"];
-					$this->sys_fields["$campo"]["request"]	=$this->request["$campo"];
-				}	
-			}		
-		}    
-		public function __GET_PRIMARY()
-		{	
-    		foreach($this->sys_fields as $campo=>$valor)
-    		{
-				if($this->sys_fields["$campo"]["type"]=='primary key')
-				{
-					$this->sys_primary_field=$campo;	
-				}
-			}				
-		} 		
-		public function lugar($option)
-		{				
-			$comando_sql	="SELECT * FROM lugar WHERE clave='$option'";
-			$return			=$this->__EXECUTE($comando_sql);
-			
-			if(is_array($return) AND isset($return[0]["lugar"])) 		$return=@$return[0]["lugar"];
-			else $return="COLIMA";
-						
-			return $return;
-		}
     	##############################################################################    
 		public function __VALOR($valor=NULL)
 		{				    
@@ -1264,42 +999,72 @@
 					{						
 						$eval_attr="";	
 						foreach($val_attr as $field_attr => $eval_field)
-						{		
-								
-							if($attr=="background-color")	$eval_attr.="if({$eval_field})	$"."style.=\"background-color:$field_attr;\";";
-							elseif($attr=="border")			$eval_attr.="if({$eval_field})	$"."style.=\"border: 1px solid $field_attr; \";";
-							elseif($attr=="font-size")		$eval_attr.="if({$eval_field})	$"."style.=\"font-size: $field_attr; \";";
-							else							$eval_attr.="if({$eval_field})	$"."style.=\"font-size: $field_attr; \";";
-							
-							#$eval_attr.="$"."this->__PRINT_R(\"$eval_field\");
+						{										
+							#if($attr=="background-color")	$eval_attr.="if({$eval_field})	$"."style.=\"background-color:$field_attr;\";";
+							if($attr=="border")				$eval_attr.="if({$eval_field})	$"."style.=\"border: 1px solid $field_attr; \";";
+							#elseif($attr=="font-size")		$eval_attr.="if({$eval_field})	$"."style.=\"font-size: $field_attr; \";";
+							else							$eval_attr.="if({$eval_field})	$"."style.=\"$attr: $field_attr; \";";
 						}
 					}
 				}	
 				
 				eval($eval_attr);
 			}
-			if($this->sys_section=="create" AND is_array(@$valor["create"]))	$style	.=$this->__VALOR($valor["create"]);
-			if($this->sys_section=="write" AND is_array(@$valor["write"]))		$style	.=$this->__VALOR($valor["write"]);
+			if(@$this->sys_private["section"]=="create" AND is_array(@$valor["create"]))	$style	.=$this->__VALOR($valor["create"]);
+			if(@$this->sys_private["section"]=="write" AND is_array(@$valor["write"]))		$style	.=$this->__VALOR($valor["write"]);
 
 			return $style;		
 		}
     	##############################################################################    
+		public function PDF_PRINT($option=null)
+		{						
+			if(!is_array($option))
+				$option=array(
+					"id"		=>"$option",
+					"section"	=>"write"					
+				);
+		
+			@$this->__PRINT_JS.="
+				setTimeout(function()
+				{  	
+					var sys_section_{$this->sys_name} = $(\"#sys_section_{$this->sys_name}\").val();
+					var sys_action_{$this->sys_name} = $(\"#sys_action_{$this->sys_name}\").val();
+							
+					$(\"#sys_id_{$this->sys_name}\").val(\"{$option["id"]}\");				
+					$(\"#sys_section_{$this->sys_name}\").val(\"{$option["section"]}\");
+					$(\"#sys_action_{$this->sys_name}\").val(\"print_pdf\");
+				
+					$(\"form\")
+						.attr(\"target\",\"_blank\")
+						.submit();
+					$(\"form\")
+						.removeAttr(\"target\");			
+						
+				 	$(\"#sys_section_{$this->sys_name}\").val(sys_section_{$this->sys_name});
+				 	$(\"#sys_action_{$this->sys_name}\").val(sys_action_{$this->sys_name});		
+				 	$(\"#sys_id_{$this->sys_name}\").val(\"\");					
+				},1500);			
+			
+			
+			";
+		}
+    	##############################################################################    
 		public function __INPUT($words=NULL, $fields=NULL)
-		{				    
+		{							
 		    if(!is_array($words))    $words=array();
 		    if(is_array($fields))
 		    {
 			    foreach($fields as $campo=>$valor)
 			    {		
 			        if(!isset($valor["type"]))	        $valor["type"]			="input";
-			        if(!isset($valor["showTitle"]))	    $valor["showTitle"]		="si";
+			        if(!isset($valor["titleShow"]))	    $valor["titleShow"]		="si";
+			        if(!isset($valor["br"]))	    	$valor["br"]			="<br>";
+			        if(!isset($valor["titleAlign"]))	$valor["titleAlign"]	="bottom";
 			        if(!isset($valor["title"]))	    	$valor["title"]			="";
 			        if(!isset($valor["value"]))	    	$valor["value"]			="";
 			        if(!isset($valor["source"]))	   	$valor["source"]		="";			        
 			        if(!isset($valor["attr"]))	   		$valor["attr"]			="";
 					if(!isset($valor["style"]))	   		$valor["style"]			="";
-					
-					if($this->sys_section=="create")	$valor["value"]			="";
 
 					$class="$campo ";
 					$style="style=\"" . $this->__VALOR($valor) . "\""; 				
@@ -1309,7 +1074,6 @@
 			        	$attr="";
 			        	if(is_array($valor["attr"]))
 			        	{	
-			        		#$this->__PRINT_R($valor["attr"]);
 			        		foreach($valor["attr"] as $attr_field => $attr_value)
 			        		{
 								if($attr_value=="required")		$class.=" required ";
@@ -1318,40 +1082,86 @@
 			        		}			        	
 			        	}			        				        	
 						$titulo					="&nbsp;";		
-					    if(in_array($valor["showTitle"],$this->sys_true))	
+					    if(in_array($valor["titleShow"],$_SESSION["var"]["true"]))	
 					    {			        
 					    	if(is_array($this->sys_fields_l18n) AND isset($this->sys_fields_l18n["$campo"]))	
 					    	{			        	
-					    		$valor["title"]		=$this->sys_fields_l18n["$campo"];
+					    		$valor["title"]			=$this->sys_fields_l18n["$campo"];
 					    	}	
 
-							if($valor["type"]=="txt")	$titulo					="{$valor["title"]}";			        	
-							else						$titulo					="<font id=\"$campo\" style=\"color:gray;\">{$valor["title"]} </font>";
-					    	
+							if($valor["type"]=="txt")	$titulo		="{$valor["title"]}";			        	
+							else						$titulo		="<font id=\"$campo\" style=\"color:gray;\">{$valor["title"]} </font>";
 					    }	
 					    
-
-					    
-					    if($valor["type"]=="input" OR $valor["type"]=="primary key")	
+					    if($valor["type"]=="input")	
 					    {			        						        
-					        $words["$campo"]  ="<input id=\"$campo\" $style autocomplete=\"off\" type=\"text\" $attr name=\"$campo\" value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} {$this->sys_object} $class\"><br>$titulo";
+					        if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					        
+					        {
+								if(@$this->sys_private["section"]=="show")
+									$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";
+								else					        
+									$words["$campo"]  ="<input id=\"$campo\" $style autocomplete=\"off\" type=\"text\" $attr name=\"{$this->sys_name}_$campo\" value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} {$this->sys_object} $class\">{$valor["br"]}$titulo";							}					        	
+					        else	$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";						        
 					    } 
 					    if($valor["type"]=="date")	
 					    {
-							#$this->__PRINT_R($this->sys_fields[$campo]);			
-					        #$words["$campo"]  ="$titulo<input id=\"$campo\" type=\"text\" name=\"$campo\" value=\"{$valor["value"]}\" placeholder=\"{$valor["holder"]}\" class=\"formulario\" >";
-					        $words["$campo"]  ="
-					        	<input id=\"$campo\" $style type=\"text\" name=\"$campo\" $attr value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} $class\"><br>$titulo
-			        			<script>
-									$(\"input#$campo".".{$this->sys_name}\").datepicker({dateFormat:\"yy-mm-dd\"});
-					        	</script>			            	
-					        	";
+					    	$js_auto="";
+					        if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					        
+					        {
+								if(@$this->sys_private["section"]=="show")
+									$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";
+								else					        
+									$words["$campo"]  ="
+										<input id=\"$campo\" $style type=\"text\" name=\"{$this->sys_name}_$campo\" $attr value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} $class\">{$valor["br"]}$titulo
+										<script>
+											$(\"input#$campo".".{$this->sys_name}\").datepicker({
+												dateFormat:\"yy-mm-dd\",
+												dayNamesMin: [\"Do\", \"Lu\", \"Ma\", \"Mi\", \"Ju\", \"Vi\", \"Sa\"],
+												monthNames: [\"Enero\", \"Febrero\", \"Marzo\", \"Abril\", \"Mayo\", \"Junio\", \"Julio\", \"Agosto\", \"Septiembre\", \"Octubre\", \"Noviembre\", \"Diciembre\"],
+												monthNamesShort: [\"Ene\", \"Feb\", \"Mar\", \"Abr\", \"May\", \"Jun\", \"Jul\", \"Ago\", \"Sep\", \"Oct\", \"Nov\", \"Dic\"]
+												$js_auto
+											});
+										</script>			            	
+							    	";
+							}					        	
+					        else	$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";	
 					    } 
+					    if($valor["type"]=="datetime")	
+					    {
+					    	$js_auto="";
+					        if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					        
+					        {
+								if(@$this->sys_private["section"]=="show")
+									$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";
+								else					        
+							    $words["$campo"]  ="
+							    	<input id=\"$campo\" $style type=\"text\" name=\"{$this->sys_name}_$campo\" $attr value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} $class\">{$valor["br"]}$titulo
+					    			<script>
+										$(\"input#$campo".".{$this->sys_name}\").datetimepicker({
+											dateFormat: 	\"yy-mm-dd\",
+											timeFormat: 	\"HH:mm:ss\",
+											showSecond: 	false,
+											showMilisecond: false,
+											showMicrosecond: false,
+											minuteText: 	\"Minutos\",
+											hourText: 		\"Horas\",
+											currentText: 	\"Ahora\",
+											closeText: 		\"Listo\",
+											dayNamesMin: 	[\"Do\", \"Lu\", \"Ma\", \"Mi\", \"Ju\", \"Vi\", \"Sa\"],
+											monthNames: 	[\"Enero\", \"Febrero\", \"Marzo\", \"Abril\", \"Mayo\", \"Junio\", \"Julio\", \"Agosto\", \"Septiembre\", \"Octubre\", \"Noviembre\", \"Diciembre\"],
+											monthNamesShort:[\"Ene\", \"Feb\", \"Mar\", \"Abr\", \"May\", \"Jun\", \"Jul\", \"Ago\", \"Sep\", \"Oct\", \"Nov\", \"Dic\"]
+										});	
+							    	</script>			            	
+					        	";
+							}					        	
+					        else	$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";	
+					    } 
+
 					    if($valor["type"]=="multidate")	
 					    {
 					        #$words["$campo"]  ="$titulo<input id=\"$campo\" type=\"text\" name=\"$campo\" value=\"{$valor["value"]}\" placeholder=\"{$valor["holder"]}\" class=\"formulario\" >";
 					        $js_multidate="";
-							if(@$this->request["sys_section_".$this->sys_name]=="write")
+							if(@$this->sys_private["section"]=="write")
 							{
 								$valores_multidate=explode(",",$valor["value"]);
 								$days_value="";
@@ -1364,169 +1174,270 @@
 								
 								$js_multidate="addDates: [$days_value]";
 					        }
-					        $words["$campo"]  ="
-					        	<input id=\"$campo\" $style type=\"text\" name=\"$campo\"  $attr class=\"formulario {$this->sys_name} $class\"><br>$titulo
-			        			<script>
-									$(\"input#$campo".".{$this->sys_name}\").multiDatesPicker(
-									{
-										dateFormat: \"yy-mm-dd\",
-										$js_multidate
-									});
-					        	</script>			            	
-					        	";
+   							if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
+							{					        
+								if(@$this->sys_private["section"]=="show")
+									$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";
+								else							
+							    $words["$campo"]  ="
+							    	<input id=\"$campo\" $style type=\"text\" name=\"{$this->sys_name}_$campo\"  $attr class=\"formulario {$this->sys_name} $class\">{$valor["br"]}$titulo
+					    			<script>
+										$(\"input#$campo".".{$this->sys_name}\").multiDatesPicker(
+										{
+											dateFormat: \"yy-mm-dd\",
+											$js_multidate
+										});
+							    	</script>			            	
+						    	";
+						    }
+						    else	$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";
 					    } 
 					    
 					    if($valor["type"]=="checkbox")	
 					    {
-					        //$words["$campo"]  ="<input id=\"$campo\" type=\"checkbox\" name=\"$campo\" class=\"formulario\"><br>$titulo";
+					        //$words["$campo"]  ="<input id=\"$campo\" type=\"checkbox\" name=\"$campo\" class=\"formulario\">{$valor["br"]}$titulo";
 					        $checked="";
 					        if($valor["value"]==1) $checked="checked";
 							
 					    	$words["$campo"]  = 
-					        "<div class=\"check-2\">
-		    					<input type=\"checkbox\" id=\"$campo\" $attr $checked value=\"1\" name=\"$campo\" />
-		    					<label for=\"$campo\">".""."</label>
+					        "<div class=\"checkbox-2\">
+		    					<input type=\"checkbox\" id=\"{$this->sys_name}_$campo\"  $checked value=\"1\" name=\"{$this->sys_name}_$campo\" />
+		    					<label for=\"{$this->sys_name}_$campo\">".""."</label>
 							</div>$titulo
-							<br>
+							{$valor["br"]}
 							";
 					    }      
 					    if($valor["type"]=="file")	
 					    {
 					        $words["$campo"]  ="$titulo<input id=\"$campo\" name=\"$campo\" type=\"file\" class=\"formulario\">";
-					        $words["$campo"]  ="<input id=\"$campo\" $attr name=\"$campo\" type=\"file\" class=\"formulario {$this->sys_name} $class\" ><br>$titulo";
+					        $words["$campo"]  ="<input id=\"$campo\" $attr name=\"{$this->sys_name}_$campo\" type=\"file\" class=\"formulario {$this->sys_name} $class\" >{$valor["br"]}$titulo";
 					    }    
-
+					    if($valor["type"]=="show_file")	
+					    {					    	
+					        $words["$campo"]  =$valor["value"];
+					    }    
 					    if($valor["type"]=="font")	
 					    {
-					        $words["$campo"]  ="$titulo<div id=\"$campo\" class=\"{$this->sys_name}\" $attr style=\"height:22px;\"> {$valor["value"]}</div><br>&nbsp;";
+					        $words["$campo"]  ="$titulo<div id=\"$campo\" class=\"{$this->sys_name}\" $attr style=\"height:22px;\"> {$valor["value"]}</div>{$valor["br"]}&nbsp;";
+					    } 
+					    if($valor["type"]=="title")	
+					    {
+					        $words["$campo"]  ="$titulo";
 					    } 
 					    if($valor["type"]=="txt")	
 					    {
 					        $words["$campo"]  ="$titulo";
 					    } 
+
+					    if($valor["type"]=="value")	
+					    {
+					        $words["$campo"]  ="{$valor["value"]}";
+					    } 
 					    
 					    if($valor["type"]=="textarea")	
 					    {
 							if($attr=="")	$attr="style=\"height:150px;\"";
-					        $words["$campo"]  ="<textarea id=\"$campo\" name=\"$campo\" $attr class=\"formulario {$this->sys_name} $class\">{$valor["value"]}</textarea><br>$titulo";
+					    	if(@$this->sys_private["section"]=="show")
+					    		$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";
+					    	else							
+						        $words["$campo"]  ="<textarea id=\"$campo\" name=\"{$this->sys_name}_$campo\" $attr class=\"formulario {$this->sys_name} $class\">{$valor["value"]}</textarea>{$valor["br"]}$titulo";
 					    } 			           
-					    if($valor["type"]=="texthtml")	
+					    if($valor["type"]=="html")	
 					    {
-							#new nicEditor({fullPanel : false}).panelInstance(\"textarea#$campo".".{$this->sys_name}\");
-							#if($attr=="")	$attr="style=\"height:100%; width:100%;\"";
-							/*
-					        $words["$campo"]  ="<div id=\"$campo\" name=\"$campo\" $attr class=\"{$this->sys_name} $class\">{$valor["value"]}</div><br>$titulo
-								<input id=\"$campo\" name=\"$campo\" value=\"{$valor["value"]}\"  class=\"formulario {$this->sys_name}\" type=\"hidden\">
-			        			<script>
-									var myEditor = new nicEditor({fullPanel : false}).panelInstance(\"$campo\");
-									
-									myEditor.addEvent('add', function() {
-										alert( myEditor.instanceById(\"$campo\").getContent() );
-									});									
-					        	</script>							
-							";
-							
-							$words["$campo"]  ="<textarea id=\"$campo\" name=\"$campo\" $attr class=\"formulario {$this->sys_name} $class\">{$valor["value"]}</textarea><br>$titulo
-								<script>
-									CKEDITOR.replace( '#$campo' );
-								</script>														
-							";							
-							*/
-							$words["$campo"]  ="<textarea id=\"$campo\" name=\"$campo\" $attr class=\"formulario {$this->sys_name} $class\">{$valor["value"]}</textarea><br>$titulo
-								<script>
-									CKEDITOR.replace( '$campo' );									
-								</script>														
-							";							
-							
+					        $words["$campo"]  ="{$valor["value"]}";
 					    } 			           
 
 					    if($valor["type"]=="password")	
 					    {					        
-					        $words["$campo"]  ="<input type=\"password\" $style id=\"$campo\" $attr name=\"$campo\" value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} $class\"><br>$titulo";
+					    	if(@$this->sys_private["section"]=="show")
+					    		$words["$campo"]  ="*********{$valor["br"]}$titulo";
+					    	else					    
+					        $words["$campo"]  ="<input type=\"password\" $style id=\"$campo\" $attr name=\"{$this->sys_name}_$campo\" value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} $class\">{$valor["br"]}$titulo";
 					    }    
 					    if($valor["type"]=="select")	
 					    {
 					        $options="";
-					        
-					        foreach($valor["source"] as $value =>$text)
-					        {
-					        	$selected="";
-					        	if($valor["value"]==$value) $selected="selected";
-					        	$options.="<option value=\"$value\" $selected>$text</option>";			            
-					        }			            
-						        $words["$campo"]  ="<select id=\"$campo\" $style name=\"$campo\"  $attr class=\"formulario {$this->sys_name} $class\"\">
-					        		$options
-					        	</select><br>$titulo
-					        ";
+							if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
+							{					        
+							    foreach($valor["source"] as $value =>$text)
+							    {
+							    	$selected="";
+							    	if($valor["value"]==$value) 
+							    	
+							    		$selected="selected";
+							    	$options.="<option value=\"$value\" $selected>$text</option>";			            
+							    }
+								if(@$this->sys_private["section"]=="show")
+									$words["$campo"]  ="{$valor["value"]}{$valor["br"]}$titulo";
+								else							    			            
+									$words["$campo"]  ="<select id=\"$campo\" $style name=\"{$this->sys_name}_$campo\"  $attr class=\"formulario {$this->sys_name} $class\"\">
+											$options
+										</select>{$valor["br"]}$titulo
+									";
+							}					        
+							else	$words["$campo"]  =@$text."{$valor["br"]}$titulo";
+							
 					    }			        
-					    if($valor["type"]=="autocomplete")	
+					    if($valor["type"]=="autocomplete" AND $this->sys_recursive<3)	
 					    {
+					    	$words["$campo"]  ="";
 					    	if(!isset($fields["auto_$campo"]["value"]))	$fields["auto_$campo"]["value"]="";
-					    	
-					    	
-					    	$json=$this->__JSON_AUTOCOMPLETE($valor);
-					    	
-					    	if(isset($this->request["auto_$campo"]))	$fields["auto_$campo"]["value"]	=$this->request["auto_$campo"];
-					    	else										$fields["auto_$campo"]["value"]	=@$json[0]->label;
-					    	
-					    	if(isset($this->request["$campo"]))			$fields["$campo"]["value"]		=$this->request["$campo"];
-					    	else										$fields["$campo"]["value"]		=@$json[0]->clave;
+
+							$eval="
+								$"."view_auto						=$"."this->sys_fields[\"$campo\"][\"obj\"]->__VIEW_WRITE($"."this->sys_fields[\"$campo\"][\"obj\"]->sys_var[\"module_path\"].\"html/create\");	
+								$"."this->sys_fields[\"$campo\"][\"obj\"]->words  	=$"."this->sys_fields[\"$campo\"][\"obj\"]->__INPUT($"."this->sys_fields[\"$campo\"][\"obj\"]->words,$"."this->sys_fields[\"$campo\"][\"obj\"]->sys_fields);
+								
+								$"."words[\"create_auto_$campo\"]  	=$"."this->__REPLACE($"."view_auto,$"."this->sys_fields[\"$campo\"][\"obj\"]->words);
+
+							";	
+							#$"."this->obj_$campo
+							
+							if(@eval($eval)===false)	
+
+							if(isset($this->request["auto_$campo"]))	
+							{
+								$fields["auto_$campo"]["value"]	=$this->request["auto_$campo"];
+								$fields["$campo"]["value"]		=$this->request["$campo"];
+							}									
+							if(isset($valor["source"]))
+							{						    	
+								$json=$this->__JSON_AUTOCOMPLETE($valor);
+								
+								if(!isset($this->request["auto_$campo"]))	
+								{
+									$fields["auto_$campo"]["value"]	=@$json[0]->label;
+									$fields["$campo"]["value"]		=@$json[0]->clave;
+								}
+							}
+							else if(isset($valor["procedure"]) AND $this->sys_recursive<3)
+							{
+								$eval="
+									$"."json							=$"."this->sys_fields[\"$campo\"][\"obj\"]->{$valor["procedure"]}();
+								";	
+								if(@eval($eval)===false)	
+									echo ""; #$eval; ---------------------------								        			
+
+								$fields["auto_$campo"]["value"]		=@$json[0][$valor["class_field_l"]];
+								$fields["$campo"]["value"]			=@$json[0][$valor["class_field_m"]];
+							}	
 					    	
 					    	$label	=$fields["auto_$campo"]["value"];
 							
-							
-							
 					    	if(isset($this->sys_fields["$campo"]["class_field_l"]))
 					    	{
-								#$this->__PRINT_R($this->sys_fields["$campo"]);	
 					    		if(isset($this->sys_fields["$campo"]["values"]) AND count($this->sys_fields["$campo"]["values"])>0)
-					    		{
-					    			$label=$this->sys_fields["$campo"]["values"][0][$this->sys_fields["$campo"]["class_field_l"]];									
-					    		}
+					    			$label=$this->sys_fields["$campo"]["values"][0][$this->sys_fields["$campo"]["class_field_l"]];
 					    	}
+					    	$js_auto="";
+					    	if(isset($this->sys_memory) AND $this->sys_memory!="")
+					    		$js_auto="appendTo: \"div#create_{$this->sys_name}\",";
 							
 							if(isset($valor["vars"]))	$vars	=$valor["vars"];
 							else						$vars	="";
 					    
-					        $words["$campo"]  ="					        	
-					        	<input id=\"auto_$campo\" $style type=\"text\"  name=\"auto_$campo\"  $attr value=\"$label\" class=\"formulario {$this->sys_name} $class\"><br>$titulo
-					        	<input id=\"$campo\" name=\"$campo\" value=\"{$valor["value"]}\"  class=\"formulario {$this->sys_name}\" type=\"hidden\">
-					        	<script type=\"\">
-									
-									$(\"input#auto_$campo".".{$this->sys_name}\").autocomplete(
-									{		
-										source:\"{$valor["source"]}$vars\",
-										dataType: \"jsonp\",
-										select: function( event, ui ) // CUANDO SE SELECCIONA LA OPCION REALIZA LO SIGUIENTE
-										{												
-											if(typeof auto_$campo === 'function') 								
-											{																
-												auto_$campo(ui);
-											}									
-											else
-											{
-											
-												$(\"input#$campo".".{$this->sys_name}\").val(ui.item.clave);					
-												$(\"input#auto_$campo".".{$this->sys_name}\").val(ui.item.label);
-											}
-										}				
-									});				            	
-					        	</script>
-					        ";
+							if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
+							{						
+								if(!isset($valor["procedure"]))			$valor["procedure"]			="__AUTOCOMPLETE";
+								if(!isset($valor["class_field_l"]))		$valor["class_field_l"]		="nombre";
+								if(!isset($valor["class_field_m"]))		$valor["class_field_m"]		="";				
+
+								$js="
+											$(\"div#auto_$campo\").hide();
+											$(\"input#auto_$campo".".{$this->sys_name}\").autocomplete(
+											{		
+												source:		\"../sitio_web/ajax/autocomplete.php?class_name={$valor["class_name"]}&procedure={$valor["procedure"]}&class_field_l={$valor["class_field_l"]}&class_field_m={$valor["class_field_m"]}$vars&date=".date("YmdHis")."\",
+												dataType: 	\"jsonp\",
+												$js_auto
+												change: function( event, ui ) // CUANDO SE SELECCIONA LA OPCION REALIZA LO SIGUIENTE
+												{
+													if($(\"input#auto_$campo".".{$this->sys_name}\").val()==\"\")
+													$(\"input#$campo".".{$this->sys_name}\").val(\"\")
+												},
+												select: function( event, ui ) // CUANDO SE SELECCIONA LA OPCION REALIZA LO SIGUIENTE
+												{												
+													if(typeof auto_$campo === 'function') 								
+													{														
+														auto_$campo(ui);
+													}									
+													else
+													{	
+														if(ui.item.clave==\"create\")
+														{																													
+															$(\"div#auto_$campo div\").removeClass(\"mainTable\");													
+															$(\"div#auto_$campo\").dialog({
+																buttons: {
+																	\"Registrar\": function() {													
+																		$( this ).dialog(\"close\");
+																	},
+																	\"Cerrar\": function() {
+																		$( this ).dialog(\"close\");
+																	}
+																},										
+																width:\"700px\"
+															});
+														}
+														else
+														{
+															$(\"input#$campo".".{$this->sys_name}\").val(ui.item.clave);					
+															$(\"input#auto_$campo".".{$this->sys_name}\").val(ui.item.label);
+														}
+													}
+													if($(\"input#auto_$campo".".{$this->sys_name}\").val()==\"\")
+													$(\"input#$campo".".{$this->sys_name}\").val(\"\")
+												}				
+											});				            	
+								
+								";
+
+
+								if(!isset($valor["procedure"]))	$valor["procedure"]="";
+								
+								if(@$this->sys_private["section"]=="show")
+									$words["$campo"]  ="{$label}{$valor["br"]}$titulo";
+								else								
+									$words["$campo"]  ="
+										<input id=\"auto_$campo\"  name=\"{$this->sys_name}_auto_$campo\" $style type=\"text\"   $attr value=\"$label\" class=\"formulario {$this->sys_name} $class\">{$valor["br"]}$titulo
+										<input id=\"$campo\" 	   name=\"{$this->sys_name}_$campo\" value=\"{$valor["value"]}\"  class=\"formulario {$this->sys_name}\" type=\"hidden\">
+										<div id=\"auto_$campo\" title=\"Crear Registro\">{create_auto_$campo}</div>
+									" . $this->__JS_SET($js);
+							}					    
+							else
+							{
+								$words["$campo"]  ="$label{$valor["br"]}$titulo";
+							}
 					    }  
 						#/*
 					    if($valor["type"]=="form")	
 					    {					    
-							if(isset($valor["relation"]) AND $valor["relation"]=="many2one")
+							#if(isset($valor["relation"]) AND $valor["relation"]=="many2one")
+							if(isset($valor["relation"]) AND $valor["relation"]=="one2many")
+							{			
+								if(!isset($valor["class_template"]))		$valor["class_template"]="many2one_standar";					
+								
+								$campo_many					=@$valor["class_field_o"];
+								$value_many					=@$this->sys_fields["$campo_many"]["value"];								
+																
+								if($this->sys_private["section"]=="create" AND $this->sys_private["action"] == "__SAVE")
+									$value_many=0;	
+								$option=array(
+									"class_one"				=>$this->sys_name,
+									"class_one_id"			=>$value_many,								
+									"class_field"			=>$campo,
+									"class_field_id"		=>"",
+									"class_field_value"		=>$valor,
+									"words"					=>$words,
+									"view"					=>"html",			
+								);								
+								$words						=$this->__MANY2ONE($option);								
+							}
+							else if(isset($valor["relation"]) AND $valor["relation"]=="many2many")
 							{								
 								if(!isset($valor["class_template"]))		$valor["class_template"]="many2one_standar";					
 								
 								$campo_many					=$valor["class_field_o"];
-								$value_many					=$this->sys_fields["$campo_many"]["value"];								
+								$value_many					=@$this->sys_fields["$campo_many"]["value"];								
 								
-								
-								
-								if($this->sys_section=="create" AND $this->request["sys_action_".$this->sys_object] == "__SAVE")
+								if($this->sys_private["section"]=="create" AND $this->sys_private["action"] == "__SAVE")
 									$value_many=0;	
 								
 								$option=array(
@@ -1537,36 +1448,22 @@
 									"class_field_id"		=>"",
 									"class_field_value"		=>$valor,
 									"words"					=>$words,
-									"view"					=>"html",
-									
+									"view"					=>"html",									
 								);								
-								#$this->__PRINT_R($option);
-								$words						=$this->__MANY2ONE($option);
-								#$this->__PRINT_R($option);
+								$words						=$this->__MANY2MANY($option);
 							}
 						}	
 						#*/
-					    if($valor["type"]=="class")	
-					    {					    
-							if(isset($valor["relation"]) AND $valor["relation"]=="one2many")
-							{
-								$eval="";
-								$eval="
-									$"."this->$campo				=new {$valor["class_name"]}();									
-									$"."this->$campo"."_obj->sys_module	=\"{$valor["class_name"]}\";
-								";	
-								$eval="
-									$"."this->$campo"."_obj				=new {$valor["class_name"]}();																	
-								";	
-								
-								if(@eval($eval)===false)	
-									echo ""; #$eval; ---------------------------								        			
-							}			        		
-					    	#$words["$campo"]  =$data["html"];
-					    }					    
 					    if($valor["type"]=="hidden")	
 					    {
-					        $words["$campo"]  ="<input type=\"hidden\" id=\"$campo\" name=\"$campo\" $attr value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name}\">";
+					        if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					        
+					        {
+								if(@$this->sys_private["section"]=="show")
+									$words["$campo"]  ="";
+								else					        
+									$words["$campo"]  ="<input type=\"hidden\" id=\"$campo\" name=\"{$this->sys_name}_$campo\" $attr value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name}\">";
+							}					        	
+					        else	$words["$campo"]  ="";						           
 					    }    
 					    if($valor["type"]=="img")	
 					    {
@@ -1580,14 +1477,90 @@
 
 			
 			return $words;
-		}   		
+		} 		  		
     	##############################################################################    
 		public function __MANY2ONE($option)		
 		{
-			#unset($_SESSION["SAVE"]["personal_calculo"]	);	
-			#$_SESSION["SAVE"]=array();
+			$class_id			=@$option["class_id"];
+			$class_one			=@$option["class_one"];
+			$class_one_id		=@$option["class_one_id"];
 			
-			#$this->__PRINT_R($option);	
+			$campo				=@$option["class_field"];
+			$class_field_id		=@$option["class_field_id"];
+			$valor				=@$option["class_field_value"];
+			
+			$words				=@$option["words"];                                                                                                                                                                                                                                                          
+			$index				=@$option["view"];
+
+
+			
+			if(isset($option["json"]))
+			{
+				$json	=$option["json"];										
+			}
+			if($this->sys_recursive<3)
+			{
+				$eval="					
+					$"."option_$campo		=array(				
+						\"memory\"			=>\"$campo\",
+						\"class_one\"		=>\"$class_one\",
+					);
+				
+					if(!is_object($"."this->sys_fields[\"$campo\"][\"obj\"]))
+						@$"."this->sys_fields[\"$campo\"][\"obj\"]		=new {$valor["class_name"]}($"."option_$campo);
+
+					if(isset($"."json))
+					{								
+						$"."sys_primary_field						=@$"."this->sys_fields[\"$campo\"][\"obj\"]->sys_private[\"field\"];
+				
+						if(isset($"."class_id) AND $"."class_id>0)
+							$"."json[\"row\"][\"$"."sys_primary_field\"]	=$"."class_id;
+						
+						$"."this->sys_fields[\"$campo\"][\"obj\"]->__SAVE($"."json);
+					}
+					
+					$"."view   										=$"."this->__TEMPLATE(\"sitio_web/html/" . $valor["class_template"]. "\");
+					
+					$"."obj_$campo"."words							=$"."this->sys_fields[\"$campo\"][\"obj\"]->words;
+					
+					$"."obj_$campo"."words[\"many2one_form\"]		=$"."this->sys_fields[\"$campo\"][\"obj\"]->__VIEW_CREATE();	
+					$"."obj_$campo"."words							=$"."this->sys_fields[\"$campo\"][\"obj\"]->__INPUT($"."obj_$campo"."words,$"."this->sys_fields[\"$campo\"][\"obj\"]->sys_fields);    
+													
+					$"."this->sys_fields[\"$campo\"][\"obj\"]->words[\"many2one_report_id\"]	=$"."campo;
+									
+					if(isset($"."words[\"html_head_js\"]) AND isset($"."this->sys_fields[\"$campo\"][\"obj\"]->words[\"html_head_js\"]))								
+						$"."words[\"html_head_js\"] 				.= $"."this->sys_fields[\"$campo\"][\"obj\"]->words[\"html_head_js\"];
+									
+					$"."option_report								=array();				
+					
+					$"."option_report[\"where\"]					=array(
+						\"{$valor["class_field_m"]}='$class_one_id'\"
+					);
+					
+					$"."option_report[\"template_title\"]	        = $"."this->sys_fields[\"$campo\"][\"obj\"]->sys_var[\"module_path\"] . \"html/report_title\";
+					$"."option_report[\"template_body\"]	        = $"."this->sys_fields[\"$campo\"][\"obj\"]->sys_var[\"module_path\"] . \"html/report_body\";
+					$"."option_report[\"template_create\"]	        = $"."this->sys_fields[\"$campo\"][\"obj\"]->sys_var[\"module_path\"] . \"html/create\";
+					$"."option_report[\"template_option\"]	        = $"."option;
+					
+					$"."option_report[\"name\"]	            		= '$campo';
+					
+					#$"."option_report[\"echo\"]	            		= 'AUX :: MANY2ONE $campo ';
+
+		
+					$"."this->sys_fields[\"$campo\"][\"obj\"]->__VIEW_REPORT	=$"."this->sys_fields[\"$campo\"][\"obj\"]->__VIEW_REPORT($"."option_report);
+
+					$"."obj_$campo"."words[\"many2one_report\"]		=$"."this->sys_fields[\"$campo\"][\"obj\"]->__VIEW_REPORT[$"."index];				
+					$"."words[\"$campo\"]  							=$"."this->__REPLACE($"."view,$"."obj_$campo"."words);												
+				";											
+				eval($eval);	
+			}
+			return $words;
+			
+		}
+    	##############################################################################    
+		public function __MANY2MANY($option)		
+		{
+			
 			$class_id			=@$option["class_id"];
 			$class_one			=$option["class_one"];
 			$class_one_id		=$option["class_one_id"];
@@ -1598,70 +1571,9 @@
 			
 			$words				=$option["words"];                                                                                                                                                                                                                                                          
 			$index				=$option["view"];
-			
-						
-			if(isset($option["json"]))
-			{
-				$json	=$option["json"];						
-			}
-						
-			$eval="
-				$"."option_$campo		=array(				
-					\"memory\"			=>\"$campo\",
-					\"class_one\"		=>\"$class_one\",
-				);
-			
-				$"."this->$campo"."_obj									=new {$valor["class_name"]}($"."option_$campo);
-								
-				if(isset($"."json))
-				{								
-					$"."sys_primary_field	=$"."this->$campo"."_obj->sys_primary_field;
-			
-					if(isset($"."class_id) AND $"."class_id>0)
-						$"."json[\"row\"][\"$"."sys_primary_field\"]	=$"."class_id;
-					
-					#$"."this->__PRINT_R($"."json);
-					$"."this->$campo"."_obj->__SAVE($"."json);
-				}
-				
-				$"."view   												=$"."this->__TEMPLATE(\"sitio_web/html/" . $valor["class_template"]. "\");									
-				
-				$"."this->$campo"."_obj->words[\"many2one_form\"]		=$"."this->$campo"."_obj->__VIEW_CREATE($"."this->$campo"."_obj->sys_module . \"html/create\");	
-				$"."this->$campo"."_obj->words							=$"."this->$campo"."_obj->__INPUT($"."this->$campo"."_obj->words,$"."this->$campo"."_obj->sys_fields);    
-												
-				$"."this->$campo"."_obj->words[\"many2one_report_id\"]	=$"."campo;
-								
-				if(!isset($"."words[\"html_head_js\"]))								
-					$"."words[\"html_head_js\"] 						= \"\";
-
-				if(isset($"."words[\"html_head_js\"]) AND isset($"."this->$campo"."_obj->words[\"html_head_js\"]))
-					$"."words[\"html_head_js\"] 						.= $"."this->$campo"."_obj->words[\"html_head_js\"];
-								
-				$"."option_report										=array();				
-				
-				$"."option_report[\"where\"]							=array(
-					\"{$valor["class_field_m"]}='$class_one_id'\"
-				);
-				
-				$"."option_report[\"template_title\"]	                = $"."this->$campo"."_obj->sys_module . \"html/report_title\";
-				$"."option_report[\"template_body\"]	                = $"."this->$campo"."_obj->sys_module . \"html/report_body\";
-				$"."option_report[\"template_create\"]	                = $"."this->$campo"."_obj->sys_module . \"html/create\";
-				$"."option_report[\"template_option\"]	                = $"."option;
-				
-				$"."option_report[\"name\"]	                			= '$campo';
-				
-				
-				$"."report_procedure									=$"."this->$campo"."_obj->__VIEW_REPORT($"."option_report	);
-
-				$"."this->$campo"."_obj->words[\"many2one_report\"]		=$"."report_procedure[$"."index];				
-				$"."words[\"$campo\"]  									=$"."this->__REPLACE($"."view,$"."this->$campo"."_obj->words);									
-			";				
-			
-			eval($eval);	
-			
 			return $words;
 		}
-    	##############################################################################    
+
 		public function __REPORT_MANY2ONE_JS($data)
 		{
 			$js="";	
@@ -1675,7 +1587,6 @@
 					";
 				}
 			}
-			
 			
 			$js="
 				var object=\"". $this->sys_name ."\";
@@ -1705,8 +1616,33 @@
 					$this->sys_fields[$field]["attr"]=array("readonly"=>"readonly");			    
 			}
 		}
+		public function __SYS_HISTORY()
+		{  
+	  		if(@$this->sys_primary_id!="")	
+	  		{
+	  			$option						=array();	
+	  			$option["name"]				="historico";
+	  			
+	  			$this->sys_historico		=new historico();
+	  			$option						=array();	
+	  			$option["template_body"]	=$this->sys_historico->sys_var["module_path"] . "html/report_historico_body";
+	  			$option["order"]			="id DESC";
+	  			#$option["echo"]			="SYS_HISTORY";
+	  			$option["where"]			=array();	
+	  			$option["where"][]			="clave=$this->sys_primary_id";
+	  			$option["where"][]			="objeto='$this->sys_object'";
+	  			$option["where"][]			="tabla='$this->sys_table'";				
+	  			
+	  			$reporte					=$this->sys_historico->__VIEW_REPORT($option);
+	  			
+	  			$this->words["sys_historico"]="
+	  										${reporte["html"]}	
+	  			";
+	  		}
+	
+		}    			
     	##############################################################################    
-		
+    	##############################################################################    
 		public function __VIEW_OPTION($data)
 		{
 			$view="";
@@ -1720,46 +1656,56 @@
 		}    	
 
     	##############################################################################    
-		public function __VIEW_CREATE($template)
+		public function __VIEW_CREATE($template=null)
 		{
+			if(is_null($template))	$template=$this->sys_var["module_path"]."html/create";
+			
+			$this->__SYS_HISTORY();
 			$view   =$this->__TEMPLATE("$template");
 			$view	=$this->__VIEW_INPUTSECTION($view);
 			return $view;
 		}    	
     	##############################################################################    
-		public function __VIEW_WRITE($template)
+		public function __VIEW_WRITE($template=null)
 		{
+			if(is_null($template))	$template=$this->sys_var["module_path"]."html/write";
+			$this->__SYS_HISTORY();
 			$view   =$this->__TEMPLATE("$template");
 			$view	=$this->__VIEW_INPUTSECTION($view);
 			
 			return $view;
 		}    	
-		public function __VIEW_INPUTSECTION($view)
+    	##############################################################################    
+		public function __VIEW_SHOW($template=null)
+		{
+			if(is_null($template))	$template=$this->sys_var["module_path"]."html/show";
+			$this->__SYS_HISTORY();
+			$view   =$this->__TEMPLATE("$template");
+			$view	=$this->__VIEW_INPUTSECTION($view);
+			return $view;
+		} 		
+		##############################################################################    
+		public function __VIEW_INPUTSECTION($view, $option=array())
 		{								
-			$sys_section	=@$this->request["sys_section_".$this->sys_name];
+			$sys_section	=@$this->sys_private["section"];
 			$sys_action		="";
-			$sys_id			=@$this->request["sys_id_".$this->sys_name];
+			$sys_id			=@$this->sys_private["id"];
 		
 			$view2="";
-			if(!in_array(@$this->request["sys_action"],$this->sys_print))
-			{	
+			if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))	
+			{
 				$view2="
 					<input id=\"sys_section_{$this->sys_name}\" system=\"yes\"  name=\"sys_section_{$this->sys_name}\" value=\"{$sys_section}\" type=\"hidden\">
 					<input id=\"sys_action_{$this->sys_name}\" system=\"yes\" name=\"sys_action_{$this->sys_name}\" value=\"{$sys_action}\" type=\"hidden\">
 					<input id=\"sys_id_{$this->sys_name}\" system=\"yes\" name=\"sys_id_{$this->sys_name}\" value=\"{$sys_id}\" type=\"hidden\">
-				";		
+				";
 				if(!isset($option["input"]))	$option["input"]="true";
-				
 			}
 			$view.=$view2;
 			
 			if(isset($this->sys_memory) AND $this->sys_memory!="")
-			{	
-				
-				$this->words["many2one_button"]="
-					<font id=\"{$this->sys_name}\">ACEPTAR</font>				
-					<font id=\"{$this->sys_name}\">CANCELAR</font>	<br>			<br>
-					<script>
+			{				
+				$js="
 						$(\"font#{$this->sys_name}\")
 							.button()
 							.click(function(){						
@@ -1768,62 +1714,57 @@
 									\"class_one\":\"{$this->sys_object}\",
 								}
 								many2one_post(options);
-							});						
-					</script>					
-				";		
-		
+						});										
+				";
+				
+				$this->words["many2one_button"]="
+					<font id=\"{$this->sys_name}\">ACEPTAR</font>				
+					<font id=\"{$this->sys_name}\">CANCELAR</font>	<br>			<br>
+				" . $this->__JS_SET($js);		
 			}			
 			return $view;
 		}    	
-    	##############################################################################    
-		public function __VIEW_CALENDAR($template,$data,$option=NULL)
-		{
-		    if(is_null($option))	$option=array();
-		    if(!array_key_exists("name",$option))   $option["name"]=$this->sys_name;
-	    
-		    
-		    $return=$this->__VIEW_KANBAN2($template,$data,$option);
-		    $return="
-                <div id=\"base_{$option["name"]}\" style=\"position:relative; height:100%; width:100%;\">
-                    <div id=\"div_{$option["name"]}\" style=\"height:100px; overflow:hidden; width:100%; \">	
-                        $return
-                    </div>
-                </div>
-				<script>
-					var alto_{$option["name"]}	    =$(\"#base_{$option["name"]}\").height() -20;
-					$(\"div#div_{$option["name"]}\").attr({\"style\":\"height:\"+alto_{$option["name"]}+\"px; overflow:auto; width:100%;\"});													
-				</script>                
-            ";
-		    
-		    return $return;
-        }
-    	##############################################################################    
+
+    	##############################################################################
+    	/*    
 		public function __VIEW_KANBAN($template,$data,$option=NULL)
 		{
 		    if(is_null($option))	$option=array();
 		    if(!array_key_exists("name",$option))   $option["name"]=$this->sys_name;
-	    
-		    
+	    		    
 		    $return=$this->__VIEW_KANBAN2($template,$data,$option);
-		    $return="
+		    		    
+        	$option_head=array(
+        		"name"				=>$option["name"],
+        		"button_search"		=>$this->button_search($option["name"]),
+        		"button_create"		=>$this->button_create($option["name"]),
+        		"inicio"			=>"1",
+        		"fin"				=>count($data),
+        		"total"				=>count($data),
+        		
+        	);
+        	
+        	$view_head=$this->__VIEW_HEAD($option_head);		    
+		    
+		    $return="		    
                 <div id=\"base_{$option["name"]}\" style=\"position:relative; height:100%; width:100%;\">
                     <div id=\"div_{$option["name"]}\" style=\"height:100px; overflow:hidden; width:100%; \">	
+                    	$view_head
                         $return
                     </div>
                 </div>
-				
 				<script>
 					var alto_{$option["name"]}	    =$(\"#base_{$option["name"]}\").height() -20;
 					$(\"div#div_{$option["name"]}\").attr({\"style\":\"height:\"+alto_{$option["name"]}+\"px; overflow:auto; width:100%;\"});													
 				</script>                
-            ";
-		    
+            ";		    
 		    return $return;
         }
+        */
+
+        ##############################################################################    
 		public function __VIEW_KANBAN2($template,$data,$option=NULL)
 		{			
-			#$this->__PRINT_R(substr($template, -4,4));
-			#$this->__PRINT_R($template);
 			$view="";
 			$class="even";
 
@@ -1832,85 +1773,74 @@
 			
 			if(is_array($data))
 			{
-			    foreach($data as $row_id => $row)			
+			    foreach($data as $row_id=>$row)			
 			    {
-					foreach(@$this->sys_fields as $field=>$fieldvalue)			
-					{	
-						
-						if(@$fieldvalue["type"]!="autocomplete" AND @$fieldvalue["relation"]=="one2many")
+					foreach($row as $field=>$fieldvalue)			
+					{							
+							
+						if(isset($this->sys_private["field"]) AND $this->sys_private["field"]==$field)
 						{
-							if(isset($fieldvalue["class_field_o"]) AND isset($fieldvalue["class_field_l"]))
-							{	
-								$class_field_o			=$fieldvalue["class_field_o"];
-								$class_field_m			=$fieldvalue["class_field_m"];
-								$class_field_l			=$fieldvalue["class_field_l"];
-								
-								$row_class_field_m   	=$row["$class_field_m"];
-								
-								$eval="
-									$"."obj_$field   				=new {$fieldvalue["class_name"]}();
-									
-									$"."option_$field=array(
-										\"where\"=>array(
-											\"$class_field_o='{$row_class_field_m}'\"
-										)
-									);									
-									$"."data_$field					=$"."obj_$field"."->__BROWSE($"."option_$field);								
-									$"."row[\"$class_field_l\"]		=$"."data_$field"."[\"data\"][0][\"$class_field_l\"];								
-								";
-								eval($eval);
-							}
-						}
-					}
-					#$this->__PRINT_R($row);
-					
-					if(is_array($row))
-					{	
-						foreach($row as $field=>$fieldvalue)			
-						{		
-							#$this->sys_fields[$field]["value"]=$fieldvalue;
-									
-							if(@$this->sys_fields[$field]["type"]=="autocomplete")
+							$this->__FIND_FIELDS($fieldvalue);												
+						}									
+						if(@$this->sys_fields[$field]["type"]=="select")
+						{										
+							$row[$field]=@$this->sys_fields[$field]["source"]["$fieldvalue"];
+						}						
+						if(@$this->sys_fields[$field]["type"]=="autocomplete")
+						{												
+					    	if(isset($this->sys_fields[$field]["class_field_l"]))
+					    	{					    		
+					    		if(isset($this->sys_fields[$field]["values"]) AND count($this->sys_fields[$field]["values"])>0)
+					    		{
+					    			$row[$field]=$this->sys_fields[$field]["values"][0][$this->sys_fields[$field]["class_field_l"]];
+								}
+								else $row[$field]="";
+							}				
+							else $row[$field]="";
+			
+							if(isset($this->sys_fields[$field]["values"][0]))
+								$row[$field]	=$this->sys_fields[$field]["values"][0][$this->sys_fields[$field]["class_field_l"]];
+							else $row[$field]="";							
+							
+							if($row[$field]=="" AND isset($row["auto_".$field]))
 							{
-								$this->sys_fields[$field]["value"]=$fieldvalue;
-								
-								$json				=$this->__JSON_AUTOCOMPLETE($this->sys_fields[$field]);							
-								if(@$json[0]->label!="Sin resultados para ")		$row["auto_$field"]	=@$json[0]->label;
-								else												$row["auto_$field"]	="";
-							}	
-						}			    
-					}	
+								$aux					=$row[$field];
+								$row[$field]			=$row["auto_".$field];
+								$row["auto_".$field]	=$aux;
+							}
+						}	
+					}			    
                     if($class=="odd")   
                     {
                     	$class="even";
-                    	$style="background-color:#D5D5D5;";							
+                    	$style="background-color:#D5D5D5; height:30px;";	
                     }	
                     else                
                     {
                     	$class="odd";
-                    	$style="background-color:#E5E5E5;";							
+                    	$style="background-color:#E5E5E5; heigth:30px;";	
                     }	
                     
                     $actions				=array();
                     $colors					=array();
-                    if(substr(@$this->request["sys_action"],0,5)!="print")	              
-	                    $actions["class"]		=$class;
+                    if(substr(@$this->sys_private["action"],0,5)!="print")	              
+	                    $actions["sys_class"]		=$class;
 	                else    
 	                    $actions["style_tr"]	=$style;
-                    
+                                        				
                     if(isset($this->sys_memory) AND $this->sys_memory!="")
 					{
 						$show	="<font class_field=\"{$this->sys_memory}\" class_field_id=\"$row_id\" id=\"{id}\" class_one=\"{$this->class_one}\" data=\"&sys_section_{$this->sys_name}=show&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\" class=\"sys_report_memory ui-icon ui-icon-contact\"></font>";	
 						$write	="<font class_field=\"{$this->sys_memory}\" class_field_id=\"$row_id\" id=\"{id}\" class_one=\"{$this->class_one}\" data=\"&sys_section_{$this->sys_name}=write&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\" class=\"sys_report_memory ui-icon ui-icon-pencil\"></font>";
 						$delete	="<font class_field=\"{$this->sys_memory}\" class_field_id=\"$row_id\" id=\"{id}\" class_one=\"{$this->class_one}\" data=\"&sys_section_{$this->sys_name}=delete&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\" class=\"sys_report_memory ui-icon ui-icon-trash\"></font>";
-						$check	="";
+						$check	="<input class=\"view_report\" class_field=\"{$this->sys_memory}\" class_field_id=\"$row_id\" id=\"{id}\" class_one=\"{$this->class_one}\" type=\"checkbox\" id=\"{$option["name"]}\" name=\"{$option["name"]}[{id}]\" value=\"{id}\">";
 					}				
 					else	
 					{			
 						$show	="<font data=\"&sys_section_{$this->sys_name}=show&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\"  class=\"sys_report ui-icon ui-icon-contact\"></font>";
 						$write	="<font data=\"&sys_section_{$this->sys_name}=write&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\"  class=\"sys_report ui-icon ui-icon-pencil\"></font>";
 						$delete	="<font data=\"&sys_section_{$this->sys_name}=delete&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\"  class=\"sys_report ui-icon ui-icon-trash\"></font>";
-						$check	="<input type=\"checkbox\" id=\"{$option["name"]}\" name=\"{$option["name"]}[]\" height=\"20\" value=\"{id}\">";
+						$check	="<input class=\"view_report\" type=\"checkbox\" id=\"{$option["name"]}\" name=\"{$option["name"]}[{id}]\" value=\"{id}\">";
 					}	
                     
                     if(!is_null($option))
@@ -1931,9 +1861,7 @@
 		                	if(!isset($option["actions"]["write"]))		$option["actions"]["write"]	="1==1";
 		                	if(!isset($option["actions"]["delete"]))	$option["actions"]["delete"]="1==1";
 		                	if(!isset($option["actions"]["check"]))		$option["actions"]["check"]	="1==1";
-                    	}           
-
-						
+                    	}           	
 
 	                	if($option["actions"]["show"]=="true")			$option["actions"]["show"]	="1==1";
 	                	elseif($option["actions"]["show"]=="false")		$option["actions"]["show"]	="1==0";
@@ -1943,48 +1871,32 @@
 	                	elseif($option["actions"]["delete"]=="false")	$option["actions"]["delete"]="1==0";
 	                	if($option["actions"]["check"]=="true")			$option["actions"]["check"]	="1==1";
 	                	elseif($option["actions"]["check"]=="false")	$option["actions"]["check"]	="1==0";
-                    	
-                    	
                     	         	
                     	$eval="
                     		if({$option["actions"]["show"]}) 						$"."show='$show';
                     		else													$"."show='';
-                    		
                     		if({$option["actions"]["write"]}) 						$"."write='$write';
                     		else													$"."write='';
-                    		
                     		if({$option["actions"]["delete"]}) 						$"."delete='$delete';
                     		else													$"."delete='';
-                    		                    		
                     		if({$option["actions"]["check"]}) 						$"."check='$check';
                     		else													$"."check='';                    		
                     	";
                     	$eval_color="";
-                    	if(!isset($option["color"]))				$option["color"]=array();
-                    	
+                    	if(!isset($option["color"]))				$option["color"]=array();                    	
                     	if(!isset($option["color"]["black"]))		$option["color"]["black"]="1==1";
-                    	
+                                        	
                     	foreach($option["color"] as $color => $filter)
                     	{							
-							
-							
-							#$this->__PRINT_R("echo ". $option["color"]["$color"] .";");
-							#if(substr($row["trabajador_puesto_id"],1,6) != substr($row["sustituto_puesto_id"],1,6))
-							#$this->__PRINT_R(substr($row["trabajador_puesto_id"],0,6) ."!=". substr($row["sustituto_puesto_id"],0,6));
-							
                     		if($eval_color=="")	$eval_color="if({$option["color"]["$color"]}) 			$"."colors[\"style_td\"]='color:$color;';";
                     		else 				$eval_color.="else if({$option["color"]["$color"]}) 	$"."colors[\"style_td\"]='color:$color;';";
                     	}
                     	
                     	$eval.=$eval_color;
-                    	#$this->__PRINT_R($eval); #$eval; ---------------------------					
                     	if(@eval($eval)===false)	
-				    		echo ""; #$eval; ---------------------------					
-				    	
-				    	
-
+				    		echo "";#$eval; ---------------------------";					
                     }
-                    if(substr(@$this->request["sys_action"],0,5)!="print")
+                    if(substr(@$this->sys_private["action"],0,5)!="print")
                     {
 						$actions["actions"]	="
 							<table class=\"cBotones cBodyReport\">
@@ -2019,48 +1931,20 @@
 						$actions["actions"]		="";
 					}                   
                     
-					#if(is_array($row))			
-						$row = array_merge($actions, $row);					
-                    #if(is_array($row))			
-						$row = array_merge($colors, $row);
+                    $row = array_merge($actions, $row);
+                    $row = array_merge($colors, $row);
                     
-				    if(@$html_template=="" OR !isset($html_template))  
+				    if(@$html_template=="")  
 				    {
 				    	$html_template  =$this->__TEMPLATE("$template");
-				    	$html_template	=str_replace("<td>", "<td style=\"{style_td}\" >", $html_template);				    	
+				    	
+				    	if(@$this->sys_private["action"]=="print_pdf")				    	
+				    		$html_template	=str_replace("<td>", "<td style=\"{style_tr}\" >", $html_template);				    	
+				    	else	
+				    		$html_template	=str_replace("<td>", "<td style=\"{style_td}\" >", $html_template);				    	
 				    }	
-					if(isset($option["template_separator"]))
-					{
-						$view_title_data	=$option["view_title_data"];	
-						$view_title			=$view_title_data["view_title"];
-						$view_title_pdf		=$view_title_data["view_title_pdf"];						
-							
-						if(!isset($template_separator))		$template_separator="";
-												
-						$separador=$option["template_separator"];						
-						$row["template_separator"]="<b>{$row[$separador]}</b>";
-						if($template_separator!=$row[$separador])
-						{	
-							#$this->__PRINT_R(substr($template, -4,4));
-							if(substr($template, -4,4)=="_pdf")
-							{
-								$view.=$view_title_pdf;
-							}
-							else						
-							{
-								$view.=$view_title;	
-							}					
-							
-						}
-						$template_separator=$row[$separador];												
-					}	
-
-					
-					
 				    $view   .=$html_template;
-					
-					
-				    $view	=$this->__REPLACE($view,$row);				
+				    $view	=$this->__REPLACE($view,$row);			
 			    }		
 
 	        	if(isset($this->sys_view_l18n) AND is_array($this->sys_view_l18n))	
@@ -2074,75 +1958,209 @@
 					$view	=$this->__REPLACE($view,$actions_lang);
 	        	}                                        			    
 			}    
-			$view =$this->__VIEW_INPUTSECTION($view);
+			$view =$this->__VIEW_INPUTSECTION($view, $option);
 			return $view;
 		}    	
-    	##############################################################################    
-		public function __VIEW_SHOW($template)
-		{
-			$this->__INPUT_TYPE("font");
-			$view   =$this->__TEMPLATE("$template");
-			$view	=$this->__VIEW_INPUTSECTION($view);
-			return $view;
-		} 		
-		public function __VIEW_TEMPLATE_TITLE($option)
-		{			
-			$return=array("view_title"=>"","view_title_pdf"=>"");	
-			if(isset($option["template_title"]))    
-			{
-				$view_title     =$this->__TEMPLATE($option["template_title"]);					//  HTML DEL REPORTE
-				$view_title		=str_replace("<td>", "<td class=\"title\">", $view_title);      // AGREGA la clase titulo
-				
-				$view_title_pdf =$this->__TEMPLATE($option["template_title"]."_pdf");					//  HTML DEL REPORTE
-				$view_title_pdf	=str_replace("<td>", "<td class=\"title\">", $view_title_pdf);      // AGREGA la clase titulo
-								
-				if(isset($option["title"]))
-				{
-					$return["view_title"]	    =$this->__REPLACE($view_title,$option["title"]);
-				}    		    	    
-				if(isset($option["title_pdf"]))
-				{
-					$return["view_title_pdf"]   =$this->__REPLACE($view_title_pdf,$option["title_pdf"]);
-				}    		    	    				
-			} 
-			return $return;
-		} 			
-		public function __VIEW_TEMPLATE_ASUNTO($option)
-		{			
-			$return="";	
-			if(isset($option["template_asunto_pdf"]))    
-			{
-				$return =$this->__TEMPLATE($option["template_asunto_pdf"]);					//  HTML DEL REPORTE								
-			} 
-			return $return;
-		} 			
-		
-		/*
-		emma farias nuño
-		*/
     	##############################################################################        
+    	public function __FOLIOS($option)
+    	{								
+			if(!isset($option["variable"]))		$option["variable"]		="";
+			if(!isset($option["subvariable"]))	$option["subvariable"]	="";
+			if(!isset($option["tipo"]))			$option["tipo"]			="";
+			if(!isset($option["subtipo"]))		$option["subtipo"]		="";
+			if(!isset($option["objeto"]))		$option["objeto"]		="";
+			if(!isset($option["company_id"]))	$option["company_id"]	=$_SESSION["company"]["id"];
+			
+			
+			
+			
+			$sql    	="
+				SELECT * FROM configuracion 
+				WHERE 1=1 
+					AND company_id='{$option["company_id"]}' 
+					AND variable='{$option["variable"]}' 
+					AND subvariable='{$option["subvariable"]}' 
+					AND tipo='{$option["tipo"]}' 
+					AND subtipo='{$option["subtipo"]}' 
+					AND objeto='{$option["objeto"]}' 
+			";
+			$datas   	= $this->__EXECUTE("$sql");
+			
+			if(count($datas)>0)
+				$sql    	="
+					UPDATE configuracion SET valor=LPAD(valor+1,6,'0')						
+					WHERE 1=1 
+						AND company_id='{$option["company_id"]}' 
+						AND variable='{$option["variable"]}' 
+						AND subvariable='{$option["subvariable"]}' 
+						AND tipo='{$option["tipo"]}' 
+						AND subtipo='{$option["subtipo"]}' 
+						AND objeto='{$option["objeto"]}' 
+				";
+			else	
+				$sql    	="
+					INSERT INTO configuracion SET 
+						valor=LPAD(1,6,'0'),					 
+						company_id='{$option["company_id"]}',
+						variable='{$option["variable"]}', 
+						subvariable='{$option["subvariable"]}' ,
+						tipo='{$option["tipo"]}' ,
+						subtipo='{$option["subtipo"]}' ,
+						objeto='{$option["objeto"]}' 
+				";
+				
+			$datas   	= $this->__EXECUTE("$sql");
+
+			$sql    	="
+				SELECT * FROM configuracion 
+				WHERE 1=1 
+					AND company_id='{$option["company_id"]}' 
+					AND variable='{$option["variable"]}' 
+					AND subvariable='{$option["subvariable"]}' 
+					AND tipo='{$option["tipo"]}' 
+					AND subtipo='{$option["subtipo"]}' 
+					AND objeto='{$option["objeto"]}' 
+			";
+			$datas   	= $this->__EXECUTE("$sql");
+			
+			return $datas[0]["valor"];		    	
+    	}
+		###################################    	
+		public function __VIEW_HEAD($option)
+		{
+			$name			=$option["name"];
+			$button_search	=$option["button_search"];;
+			$button_create	=$option["button_create"];;
+			$inicio			=$option["inicio"];
+			$fin			=$option["fin"];
+			$total			=$option["total"];
+			
+        	if(@$this->sys_private["action"]=="print")	$view_head="";                	                                	
+        	elseif(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))	
+        	{	
+				if(!isset($this->request["sys_filter_$name"]))	$this->request["sys_filter_$name"]="";
+		
+        		$view_head="
+					<div id=\"report_$name\" style=\"height:35px; width:100%;  padding:0px; margin:0px;\" class=\"ui-widget-header\">
+						<table width=\"100%\" height=\"100%\" style=\"padding:0px; margin:0px;\">
+							<tr>
+								<td width=\"10\"></td>
+				";
+				if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))	
+				{
+					$view_head.="						
+								$button_search
+								$button_create
+								<td width=\"1\">
+									<table>
+										<tr id=\"filter_fields_$name\">
+										</tr>
+									</table>
+								</td>
+								<td>											
+									<input style=\"paddin:8px; height:29px;\" name=\"sys_filter_$name\" system=\"yes\" id=\"sys_filter_$name\" class=\"formulario $name\" type=\"text\" value=\"{$this->request["sys_filter_$name"]}\" placeholder=\"Filtrar reporte\">													
+								</td>
+								<td width=\"30\">
+									<font id=\"sys_search_$name\" class=\"sys_seach ui-button\">Filtrar</font>
+								</td>
+					";
+				}
+				$view_head.="																
+								<td align=\"right\">
+									<b> $inicio - $fin / $total</b>
+								</td>								
+								<td width=\"50\" style=\"padding-left:8px; padding-right:8px;\">
+				";
+				if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))	
+				{
+					if(@!$this->sys_private["row"]) $this->sys_private["row"]=50; 	
+					$array=array(1,20,50,100,200,500);
+					$option_select="";
+					foreach($array as $index)
+					{
+						$selected		="";	
+						if($index==$this->sys_private["row"]) 	$selected="selected";
+						$option_select.="<option value=\"$index\" $selected>$index</option>";
+					}												
+					$view_head.="
+									<select type=\"report\" name=\"sys_rows_$name\" id=\"sys_rows_$name\">
+										$option_select		
+									</select>
+					";
+				}					
+				$view_head.="	
+								</td>
+								<td  width=\"20\" align=\"center\" >
+									<font action=\"-\" name=\"$name\" class=\"page ui-button\">Anterior</font>
+								</td>										
+								<td width=\"20\" align=\"center\" >
+									<font action=\"+\" name=\"$name\" class=\"page ui-button\">Siguiente</font>
+								</td>
+							</tr>
+						</table>								
+					</div>                
+        		";
+        	}
+			return $view_head;
+		}		
+		###################################
+		public function button_create($name)
+		{
+			return	"
+				<td width=\"15\" align=\"center\">
+					<font id=\"create_$name\" active=\"$name\" class=\"ui-button show_form\">Formulario</font>
+				</td>	
+			";		    	    
+		}
+		###################################
+		public function button_search($name)
+		{
+			return	"
+				<td width=\"25\" align=\"center\">
+					<font id=\"search_$name\" active=\"$name\" class=\"show_form ui-icon ui-icon-search\"></font>
+				</td>	
+			";		    	    
+		}
+    	##############################################################################    
+		public function __VIEW_KANBAN($option)
+		{
+			$option["type_view"]="kanban";
+			return $this->__SYS_REPORT($option);
+        }				
+		###################################
 		public function __VIEW_REPORT($option)
 		{
-			
+			$option["type_view"]="report";
+			return $this->__SYS_REPORT($option);
+		}
+		###################################
+		public function __SYS_REPORT($option)
+		{
+			if($option["type_view"]=="report")
+			{
+				if(!isset($option["template_title"]))	$option["template_title"]	=$this->sys_var["module_path"]."html/report_title";
+				if(!isset($option["template_body"]))	$option["template_body"]	=$this->sys_var["module_path"]."html/report_body";			
+			}
+			else
+			{
+				if(!isset($option["template_body"]))	$option["template_body"]	=$this->sys_var["module_path"]."html/kanban";						
+			}
+
 			if(isset($option["template_option"]))	$template_option		=$option["template_option"];
 			
-			#$this->__PRINT_R($option);
-			$return=array();
-		    $view_title="";
+			$return						=array();
+		    $view_title					="";
 			if(isset($this->sys_memory) AND isset($template_option["class_field"]))
 			{	
-				$campo									=$template_option["class_field"];
-				#unset($_SESSION["SAVE"][$this->class_one]);
-				#$this->__PRINT_R($_SESSION["SAVE"][$this->class_one]);
+				$campo					=$template_option["class_field"];
 				
-				if(isset($_SESSION["SAVE"][@$this->class_one]["$campo"]) AND count($_SESSION["SAVE"][@$this->class_one]["$campo"])>0)
+				if(isset($this->class_one) AND isset($_SESSION["SAVE"][$this->class_one]["$campo"]) AND count($_SESSION["SAVE"][$this->class_one]["$campo"])>0)
 				{						
 					$campo				=$template_option["class_field"];
-					#$this->__PRINT_R(    $_SESSION["SAVE"][$this->class_one]["$campo"]);	
-					$option["data"]		=@$_SESSION["SAVE"][@$this->class_one]["$campo"]["data"];
+					$option["data"]		=@$_SESSION["SAVE"][$this->class_one]["$campo"]["data"];
 					$option["total"]	=count(@$_SESSION["SAVE"][$this->class_one]["$campo"]["data"]);				
-					$option["inicio"]	=@$_SESSION["SAVE"][@$this->class_one]["$campo"]["inicio"];		
-					$option["title"]	=@$_SESSION["SAVE"][@$this->class_one]["$campo"]["title"];				
+					$option["inicio"]	=@$_SESSION["SAVE"][$this->class_one]["$campo"]["inicio"];		
+					$option["title"]	=@$_SESSION["SAVE"][$this->class_one]["$campo"]["title"];				
 				}
 			}
 		    if(is_array($option))
@@ -2155,102 +2173,79 @@
 				if(isset($option["fin"]) AND $option["fin"]>0)			$fin				=$option["fin"];
 				else													$fin				=0;
 		    	
-		        $sys_order="";
-		        $sys_torder="";
+		        $sys_order				="";
+		        $sys_torder				="";
 		    	if(!isset($option["name"]))    					$name		=@$this->sys_name;
 		    	else											$name		=$option["name"];
 				
-				$this->sys_name=$name;		
+				$this->sys_name			=$name;		
 		    	
-		    	if(isset($this->request["sys_page_$name"]))		$sys_page	=$this->request["sys_page_$name"];
+		    	if(isset($this->sys_private["page"]))			$sys_page	=$this->sys_private["page"];
 		    	else											$sys_page	=1;
-
-		    	if(isset($this->request["sys_order_$name"]))	$sys_order	=$this->request["sys_order_$name"];
-		    	
-		    	if(isset($this->request["sys_torder_$name"]))	$sys_torder	=$this->request["sys_torder_$name"];
-		    	
-		    	if(isset($this->request["sys_row_$name"]))	    $sys_row	=$this->request["sys_row_$name"];
+		    	if(isset($this->sys_private["order"]))			$sys_order	=$this->sys_private["order"];		    	
+		    	if(isset($this->sys_private["torder"]))			$sys_torder	=$this->sys_private["torder"];		    	
+		    	if(isset($this->sys_private["row"]))	    	$sys_row	=$this->sys_private["row"];
 		    	else                                            $sys_row	=50;
 				
 				if($sys_row=="")								$sys_row	=50;
 
 		    	$option["sys_page_$name"]           			=$sys_page;		        		        
 				
-		    	if(isset($option["data"]))          			$return["data"] =$option["data"];	
-		    	else
-		    	{			    		
+		    	if(isset($option["data"]) AND !in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))          			
+		    		$return["data"] =$option["data"];	
+		    	else  
+		    	{			    				    	
 		    	    $option["name"]                 			=$name;
 		    	   
-		    		$browse 									=$this->__BROWSE($option);		 
-
-					if(isset($this->sys_memory) AND isset($template_option["class_field"]))
-					{												
-						
-						$_SESSION["SAVE"][@$this->class_one]["$campo"]=$browse;;												
-					}
-					
-					if(count($browse["data"])<=0)
-					{							
-						$browse["data"]=array();				
-					}								
+		    		$browse 									=$this->__BROWSE($option);		
+		    		
+					if(isset($this->class_one) AND isset($this->sys_memory) AND isset($template_option["class_field"]) AND $_SESSION["var"]["modulo"]==$this->class_one)
+						$_SESSION["SAVE"][$this->class_one]["$campo"]=$browse;;												
+					if(count($browse["data"])<=0)				$browse["data"]		=array();					
 					
 					##################################
 					
-		    		$return["data"]					= $browse["data"];
-		    		$option["title"]				= @$browse["title"];
-					$option["title_pdf"]			= @$browse["title_pdf"];
-		    		
+		    		$return["data"]								= $browse["data"];		    				    		
+		    		$option["title"]							= @$this->sys_title;
+																					
 		    		if(isset($browse["total"]))		
 		    		{
-						$return["total"]				= $browse["total"];	
+						$return["total"]						= $browse["total"];	
+						$inicio				 					= @$browse["inicio"] + 1;
+						$aux_fin                    		    = @$inicio + @$sys_row -1;
 						
-						$inicio				            = @$browse["inicio"] + 1;
-						$aux_fin                        = @$inicio + @$sys_row -1;
-						
-						if($aux_fin<$return["total"])   $fin    =$aux_fin;
-						else                            $fin    =$return["total"];
+						if($aux_fin<$return["total"])   		$fin    =$aux_fin;
+						else                            		$fin    =$return["total"];
 					}			    		
-		    	}	
-
-				#######################								
-				$view_title_data						=$this->__VIEW_TEMPLATE_TITLE($option);			
-				#$this->words["sys_asunto"]				=$this->__VIEW_TEMPLATE_ASUNTO($option);
-				$this->words["sys_asunto"]				=$this->__TEMPLATE(@$option["template_asunto_pdf"]);
-				$this->words["sys_pie"]					=$this->__TEMPLATE(@$option["template_pie_pdf"]);
-				
-				
-
-				#$this->__PRINT_R($view_title_data);
-				$view_title			=$view_title_data["view_title"];
-				$view_title_pdf		=$view_title_data["view_title_pdf"];
+		    	}
+		    	$total											=$return["total"];
+		    	if(!isset($browse))			$browse				=array("");	
+		    	if(!isset($browse["js"]))	$browse["js"]		="";	
+		    			    	
+				#######################											
+				$view_title		=$this->__VIEW_TEMPLATE_TITLE($option);		
 								
-		    	$view_create	="";
-		    	$button_create	="";
+		    	$view_create			="";
+		    	$button_create			="";
 				###########################
 		    	if(isset($option["template_create"]) AND $option["template_create"] !="")
 		    	{
-					$this->words               	=	$this->__INPUT($this->words,$this->sys_fields);
+					$this->words		=	$this->__INPUT($this->words,$this->sys_fields);
 		    
 					$eval="
-						if(isset($"."this->sys_id_{$this->sys_name}))
-							$"."clave_id	=$"."this->sys_id_{$this->sys_name};
-					";
-					
+						if(isset($"."this->sys_private[\"id\"]))
+							$"."clave_id	=$"."this->sys_private[\"id\"];
+					";					
 					eval($eval);
 			
 		    		$view_create		=	$this->__REPLACE($this->__VIEW_CREATE($option["template_create"]),$this->words);
 					$view_create="
             			<div id=\"create_$name\" title=\"Crear Resgistro\" class=\"report_search d_none\" style=\"width:100%; background-color:#373737;\">
 	            			$view_create
-	            			<script>
-	            			</script>
             			</div>
-					";		    	    
-					$button_create="
-						<td width=\"15\" align=\"center\">
-							<font id=\"create_$name\" active=\"$name\" class=\"ui-button show_form\">Formulario</font>
-						</td>	
-					";					
+					";		    	
+					
+					$button_create=$this->button_create($name);										
 		    	}    
 
 		    	$view_search="";
@@ -2261,359 +2256,257 @@
 		    		$this->words["module_body"]     =$this->__VIEW_CREATE($option["template_search"]);
 		    		$this->words					=$this->__INPUT($this->words,$this->sys_fields); 
 
-
 					$view_search					=$this->words["module_body"];
 		    		$this->words["module_body"]		="";
 		    		
 		    	    $view_search     				=$this->__TEMPLATE($option["template_search"]);		    	    
 		    	    $view_search					=str_replace("<td>", "<td class=\"title\">", $view_search);
-		    	    		    	
-					#__TEMPLATE
-					if(!in_array(@$this->request["sys_action"],$this->sys_print))
-					{	
+		    	    
+		    	    if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))			    	    
+					{
 						$view_search="
-							<div id=\"search_$name\" title=\"Filtrar Resgistro\" class=\"report_search d_none\" style=\"width:100%; background-color:#373737;\">
-								$view_search
-								<script>
-									$(\"font#search_$name\").click(function()
-									{
-										$(\"div#search_$name\").dialog({
-											open: function(event, ui){
+		        			<div id=\"search_$name\" title=\"Filtrar Resgistro\" class=\"report_search d_none\" style=\"width:100%; background-color:#373737; padding:0px; margin:0px;\">
+			        			$view_search
+			        			<script>
+			        				$(\"font#search_$name\").click(function()
+			        				{
+			        					$(\"div#search_$name\").dialog({
+			        						open: function(event, ui){
 												var dialog = $(this).closest('.ui-dialog');
 												if(dialog.length > 0)
 												{
 													$('.ui-autocomplete.ui-front').zIndex(dialog.zIndex()+1);
 												}
 											},
-											width:\"700px\"
-										});
-									});
-								</script>	            			
-							</div>
+			        						width:\"700px\"
+			        					});
+			        				});
+			        			</script>	            			
+		        			</div>
 						";		    	    
-						$button_search="
-							<td width=\"25\" align=\"center\">
-								<font id=\"search_$name\" active=\"$name\" class=\"show_form ui-icon ui-icon-search\"></font>
-							</td>	
-						";		    	    
+						$button_search=$this->button_search($name);
 					}	
 		    	}    
                 $view_body="";
 				##############################
 		    	if(isset($option["template_body"]))
 		    	{    
-		    	    $template       =$option["template_body"];
-		    	    $option_kanban	=array();
+		    	    $template       				=$option["template_body"];
+		    	    $option_kanban					=array();
 		    	    if(isset($option["actions"]))	$option_kanban["actions"]	=$option["actions"];
 		    	    if(isset($option["color"]))		$option_kanban["color"]		=$option["color"];
-					if(isset($option["template_separator"]))		
-					{	
-						$option_kanban["template_separator"]		=$option["template_separator"];
-						$option_kanban["view_title_data"]			=$view_title_data;
-					}	
-					
 		    	    if(isset($option["name"]))		$option_kanban["name"]		=$name;
-
+		    	    if(!isset($option["input"]))	$option_kanban["input"]		="true";
+		    	    if(isset($option["input"]))		$option_kanban["input"]		=$option["input"];
+		    	    
 					if(isset($return["data_0"]))
 					{
-						$view_body		=$this->__VIEW_KANBAN2($template,$return["data_0"],$option_kanban);
-						$view_body_pdf	=$this->__VIEW_KANBAN2($template."_pdf",$return["data_0"],$option_kanban);
+						$view_body					=$this->__VIEW_KANBAN2($template,$return["data_0"],$option_kanban);
 						unset($return["data_0"]);
 					}	
 					else
 					{	
-						$view_body		=$this->__VIEW_KANBAN2($template,$return["data"],$option_kanban);
-						$view_body_pdf	=$this->__VIEW_KANBAN2($template."_pdf",$return["data"],$option_kanban);
+						$view_body					=$this->__VIEW_KANBAN2($template,$return["data"],$option_kanban);
 					}
-					#$this->__PRINT_R($return);
-					if($view_body_pdf=="")	$view_body_pdf=$view_body;
-					
-					if(isset($option["template_separator"])) $view_title_pdf="";	
-					/*
-					$return["pdf"]	="				
-						
-						<table width=\"100%\" border=\"1\" style=\"background-color:#fff; \">								
-							$view_title_pdf
-							$view_body_pdf
-						</table>					
-					";
-					*/
 		    	}    
                 #if(isset($inicio) AND $return["total"]>0)
-                {                	
-                	if(@$this->request["sys_action"]=="print")	$view_head="";                	                
-                	elseif(!in_array(@$this->request["sys_action"],$this->sys_print))
-                	{	
-						if(!isset($this->request["sys_filter_$name"]))	$this->request["sys_filter_$name"]="";
-				
-                		#<div id=\"report_$name\" style=\"height:35px; width:100%; \" class=\"ui-widget-header\">
-						$calendar="";
-						if(isset($option["date"]))
-						{
-							$name_calendar ="sys_filter_{$name}_{$option["date"]}";
-							$name_calendar_filter ="sys_calendar_{$name}_{$option["date"]}";
-							$calendar="
-								<td width=\"100\">									
-									<input id=\"$name_calendar_filter\"  type=\"text\" name=\"$name_calendar_filter\"  system=\"yes\" value=\"\" class=\"formulario {$this->sys_name}\" placeholder=\"Filtrar fecha\">
-									<script>
-										$(\"input#$name_calendar_filter\").datepicker(
-										{
-											dateFormat:\"yy-mm-dd\",
-											onSelect: function(dateText, inst) {
-												
-												if($(\"#$name_calendar\").length>0) 
-												{	
-													$(\"#$name_calendar\").val(dateText);
-												}
-												else											
-												{	
-													var calendar=\"<input id=\\\"$name_calendar\\\"  type=\\\"hidden\\\" name=\\\"$name_calendar\\\"  system=\\\"yes\\\" value=\\\"\" + dateText + \"\\\">\";												
-													$(\"div#report_$name\").append(calendar);
-												}
-												
-												$(\"#sys_action_$name\").val(\"seach\");
-												$(\"#sys_page_$name\").val(1);	
-												$(\"form\").submit();												
-												
-												
-												
-												//*//alert(dateText);
-											},
-										});
-									</script>	
-								</td>									
-							";
-						}					
-						
-						
-						
-						
-						
-                		$view_head="
-							<div id=\"report_$name\" style=\"height:35px; width:100%;\" class=\"ui-widget-header\">
-								<table width=\"100%\" height=\"100%\">
-									<tr>
-										<td width=\"10\"></td>
-										$button_search
-										$button_create
-										<td width=\"1\">
-											<table>
-												<tr id=\"filter_fields_$name\">
-												</tr>
-											</table>
-										</td>
-										<td>											
-											<input style=\"paddin:8px; height:23px;\" name=\"sys_filter_$name\" system=\"yes\" id=\"sys_filter_$name\" class=\"formulario $name\" type=\"text\" value=\"{$this->request["sys_filter_$name"]}\" placeholder=\"Filtrar reporte\">													
-										</td>
-										<td width=\"30\">
-											<font id=\"sys_search_$name\" class=\"sys_seach ui-button\">Filtrar</font>
-										</td>
-										$calendar
-										<!--
-										<td width=\"30\">
-											<select name=\"sys_check_action_$name\" id=\"sys_check_action_$name\">
-												<option value=\"\">Selecciona una opcion</option>
-												<option value=\"delete\">Borrar</option>
-												<option value=\"print\">Imprimir</option>
-											</select>																						
-											<script>
-												$(\"#sys_check_action_$name\" ).selectmenu();
-											</script>																						
-										</td>										
-										-->
-										<td align=\"right\">
-											<b> $inicio - $fin / {$return["total"]}</b>
-										</td>								
-										<td width=\"50\" style=\"padding-left:8px; padding-right:8px;\">
-						";
-						if(@$this->request["sys_action"]!="print_pdf")	
-						{
-							if(@!$this->request["sys_row_$name"]) $this->request["sys_row_$name"]=50; 	
-							$array=array(1,20,50,100,200,500);
-							$option_select="";
-							foreach($array as $index)
-							{
-								$selected		="";	
-								if($index==$this->request["sys_row_$name"]) 	$selected="selected";
-								$option_select.="<option value=\"$index\" $selected>$index</option>";
-							}							
-							
-							$view_head.="
-											<select type=\"report\" name=\"sys_rows_$name\" id=\"sys_rows_$name\">
-												$option_select		
-											</select>
-							";
-						}					
-						#3141005662
-						$view_head.="	
-										</td>
-										<td  width=\"20\" align=\"center\" >
-											<font action=\"-\" name=\"$name\" class=\"page ui-button\">Anterior</font>
-										</td>										
-										<td width=\"20\" align=\"center\" >
-											<font action=\"+\" name=\"$name\" class=\"page ui-button\">Siguiente</font>
-										</td>
-									</tr>
-								</table>		
-								
-							</div>                
-                		";
-                	}
-					#
+                {                     	           	
+                	if(@$this->sys_private["action"]=="print")	$view_head="";
+                	
+                	$option_head=array(
+                		"name"				=>"$name",
+                		"button_search"		=>"$button_search",
+                		"button_create"		=>"$button_create",
+                		"inicio"			=>"$inicio",
+                		"fin"				=>"$fin",
+                		"total"				=>"$total",                		
+                	);                	
+                	$view_head				=$this->__VIEW_HEAD($option_head);
 										
-					if(!isset($option["header"]))	
-						$option["header"]		="true";					
+					if(!isset($option["header"]))		$option["header"]		="true";															
+					if(@$option["header"]!="true")		$view_head				="";
 										
-					if(@$option["header"]!="true")		$view_head="";
-										
-					$return["title"]=$view_title;
-					
+					$return["title"]					=$view_title;
 
-					#0133 32084420  CESAR JIMENES  32084444
+					if(!isset($option["height"]))		$option["height"]="100%";
+					
+					$height_render						="height:{$option["height"]};";
+					$min_height							="min-height: 140px;";
+					if(in_array(@$option["height"],$_SESSION["var"]["false"]))
+					{
+						$height_render	="";
+						$min_height		="";
+					}						
+
 					$button_create_js="";
 					
-					if(isset($template_option) AND !in_array(@$this->request["sys_action"],$this->sys_print))	
-					{
-						#$this->__PRINT_R($template_option);
-						
+					if(isset($template_option) AND !in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
+					{						
 						$button_create_js="
 							if($(\"font#create_$name\").length>0)
 							{	
-								$(\"font.show_form\").button({	    
-									icons: {	primary: \"ui-icon-extlink\" },
-									text: false
-								}),
+								{$browse["js"]}
+							
+								$(\"font.show_form\").button({
+									icons: 	{primary:	\"ui-icon-extlink\"},
+									text: 	false								
+								});
+
+								var options={};
+								options[\"class_one\"]			=\"{$template_option["class_one"]}\";
+								options[\"class_field\"]		=\"{$template_option["class_field"]}\";												
+								options[\"class_many\"]			=\"{$template_option["class_field_value"]["class_name"]}\";
+								options[\"object\"]				=\"{$template_option["class_field_value"]["class_name"]}\";
+
 	            				$(\"font#create_$name\").click(function()
 	            				{
-									$(\".{$template_option["class_field"]}\").val(\"\");
-									
-	            					$(\"div#create_$name\").dialog({
-	            						open: function(event, ui){
-											var dialog = $(this).closest('.ui-dialog');
-										},
-										buttons: {
-											\"Registrar\": function() {													
-												var options={};
-												options[\"class_one\"]			=\"{$template_option["class_one"]}\";
-												options[\"class_field\"]		=\"{$template_option["class_field"]}\";												
-												options[\"class_many\"]			=\"{$template_option["class_field_value"]["class_name"]}\";
-												options[\"object\"]				=\"{$template_option["class_field_value"]["class_name"]}\";
-												
-												many2one_post(options);
+	            					$(\"div#create_$name\")
+	            						.dialog({
+			        						open: function(event, ui){
+												var dialog = $(this).closest('.ui-dialog');
 											},
-											\"Registrar y Cerrar\": function() {													
-												var options={};
-												options[\"class_one\"]			=\"{$template_option["class_one"]}\";
-												options[\"class_field\"]		=\"{$template_option["class_field"]}\";												
-												options[\"class_many\"]			=\"{$template_option["class_field_value"]["class_name"]}\";
-												options[\"object\"]				=\"{$template_option["class_field_value"]["class_name"]}\";
-												
-												many2one_post(options);
-												$( this ).dialog(\"close\");
-											},
-											
-											\"Cerrar\": function() {
-												$( this ).dialog(\"close\");
-											}
-										},										
-	            						width:\"700px\"
-	            					});
+											buttons: {
+												\"Registrar\": function() {													
+													many2one_post(options);
+												},
+												\"Registrar y Cerrar\": function() {													
+													many2one_post(options);
+													$( this ).dialog(\"close\");
+												},
+												\"Cerrar\": function() {
+													$( this ).dialog(\"close\");
+												}
+											},										
+			        						width:\"700px\"
+			        					});
 	            				});
 							}						
 						";
-						
-					}				
-					$return["report"]="";
-					if(!in_array(@$this->request["sys_action"],$this->sys_print))
-						
-						$return["report"]="
-							$view_head
-							<div id=\"div_$name\" class=\"render_h_destino\" style=\"width:100%; overflow-y:auto; overflow-x:hidden; min-height: 140px;\">
-						";
-					if(isset($option["template_separator"])) $view_title="";
-						
-						
-						$return["report"].="
-								<table width=\"100%\" style=\"background-color:#fff; \">
-								$view_title
-								$view_body
-								</table>
-						";		
-					if(!in_array(@$this->request["sys_action"],$this->sys_print))
-						$return["report"].="
-							</div>								
-							<script>
-									$button_create_js
-									sys_report_memory();
-													
-									$(\"#sys_search_$name\")
-										.button({
-											icons: {	primary: \"ui-icon-search\" },
-											text: false
-										})
-										.click(function(){
-											$(\"#sys_action_$name\").val(\"seach\");
-											$(\"#sys_page_$name\").val(1);	
-											$(\"form\").submit();
-										}
-									);							
-									$(\"#sys_rows_$name\").change(function(){
-									
-										$(\"#sys_row_$name\").val(  $(\"#sys_rows_$name\").val()      );
-										$(\"#sys_page_$name\").val(1);
-										$(\"form\").submit(); 									
-									});								
-									$(\".page[action='-'][name='$name']\").button({
-										icons: {	primary: \"ui-icon-triangle-1-w\" },
+					}		
+							
+					$report_class="";
+					if(!isset($option["template_option"]))	$report_class="report_class";
+
+					if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					
+					{
+						@$return["js"].="			
+								$button_create_js
+								sys_report_memory();
+																				
+								$(\"#sys_search_$name\")
+									.button({
+										icons: {	primary: \"ui-icon-search\" },
 										text: false
-									});
-									$(\".page[action='+'][name='$name']\").button({
-										icons: {	primary: \"ui-icon-triangle-1-e\" },
-										text: false
-									});
+									})
+									.click(function(){
+										$(\"#sys_action_$name\").val(\"seach\");
+										$(\"#sys_page_$name\").val(1);	
+										$(\"form\").submit();
+									}
+								);							
+								$(\"#sys_rows_$name\").change(function(){
 								
-									$(\".page\").click(function(){
-										var action      	=$(this).attr(\"action\");						    
-										var sys_page    	=$(\"#sys_page_$name\").val();
-										var sys_page2		=sys_page;
-										if(action==\"-\")
-										{	
-											if($inicio > $(\"#sys_row_$name\").val())
-											{	
-												sys_page--;
-											}	
-										}	
-										else
-										{				
-											if($fin < {$return["total"]})
-											{	
-												sys_page++;
-											}	
-										}			
-										if(sys_page!=sys_page2)
-										{	
-											$(\"#sys_page_$name\").val(sys_page);
-											$(\"form\").submit(); 
-										}	
-									});	
-							</script>
-						";
-					$view="";	
-					if(!in_array(@$this->request["sys_action"],$this->sys_print))					
-						$view="
-							<div id=\"base_$name\" class=\"render_h_origen\" diferencia_h=\"-40\" style=\"height:99%; width:100%; overflow-y:auto; overflow-x:hidden; border: 	1px solid #ccc;\">
-						";
+									$(\"#sys_row_$name\").val(  $(\"#sys_rows_$name\").val()      );
+									$(\"#sys_page_$name\").val(1);
+									$(\"form\").submit(); 									
+								});								
+								$(\".page[action='-'][name='$name']\").button({
+									icons: {	primary: \"ui-icon-triangle-1-w\" },
+									text: false
+								});
+								$(\".page[action='+'][name='$name']\").button({
+									icons: {	primary: \"ui-icon-triangle-1-e\" },
+									text: false
+								});
+							
+								$(\".page\").click(function(){
+									var action      	=$(this).attr(\"action\");						    
+									var sys_page    	=$(\"#sys_page_$name\").val();
+									var sys_page2		=sys_page;
+									if(action==\"-\")
+									{	
+										if($inicio > $(\"#sys_row_$name\").val())		sys_page--;
+									}	
+									else
+									{				
+										if($fin < {$return["total"]})					sys_page++;
+									}			
+									if(sys_page!=sys_page2)
+									{	
+										$(\"#sys_page_$name\").val(sys_page);
+										$(\"form\").submit(); 
+									}	
+								});	
+						";						
+						if($option["type_view"]=="report")
+						{
+							$return["report"]="
+								$view_head																					
+								<div id=\"div_$name\" class=\"$report_class view_report_d1\" obj=\"$name\" style=\"height: 100%;\">
+									<div id=\"div2_$name\" class=\"view_report_d2\" style=\"width:100%; overflow-y:auto; overflow-x:hidden; padding:0px; margin:0px;\">
+										<table width=\"100%\" class=\"view_report_t1\" style=\"background-color:#fff; color:#000;  padding:0px; margin:0px;\">
+											$view_title
+											$view_body
+										</table>
+									</div>
+								</div>
+								<script>
+									{$return["js"]}
+								</script>
+							";						
+						}
+						else
+						{
+							$return["report"]="
+								$view_head																					
+								<div id=\"div_$name\" class=\"$report_class view_report_d1\" obj=\"$name\" style=\"height: 100%;\">
+									<div id=\"div2_$name\" class=\"view_report_d2\" style=\"width:100%; overflow-y:auto; overflow-x:hidden; padding:0px; margin:0px;\">
+											$view_body
+									</div>
+								</div>
+								<script>
+									{$return["js"]}
+								</script>
+							";												
+						}	
+					}
+					else
+					{					
+						if($option["type_view"]=="report")
+						{
+							$return["report"]="
+								<table width=\"100%\" border=\"0\" style=\"background-color:#fff;  color:#000; padding:3px; margin:0px;\">								
+									$view_title
+									$view_body
+								</table>					
+							";
+						}
+						else
+						{
+							$return["report"]="
+								<div id=\"div_$name\" class=\"$report_class view_report_d1\" obj=\"$name\" style=\"height: 100%;\">
+									<div id=\"div2_$name\" class=\"view_report_d2\" style=\"width:100%; overflow-y:auto; overflow-x:hidden; padding:0px; margin:0px;\">
+											$view_body
+									</div>
+								</div>
+							";
 						
-					
-					$view.="	
-						{$return["report"]}
-					";
-					if(!in_array(@$this->request["sys_action"],$this->sys_print))					
-						$view.="	
+						}	
+					}
+					if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					
+						$view="
+						<div id=\"base_$name\" class=\"render_h_origen\" diferencia_h=\"-20\" style=\"$height_render width:100%; overflow-y:auto; overflow-x:hidden; border: 	1px solid #ccc; padding:0px; margin:0px;\">
+					";		
+
+			
+					@$view.="{$return["report"]}";
+
+					if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					
+						$view.="						
 						</div>		
 					";
 
-					if(!in_array(@$this->request["sys_action"],$this->sys_print))					
+					if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
 					{
 						$view.="
 							<input name=\"sys_order_$name\" id=\"sys_order_$name\" class=\"$name\" type=\"hidden\" value=\"$sys_order\">		
@@ -2625,24 +2518,22 @@
 					$filter_autocomplete="";
 					if(isset($this->sys_fields) AND is_array($this->sys_fields))
 					{
-						$sys_fields_filter	=$this->sys_fields;
-						if(isset($this->sys_filter) and is_array($this->sys_filter))
-						{
-							$sys_fields_filter=array_merge($this->sys_fields,$this->sys_filter);
-						}
-						foreach($sys_fields_filter as $campo=>$valor)
+						foreach($this->sys_fields as $campo=>$valor)
 						{        								
-							if(@$this->request["sys_filter_{$this->sys_name}_{$campo}"])
+							if(@$this->sys_fields["$campo"]["filter"])
 							{	
+								if(!isset($this->sys_fields["$campo"]["where"]))
+									$this->sys_fields["$campo"]["where"] = "LIKE";
+									
+								$sys_filter=$this->sys_fields["$campo"]["where"];	
 								$filter_autocomplete.="
-									var filter=filter_html(\"$campo\",\"{$valor["title_filter"]}\",\"{$this->request["sys_filter_{$this->sys_name}_{$campo}"]}\",\"$name\");											
+									var filter=filter_html(\"$campo\",\"{$valor["title_filter"]}\",\"{$this->sys_fields["$campo"]["filter"]}\",\"$name\",\"$sys_filter\");
 									$(\"#filter_fields_$name\").append(filter);
 								";
 							}							
 						}	
 					}									
-					
-					if(!in_array(@$this->request["sys_action"],$this->sys_print))					
+					if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
 					{				
 						$view.="
 							$view_search
@@ -2654,13 +2545,8 @@
 								
 									$( function() 
 									{
-										function split( val ) {
-											return val.split( /,\s*/ );
-										}
-										function extractLast( term ) 
-										{
-											return split( term ).pop();
-										}
+										function split( val ) 			{	return val.split( /,\s*/ );	}
+										function extractLast( term ) 	{	return split( term ).pop();	}
 
 										$(\"#sys_filter_$name\" )								
 										.on( \"keydown\", function( event ) 
@@ -2678,15 +2564,7 @@
 												term: extractLast( request.term )
 												}, response );
 											},
-											search: function() 
-											{
-												// custom minLength
-												var term = extractLast( this.value );
-												if ( term.length < 2 ) 
-												{
-													return false;
-												}
-											},
+											
 											focus: function() 
 											{
 												// prevent value inserted on focus
@@ -2722,70 +2600,47 @@
 		    else $return["html"]="Es necesario un array para generar el reporte";
 		    
 		    return $return;
-		}   
-		
+		}
+		##############################################################################   
+		public function __VIEW_TEMPLATE_TITLE($option)
+		{
+			$return="";	
+
+			if(isset($option["template_title"]) AND $option["template_title"] != "")
+			{
+				$view_title     				=$this->__TEMPLATE($option["template_title"]);					//  HTML DEL REPORTE
+				$view_title						=str_replace("<td>", "<td class=\"title\">", $view_title);      // AGREGA la clase titulo
+				
+				$this->sys_title["style_tr"]	="background-color:#D5D5D5; height:30px;";
+				
+			} 
+			if(isset($this->sys_title))
+			{
+				$return	    =$this->__REPLACE(@$view_title,$this->sys_title);					
+			}    		    	    				
+
+			return $return;
+		} 			
 		
     	##############################################################################        
-		public function __PRINT($message=NULL,$option=NULL)
-		{	
-			$cerrado="";
-			if(is_null($option))			$option				=$this->__PRINT_OPTION;
-			if(is_null($message))			$message			=$this->__PRINT;
-			
-			if(!isset($option["title"]))	$option["title"]	="Mensaje del Sistema";
-			if(!isset($option["time"]))		$option["time"]		="2500";
-			if(!isset($option["object"]))	$option["object"]	="message";
-			
-			if($option["time"]>0)
-			{	
-				$cerrado="
-					setTimeout(function() 
-					{
-						$(\"#{$option["object"]}\").dialog(\"close\")
-					}, {$option["time"]} );			
-				";	
-			}		
-			if($message!="")
-			{	
-				if($option["object"]!="message")
-						echo "<div id=\\\"{$option["object"]}\\\"></div>";			
-				echo "					
-					<script>
-						$(\"#{$option["object"]}\")
-							.attr({\"title\":\"{$option["title"]}\"})
-							.html(\"$message\")
-							.dialog(
-							{
-								show: {
-									effect: \"shake\",
-									duration: 750
-								},		    			    	
-								width:\"350\",
-								modal: true,
-							}
-						);								
-						$cerrado
-					</script>
-				";
-			}
-		}
 		public function __MESSAGE($message,$option=NULL)
 		{
-			
 			/*
 			if(is_null($option))	$option=array();
 			
 			if(isset($option["template"]))		$template 	=$option["template"];
 			else 								$template 	="message";
 		    
-		    #if(isset($option["message"]))  		$message    =$option["message"];
-		    #else                           		$message    ="No se ha indicado un mensaje";
+		    if(isset($option["message"]))  		$message    =$option["message"];
+		    else                           		$message    ="No se ha indicado un mensaje";
 		    
 		    if(isset($option["image"]))    		$image      =$option["image"];
 		    else                           		$image      ="sitio_web/alerta_azul.png";
 		    
 			$html_template  =$this->__TEMPLATE("sitio_web/html/".$template);
-			$html_template  ="";		  
+			$html_template  ="";
+		    
+		    #echo $html_template;
 		    
 		    $datas          =array("message"=>$message,"image"=>$image);
 	        $view	        =$this->__REPLACE($html_template,$datas);	
@@ -2803,7 +2658,7 @@
 				{
 					$(\"#message\").dialog(\"close\")
 				}, 2500 );
-		    ";
+						    ";
 		    
 		    $return=array(
 		    	"html"		=>$view,
@@ -2811,12 +2666,738 @@
 		    	"js"		=>$jquery		    	
 		    );
 		    
+			
 			return $return;
 			*/
 		}    
+		function pointInPolygon($point, $polygon, $pointOnVertex = true) 
+		{
+			
+			$this->pointOnVertex = $pointOnVertex;
+
+			// Transformar la cadena de coordenadas en matrices con valores "x" e "y"
+			#PUNTO";
+			$point = $this->pointStringToCoordinates($point);
+			$vertices = array();
+			foreach ($polygon as $vertex) 
+			{
+				#POLIGONO";
+				$vertices[] = $this->pointStringToCoordinates($vertex);
+			}
+
+			// Checar si el punto se encuentra exactamente en un vértice
+			if ($this->pointOnVertex == true and $this->pointOnVertex($point, $vertices) == true) 
+			{
+				#return "vertice";
+				return "DENTRO";
+			}
+
+			// Checar si el punto está adentro del poligono o en el borde
+			$intersections = 0;
+			$vertices_count = count($vertices);
+
+			for ($i=1; $i < $vertices_count; $i++) 
+			{
+				$vertex1 = $vertices[$i-1];
+				$vertex2 = $vertices[$i];
+				if ($vertex1['y'] == $vertex2['y'] and $vertex1['y'] == $point['y'] and $point['x'] > min($vertex1['x'], $vertex2['x']) and $point['x'] < max($vertex1['x'], $vertex2['x'])) 
+				{ // Checar si el punto está en un segmento horizontal
+					#return "BORDE";
+					return "DENTRO";
+				}
+				if ($point['y'] > min($vertex1['y'], $vertex2['y']) and $point['y'] <= max($vertex1['y'], $vertex2['y']) and $point['x'] <= max($vertex1['x'], $vertex2['x']) and $vertex1['y'] != $vertex2['y']) 
+				{
+					$xinters = ($point['y'] - $vertex1['y']) * ($vertex2['x'] - $vertex1['x']) / ($vertex2['y'] - $vertex1['y']) + $vertex1['x'];
+					if ($xinters == $point['x']) 
+					{ // Checar si el punto está en un segmento (otro que horizontal)
+						#return "BORDE";
+						return "DENTRO";
+					}
+					if ($vertex1['x'] == $vertex2['x'] || $point['x'] <= $xinters) 
+					{
+						$intersections++;
+					}
+				}
+			}
+			// Si el número de intersecciones es impar, el punto está dentro del poligono.
+			if ($intersections % 2 != 0) 
+			{
+				return "DENTRO";
+			} 
+			else 
+			{
+				return "AFUERA";
+			}
+		}
+		##############################################################################
+		function pointOnVertex($point, $vertices) 
+		{
+			foreach($vertices as $vertex) 
+			{
+				if ($point == $vertex) 
+				{
+					return true;
+				}
+			}
+
+		}
+		##############################################################################
+		function pointStringToCoordinates($pointString) 
+		{
+			$pointString=trim($pointString);
+			$coordinates = explode(" ", $pointString);
+			return array("x" => $coordinates[0], "y" => $coordinates[1]);
+		}	
+		##############################################################################
+		function __SMS($sDestination, $sMessage, $debug, $sSenderId){
+			$sData ='cmd=sendsms&';
+			$sData .='domainId=solesgps&';
+			$sData .='login=e.vizcaino@solesgps.com&';
+			$sData .='passwd=Vz4sPioUm7&';
+
+
+			#$sData .='domainId=test&';
+			#$sData .='login=e.vizcaino&';
+			#$sData .='passwd=r94uf43n&';
+			
+			//No es posible utilizar el remitente en América pero sí en España y Europa
+			$sData .='senderId='.$sSenderId.'&';
+			$sData .='dest='.str_replace(',','&dest=',$sDestination).'&';
+			$sData .='msg='.urlencode(substr($sMessage,0,160));
+			#$sData .='msg='.urlencode(utf8_encode(substr($sMessage,0,160)));
+
+			//Tiempo máximo de espera para conectar con el servidor = 5 seg
+			$timeOut = 5; 
+			$fp = fsockopen('www.altiria.net', 80, $errno, $errstr, $timeOut);
+			if (!$fp) 
+			{
+				//Error de conexion o tiempo maximo de conexion rebasado
+				$output = "ERROR de conexion: $errno - $errstr<br />\n";
+				$output .= "Compruebe que ha configurado correctamente la direccion/url ";
+				$output .= "suministrada por altiria<br>";
+				return $output;
+			} 
+			else 
+			{
+				$buf = "POST /api/http HTTP/1.0\r\n";
+				$buf .= "Host: www.altiria.net\r\n";
+				$buf .= "Content-type: application/x-www-form-urlencoded; charset=UTF-8\r\n";
+				$buf .= "Content-length: ".strlen($sData)."\r\n";
+				$buf .= "\r\n";
+				$buf .= $sData;
+				fputs($fp, $buf);
+				$buf = "";
+
+				//Tiempo máximo de espera de respuesta del servidor = 60 seg
+				$responseTimeOut = 60;
+				stream_set_timeout($fp,$responseTimeOut);
+				stream_set_blocking ($fp, true);
+				if (!feof($fp))
+				{
+					if (($buf=fgets($fp,128))===false)
+					{
+						// TimeOut?
+						$info = stream_get_meta_data($fp);
+						if ($info['timed_out'])
+						{
+							$output = 'ERROR Tiempo de respuesta agotado';
+							return $output;
+						} 
+						else 
+						{
+							$output = 'ERROR de respuesta';
+							return $output;
+						}
+					} 
+					else
+					{
+						while(!feof($fp))
+						{
+							$buf.=fgets($fp,128);
+						}
+					}
+				} 
+				else 
+				{
+					$output = 'ERROR de respuesta';
+					return $output;
+				}
+
+				fclose($fp);
+
+				//Si la llamada se hace con debug, se muestra la respuesta completa del servidor
+				if ($debug)
+				{
+					print "Respuesta del servidor: <br>".$buf."<br>";
+				}
+
+				//Se comprueba que se ha conectado realmente con el servidor
+				//y que se obtenga un codigo HTTP OK 200 
+				if (strpos($buf,"HTTP/1.1 200 OK") === false)
+				{
+					$output = "ERROR. Codigo error HTTP: ".substr($buf,9,3)."<br />\n";
+					$output .= "Compruebe que ha configurado correctamente la direccion/url ";
+					$output .= "suministrada por Altiria<br>";
+					return $output;
+				}
+				//Se comprueba la respuesta de Altiria
+				if (strstr($buf,"ERROR"))
+				{
+					$output = $buf."<br />\n";
+					$output .= " Ha ocurrido algun error. Compruebe la especificacion<br>";
+					return $output;
+				} 
+				else 
+				{
+					$output = $buf."<br />\n";
+					$output .= " Exito<br>";
+					return $output; 
+				}     
+			}
+		}					
+		public function __NIVEL_SESION($nivel)
+		{  
+			$return=false;
+			
+			$menu_activo=@$_SESSION["sys"]["menu"];
+			
+			if(is_array(@$_SESSION["group"]))
+			{	
+				foreach(@$_SESSION["group"] as $datos)
+				{
+					#if($datos["menu_id"]==$menu_activo AND $datos["nivel"]<=$nivel) 
+					#	$return=true;
+			
+					$eval="
+						if($"."datos[\"menu_id\"]==$"."menu_activo AND $"."datos[\"nivel\"]$nivel) 
+							$"."return=true;				
+					";
+					eval($eval);
+				}		
+			}		
+			return $return;
+		}    	
+	    
+		function abrir_conexion()
+		{
+			$OPHP_database=$this->__SYS_DB();
+			if($OPHP_database["type"]=="mysql")	        	
+			{			
+				#$this->OPHP_conexion = @mysqli_connect($OPHP_database["host"], $OPHP_database["user"], $OPHP_database["pass"], $OPHP_database["name"]) OR $this->reconexion();
+				$this->OPHP_conexion = @mysqli_connect($OPHP_database["host"], $OPHP_database["user"], $OPHP_database["pass"], $OPHP_database["name"]) OR $this->reconexion();				
+			}
+		}
+
+		function reconexion()
+		{
+			$OPHP_database=$this->__SYS_DB();
+			if($OPHP_database["type"]=="mysql")	        	
+			{
+				$this->OPHP_conexion = @mysqli_connect("localhost", $OPHP_database["user"], $OPHP_database["pass"], $OPHP_database["name"]);
+			}
+		}
+		
+		function cerrar_conexion()
+		{
+		    $this->OPHP_conexion->close();
+		}	
+		
+		
+		///////////////////////////////////////////////////////////
+		public function __FILE_JS($data=null)
+		{
+			$return="";
+			if(is_null($data) AND isset($this->sys_var["module_path"]))									
+				$data=array("../" . $this->sys_var["module_path"] . "js/index");
+						
+		    if(is_array($data))
+		    {
+		        foreach($data as $valor)
+				{    		    													   
+				    #if($valor=="maps")                  $file="http://maps.google.com/maps/api/js";
+				    if($valor=="maps")                  $file="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTDTeSJ3Uu3hHCy73RzGoJbx6vmKcmmUI";
+				    else if($valor=="responsivevoice")  $file="https://code.responsivevoice.org/responsivevoice.js";
+				    else                                $file="$valor.js";
+				        		        		    
+				    $return.="<script src=\"$file\"></script>";    		        		    
+				        		    
+				    if($valor=="maps")	$return.="
+				    	<script src=\"../sitio_web/js/maplabel-compiled.js\"></script>
+				    ";    		    
+				}		
+			}
+			return $return;
+    	} 
+    	public function __HTML_USER()
+    	{
+    		#$this->__PRINT_R($_SESSION);
+    	    $return="";
+    	    #$img=@$_SESSION["user"]["img_files_id_min"];
+    	    $img=@$_SESSION["user"]["img_files_id_sup_chi"];
+    	    $return="    
+    	    	<!--	            	        
+    	        <img src=\"../sitio_web/img/settings.png\" height=\"20\">
+    	        -->
+    	        <font id=\"setting\" title=\"Ajustes\">
+    	            {$img}
+    	        </font>
+    	    ";
+
+
+    	    return  $return;
+    	}
+    	
+		public function __FILE_CSS($data)
+		{
+		    $return="";  
+            foreach($data as $valor)
+    		{    		
+    		    $file="$valor.css";
+    		    $return.="<link rel=\"stylesheet\" type=\"text/css\" href=\"$file\">";    		    
+			}		
+			return $return;
+    	}     	     	  
+		public function __PRINT_R($variable)
+		{  
+		    echo "<div class=\"developer\" title=\"Sistema :: {$this->sys_object} {$this->sys_name}\"><pre>";
+		    @print_r(@$variable);
+		    echo "</pre></div>";		    			
+    	} 
+		public function __PRINT_HTML($variable)
+		{  
+			if(is_array($variable))
+			{
+				$return="";
+				foreach($variable as $row)
+				{
+					if(is_array($row))	$return.="<tr>".$this->__PRINT_HTML($row). "</tr>";
+					else				$return.=$this->__PRINT_HTML($row);	
+				}
+				return $return;
+			}
+			else
+			{
+				return "<td>".$variable."</td>";
+			}
+    	}     	   	
+		public function __JS($variable)
+		{  
+		    echo $this->__JS_SET($variable);
+    	}    	
+		public function __JS_SET($variable)
+		{  
+		    return "
+		        <script>
+		            $variable
+		        </script>    
+		    ";
+    	}    	
+		public function __JS_SET_INPUT($datas)
+		{
+			$return="";
+			if(is_array($datas))
+			{				
+			    foreach($datas as $field =>$value)
+			    {
+			    	$return.="
+			    		set_var(\"{$field}\", \"$value\");";			 		
+				}			  
+			}
+			return $return;
+    	}    	
+    	
+		public function __BUTTON($datas=NULL)
+		{  
+			$return="";
+			if(is_array($datas))
+			{
+				
+			    foreach($datas as $data)
+			    {
+			    	$icon="";
+					$title="";
+			    	$action=0;
+			    	$titulo="";
+					$sys_input="";
+			        foreach($data as $etiqueta =>$valor)
+			        {					       
+			        	if($etiqueta=="icon") 	
+			        	{
+			        		$icon="$valor";
+			        	}		
+			        	elseif($etiqueta=="text") 	
+			        	{
+			        		$titulo="$valor";
+			        		$text="$valor";
+			        	}		    	
+			        	elseif($etiqueta=="title") 	
+			        	{
+			        		$title="$valor";		        		
+			        	}		    	
+			        	else
+			        	{
+			        		if(@$icon=="")
+			        		{
+			        			if($etiqueta=="create") 	$icon="ui-icon-document";
+			        			if($etiqueta=="write") 		$icon="ui-icon-pencil";
+			        			if($etiqueta=="report") 	$icon="ui-icon-note";			        		
+			        			if($etiqueta=="kanban") 	$icon="ui-icon-newwin";			        		
+			        			if($etiqueta=="action") 	$icon="ui-icon-document";
+			        			if($etiqueta=="cancel") 	$icon="ui-icon-close";
+			        			
+			        			if($etiqueta=="import") 	$icon="ui-icon ui-icon-arrowthickstop-1-s";
+			        						        			
+			        			if(in_array($etiqueta,array("create","write","report","kanban")))	
+			        			{
+			        				$text="false";
+			        				$action="1";
+			        			}
+			        			elseif(in_array(substr($etiqueta,0,6),array("create","report","kanban")))	
+			        			{
+			        				$text="true";
+			        				$action="1";
+			        			}			        			
+			        			elseif(in_array(substr($etiqueta,0,5),array("write")))	
+			        			{
+			        				$text="true";
+			        				$action="1";
+			        			}			        			
+			        			
+			        			else
+			        			{
+					    			if(in_array($etiqueta,array("action")))	
+					    			{
+					    				$action="1";
+									}			        				
+			        				$text="true";			        			
+			        			}
+			        		}
+			        		if(@$action=="1")	
+			        		{
+			        			$font_id	="$etiqueta"."_{$this->sys_name}";
+			        			$funcion_id	="execute"."_{$this->sys_name}";
+			        		}	
+			        		else				$font_id="$etiqueta";
+			        		
+			        		$value="$etiqueta";
+							if(isset($this->sys_view_l18n) AND is_array($this->sys_view_l18n) AND isset($this->sys_view_l18n["$etiqueta"]))	
+							{			        	
+								$titulo		=$this->sys_view_l18n["$etiqueta"];
+							}			        	
+							if($titulo=="")	$titulo=$valor;
+							
+			        	}
+			        }	
+			        if($value=="action")    $sys_input.="$(\"#sys_action_{$this->sys_name}\").val(\"__SAVE\");";
+			        else					
+			        {
+			        	$sys_input.="
+							$(\"#sys_action_{$this->sys_name}\").val(\"__clean_session\");
+			        		$(\"#sys_section_{$this->sys_name}\").val(\"$value\");
+			        		$(\"#sys_id_{$this->sys_name}\").val(\"\");
+			        		$(\"input.{$this->sys_name}\").val(\"\");							
+			        	";
+			        }	
+			        
+		        	$script="
+							$(\"#$font_id\").button({
+								icons: {	primary: \"$icon\" },
+								text: $text
+							});
+					";
+					if(@$action=="1")
+					{				
+						$script.="
+							$(\"#$font_id\").click(function()
+							{								
+								var enviar	=true;									
+								$sys_input
+								
+								$(\".sys_filter\").val(\"\");
+								
+								if($(this).attr(\"id\")==\"action_{$this->sys_name}\") 								
+								{									
+									enviar	=false;	
+									if(typeof submit_{$this->sys_name} === 'function') 								
+									{															
+										enviar	=submit_{$this->sys_name}();
+									}									
+									else
+									{
+										enviar	=true;		
+									}								
+									if($(\"[class*='required'][class*='{$this->sys_name}']\").length>0)
+									{				
+										$(\"[class*='required'][class*='{$this->sys_name}']\").each(function(){
+											if(   $(this).val()==\"\"   )
+											{
+												enviar=false;	
+											}										
+										});	
+										var form=\"Favor de verificar los campos faltantes</font>\";								
+									}
+								}
+								
+								if(enviar==true)	$(\"form\").submit();
+								else 
+								{
+									$(\"#message\")
+									.html(form)
+									.dialog({
+										width:\"400\",
+										modal: true,
+									});
+								}							
+							});		 
+			        	";
+		        	}
+					if($etiqueta=="import")
+					{
+						$script.="
+							$(\"#$font_id\").click(function()
+							{									
+								var form=\"Archivo CSV <input id=\\\"import_csv_{$this->sys_name}\\\"  name=\\\"import_csv_{$this->sys_name}\\\" type=\\\"file\\\" class=\\\"formulario\\\"><font id=\\\"upload_import\\\">Cargar</font>\";								
+								$(\"#message\")
+								.html(form)
+								.dialog({
+									width:\"400\",
+									modal: true,
+								});
+								var datos={		
+									type: 'POST',													
+									async: true,
+									cache: false,
+									contentType: false,
+									enctype: 'multipart/form-data',
+									processData: false,
+								};
+																
+								$(\"#upload_import\")
+									.button()
+									.click(function()
+									{
+										$(\"#message\")
+											.dialog(\"destroy\")
+											.hide();										
+								
+										var formData = new FormData($(\"form\")[0]);
+										
+										var subiendo=datos;
+										
+										subiendo.url		='../sitio_web/ajax/general.php&seccion_import=subiendo_archivo&sys_name={$this->sys_name}&date=".date("YmdHis")."';
+										subiendo.data		=formData;
+										subiendo.success	=function (response) 
+										{			
+											var obj = $.parseJSON( response);
+																					
+											$(\"#message\")
+											.attr({\"title\":\"Estado del sistema\"})
+											.html(obj.mensaje)
+											.dialog({
+												width:\"400\",
+												modal: true,
+											});				
+
+											var preparar=datos;
+											preparar.url		='../sitio_web/ajax/general.php&seccion_import=preparar_tabla&sys_name={$this->sys_name}&date=".date("YmdHis")."';										
+											preparar.success	=function (response) 
+											{
+												var html=$(\"#message\").html() + response;											
+												$(\"#message\").html(html);												
+												
+												var cargar=datos;
+												cargar.url		='../sitio_web/ajax/general.php&seccion_import=cargar_tabla&sys_name={$this->sys_name}&date=".date("YmdHis")."&name='+obj.name;										
+												cargar.success	=function (response) 
+												{
+													var html=$(\"#message\").html() + response;											
+													$(\"#message\").html(html);												
+																										
+													var actualizar=datos;
+													actualizar.url		='../sitio_web/ajax/general.php&seccion_import=actualizando_datos&sys_name={$this->sys_name}&date=".date("YmdHis")."';										
+													actualizar.success	=function (response) 
+													{
+														$(\"#import_pendiente\").html(response);												
+													};											
+													$.ajax(actualizar);														
+												};											
+												$.ajax(cargar);																									
+											};											
+											$.ajax(preparar);	
+										};
+										$.ajax(subiendo);	
+									});									
+							});		        	
+			        	";						
+					}		
+		        	
+			        $return .="
+			        	<font id=\"$font_id\" title=\"$title\">$titulo</font>
+			        	<script>
+			        		$script
+			        	</script>
+			        ";
+			        
+			    }
+			}    
+			return $return;
+		} 			
+		public function __CHECK($datas=NULL, $name=NULL)
+		{  
+			$return="";
+			if(is_array($datas))
+			{
+			    foreach($datas as $data)
+			    {			    
+			        $return .="
+			        	<input id=\"{$data["id"]}\" type=\"checkbox\">
+			        	<label for=\"{$data["id"]}\">{$data["title"]}</label>				        	
+			        ";
+			    }
+		        $return ="
+					<div id=\"$name\">
+					$return
+					</div>
+					<script>
+						$(\"div#$name\").buttonset();
+					</script>		        	
+		        ";			    
+			}    
+			return $return;
+		} 			
+    	##############################################################################    
+		public function __JSON_AUTOCOMPLETE($valor)
+		{	
+			if(isset($valor["source"]))
+			{	
+		    	$vauxpath						=explode("/",$_SERVER["PHP_SELF"]);
+		    	$vauxpath[count($vauxpath)-1]	="";
+		    	$auxpath						="http://".$_SERVER["SERVER_NAME"].implode("/",$vauxpath).substr($valor["source"],3,strlen($valor["source"])-3);
+			}        	
+        	return	@json_decode(@file_get_contents($auxpath."?id=".$valor["value"]));
+		}		
+		##############################################################################
+		public function __DATA_AUTOCOMPLETE($data)
+		{		
+			$data_json=array();
+			if(count($data)>0)
+			{
+				foreach($data as $row)
+				{
+					$data_json[]=array(
+						'label'     => $row["name"],
+						'clave'		=> $row["id"]	
+					);			
+				}
+			}
+			else
+			{
+				if(@$_GET["term"]!="")	$busqueda=@$_GET["term"];
+				else					$busqueda=@$_GET["id"];
+				
+				$data_json[]=array(
+					'label'     => "Sin resultados para ". $busqueda,
+					'clave'		=> ""	
+				);				
+			}		
+			echo json_encode($data_json);
+		}		
+		##############################################################################
+
+		public function menu_vehicle()
+    	{
+    		if(isset($_SESSION["company"]["id"]))	
+    		{
+				$option["select"]   =array( "d.*" );
+				$option["from"]		="devices d join positions p on p.deviceId=d.id";			
+				$option["where"]	=array(
+				    "d.company_id={$_SESSION["company"]["id"]}"
+				);
+				$option["group"]	="deviceId";
+				
+				$vehicles            =$this->__VIEW_REPORT($option);
+				
+				$html="";
+				
+		
+				$comando_sql        ="
+					select
+						distinct(d.id) as d_id, 
+						d.*
+					from 	
+						devices d,
+						user_group ug,
+						groups g
+					where 	d.company_id={$_SESSION["company"]["id"]}
+						AND ug.menu_id=2
+						
+						AND(		
+							(
+								responsable_fisico_id={$_SESSION["user"]["id"]}		
+								AND user_id=responsable_fisico_id
+								AND ug.active=g.id
+							)        
+							OR
+							(
+								ug.user_id={$_SESSION["user"]["id"]}		
+								AND ug.active=g.id
+								AND g.nivel<40
+							)
+						) 			
+	
+				";	
+				$option_conf=array();
+	
+
+				$option_conf["open"]	=1;
+				$option_conf["close"]	=1;			
+				$data =$this->__EXECUTE($comando_sql,$option_conf);	
+				
+				foreach($data as $vehicle)
+				{
+					if($vehicle["image"]=="")	$vehicle["image"]="01";
+				
+			    	$html.="
+				        <table class=\"select_devices\" device=\"{$vehicle["id"]}\" lat=\"\" lon=\"\" width=\"100%\" height=\"40\" border=\"0\">
+			        		<tr>
+				        		<td rowspan=\"2\"  width=\"50\" align=\"center\">
+			        				<img height=\"25\" src=\"../sitio_web/img/car/vehiculo_{$vehicle["image"]}/i135.png\">
+			        			</td>
+			        			<td valign=\"bottom\">{$vehicle["name"]}</td>
+			        			<td width=\"25\" rowspan=\"2\" class=\"event_device\"> - </td>
+			        		</tr>
+			        		<tr>
+			        			<td  valign=\"top\"><b>{$vehicle["placas"]}</b></td>
+			        			
+			        		</tr>		        	
+			        	</table>
+			    	";			
+				}
+		    	$html="
+			    	<font style=\"padding-left:5px; color:SteelBlue; font-size:13; font-weight:bold;\"> Dispositivos </font>
+		        	<table  width=\"100%\" height=\"30\" border=\"0\">
+			        	<tr>
+		        			<td width=\"60\" align=\"center\" class=\"select_devices\" device=\"-1\">
+			        			<img src=\"../sitio_web/img/eyes.png\">
+		        			</td>
+		        			<td valign=\"center\" style=\"padding-left:30px;\" class=\"select_devices\" device=\"0\"><b>VER TODOS</b></td>
+		        		</tr>			        	
+		        	</table>		    
+		        	<!-- BASE DE DATOS
+		        	<div id=\"devices_all\" style=\"overflow:auto; height:30px;\"> 
+		        	-->
+		        	<div id=\"devices_all\" style=\"overflow:auto; height:30px;\">
+			        	$html
+		    		</div>
+		    	";			
+		    }
+		    else	
+			{
+				$html="";
+			}
+			return $html;
+
+		}					
+
 
 	}  	
 ?>
-
-
-

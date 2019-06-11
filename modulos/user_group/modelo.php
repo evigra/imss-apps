@@ -10,39 +10,23 @@
 		var $sys_fields		=array(
 			"id"	    =>array(
 			    "title"             => "id",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"user_id"	    =>array(
 			    "title"             => "Usuario",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"menu_id"	    =>array(
 			    "title"             => "Menu",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"company_id"	    =>array(
 			    "title"             => "Compania",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    #"source"            => "../modulos/company/ajax/index.php",
-			    "default"           => "",
-			    "value"             => "",			    
 			),						
 			"active"	    =>array(
 			    "title"             => "Activo",
-			    "showTitle"         => "si",
 			    "type"              => "password",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 
 		);				
@@ -57,6 +41,8 @@
 		}
    		public function __SAVE($datas=NULL,$option=NULL)
     	{
+    		if(is_array($datas))
+	    	    $datas["company_id"]    	=@$_SESSION["company"]["id"];
     		parent::__SAVE($datas,$option);
 		}		
 		public function groups($option=NULL)		
