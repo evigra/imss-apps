@@ -88,7 +88,7 @@
 				$this->__FIND_FIELD_ID();		
 				$this->__FIND_FIELDS();
 								
-				if($_SESSION["var"]["vpath"]==$this->sys_name."/" AND substr(@$this->sys_private["action"],0,6)=="__SAVE")
+				if(@$_SESSION["var"]["vpath"]==$this->sys_name."/" AND substr(@$this->sys_private["action"],0,6)=="__SAVE")
 				{	
 					$this->__PRE_SAVE();
 				    $words["system_message"]    			=@$this->__SAVE_MESSAGE;
@@ -174,7 +174,7 @@
 													
 							$html_title["$campo"]			=$__REPORT_TITLES["html"];	
 							/////////////////////////////////////
-							$html_title_clean["$campo"]		=$__REPORT_TITLES["html"];								
+							$html_title_clean["$campo"]		=$__REPORT_TITLES["html"];															
 						}
 						#*/
     				}
@@ -241,9 +241,14 @@
 
 							$option["where"][]="$class_field_o IN ($busqueda)";			
 						}
+						if(@$this->sys_fields[$campo]["type"]=="select")
+						{							
+							$option["where"][]="$campo_aux ='$busqueda'";			
+						}
+
 						else
 							
-						$option["where"][]="$campo_aux $sys_where '%$busqueda%'";	
+							$option["where"][]="$campo_aux $sys_where '%$busqueda%'";	
 					}					
 				}	
 			}	
@@ -411,6 +416,13 @@
    			
    			
 			$this->sys_title		=$html_title;
+			if(!isset($_SESSION["modules"]))					
+				$_SESSION["modules"]										=array();
+			if(!isset($_SESSION["modules"][$this->sys_object]))	
+				$_SESSION["modules"][$this->sys_object]						=array();
+			if(!isset($_SESSION["modules"][$this->sys_object]["title"]))	
+				$_SESSION["modules"][$this->sys_object]["title"]			=$html_title;
+						
 			$this->sys_title_pdf	=$html_title;
    			   			
    			if(isset($html_title))			

@@ -231,14 +231,18 @@
 		public function __WA($data)
     	{    		    		    	
 			$sesion 			=array("apikey"=>"AO7K3A1BOEO8O0PX4KK4");
+			$sesion 			=array("apikey"=>"NJQ6UF3POVNMC00SFEWL");
+			
 
 			$url 				="https://panel.apiwha.com/send_message.php";
 			$vars 				=$sesion;				
 			$vars["number"]		=$data["telefono"];
+			
+			
+			#$vars["number"]		="5213414208060";
 			$vars["text"]		=$data["mensaje"];
 
-			$option				=array("url"=>$url,"post"=>$vars);
-			
+			$option				=array("url"=>$url,"post"=>$vars);			
 			$respuesta			=$this->__curl($option);			
     	}			
 		public function WS_TAECEL($data)
@@ -627,7 +631,7 @@
 				WHERE 1=1
 					AND nombre is not null
 					AND estatus=1
-					AND tipo_company='GPS'
+					AND tipo_company='SYSTEM'
 			"; 
 
 		    $datas              =$this->__EXECUTE($comando_sql, $option_conf);
@@ -709,15 +713,16 @@
 				$valor	=htmlentities($valor);
 													
 			if($campo=="sys_section_{$this->sys_name}")		$this->sys_private["section"]			=$valor;
+			elseif($campo=="sys_action_{$this->sys_name}" AND $this->sys_private["action"]=="")	$this->sys_private["action"]			=$valor;
+			
 			elseif($campo=="sys_section" AND $_SESSION["var"]["modulo"]==$this->sys_object)
 			{
-				$this->sys_private["section"]			=$valor;
+				$this->sys_private["section"]			=$valor; 
 			}
 			elseif($campo=="sys_action" AND $_SESSION["var"]["modulo"]==$this->sys_object)
 			{
 				$this->sys_private["action"]			=$valor;
-			}
-			elseif($campo=="sys_action_{$this->sys_name}" AND $this->sys_private["action"]=="")	$this->sys_private["action"]			=$valor;
+			}			
 			elseif($campo=="sys_id_{$this->sys_name}")				$this->sys_private["id"]				=$valor;
 			elseif($campo=="sys_order_{$this->sys_name}")			$this->sys_private["order"]				=$valor;
 			elseif($campo=="sys_torder_{$this->sys_name}")			$this->sys_private["torder"]			=$valor;
@@ -2192,22 +2197,25 @@
 		    	$option["sys_page_$name"]           			=$sys_page;		        		        
 				
 		    	if(isset($option["data"]) AND !in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))          			
+		    	{
 		    		$return["data"] =$option["data"];	
+								
+					$this->sys_title		=$_SESSION["modules"][$this->sys_object]["title"];					
+					$this->sys_title_pdf	=$this->sys_title;
+		    	}	
 		    	else  
 		    	{			    				    	
 		    	    $option["name"]                 			=$name;
-		    	   
 		    		$browse 									=$this->__BROWSE($option);		
 		    		
 					if(isset($this->class_one) AND isset($this->sys_memory) AND isset($template_option["class_field"]) AND $_SESSION["var"]["modulo"]==$this->class_one)
-						$_SESSION["SAVE"][$this->class_one]["$campo"]=$browse;;												
+						$_SESSION["SAVE"][$this->class_one]["$campo"]=$browse;
 					if(count($browse["data"])<=0)				$browse["data"]		=array();					
 					
 					##################################
 					
 		    		$return["data"]								= $browse["data"];		    				    		
-		    		$option["title"]							= @$this->sys_title;
-																					
+		    																							
 		    		if(isset($browse["total"]))		
 		    		{
 						$return["total"]						= $browse["total"];	
@@ -2218,6 +2226,8 @@
 						else                            		$fin    =$return["total"];
 					}			    		
 		    	}
+		    	$option["title"]								= @$this->sys_title;
+		    	
 		    	$total											=$return["total"];
 		    	if(!isset($browse))			$browse				=array("");	
 		    	if(!isset($browse["js"]))	$browse["js"]		="";	

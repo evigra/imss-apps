@@ -205,40 +205,65 @@
 					$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
 					$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
 					$words["trabajador_nombre"]				=str_replace("/"," ",$words["trabajador_nombre"]);
-					$words["trabajador_puesto"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_puesto"], 143,"-"));
-					
-					$words["trabajador_departamento"]		=str_replace("-","&nbsp;",str_pad($words["trabajador_departamento"], 40,"-"));
-					#$words["ocurrir"]						=str_replace("-","&nbsp;",str_pad($words["ocurrir"], 140,"-"));
-					#$words["hora"]							=str_pad($words["hora"], 15,"");
-					
-					
+					$words["trabajador_puesto"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_puesto"], 143,"-"));					
+					$words["trabajador_departamento"]		=str_replace("-","&nbsp;",str_pad($words["trabajador_departamento"], 40,"-"));					
 					$words["RT"]							=" &nbsp;  &nbsp; ";
-					$words["EG"]							=" &nbsp;  &nbsp; ";				
-										
+					$words["EG"]							=" &nbsp;  &nbsp; ";														
 					$words[ $dato["tipo"] ]					="&nbsp;<b>X</b>&nbsp;";
-
-					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_FORMATO")),$words);
+					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_RECETA")),$words);
 					
 					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
 					$words["sys_subtitulo"]					="";		
 					$words["sys_titulo2"]					="";		
 					$words["sys_subtitulo2"]				="";
-					$words["sys_asunto"]				="";				
+					$words["sys_asunto"]					="";				
 					$words["sys_pie"]						="1A72-009-027";		
-					
-				
-					#if(@$dato["trabajador_departamento_id"])
-						#$words["lugar"]						=$this->lugar(substr($dato["trabajador_departamento_id"],0,6));		
+									
 					$words["fecha"]							=$this->sys_date;		
-					#$words["fecha"]							="2017-09-21";		
-																											
 					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
-					$template								=$this->__REPLACE($template,$words);
+					$template								=$this->__REPLACE($template,$words);					
+					////////////////////////////////////////
+					$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
+					$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
+					$words["trabajador_nombre"]				=str_replace("/"," ",$words["trabajador_nombre"]);
+					$words["trabajador_puesto"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_puesto"], 143,"-"));					
+					$words["trabajador_departamento"]		=str_replace("-","&nbsp;",str_pad($words["trabajador_departamento"], 40,"-"));					
+					$words["RT"]							=" &nbsp;  &nbsp; ";
+					$words["EG"]							=" &nbsp;  &nbsp; ";														
+					$words[ $dato["tipo"] ]					="&nbsp;<b>X</b>&nbsp;";
+					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_DOTACION")),$words);
+					
+					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
+					$words["sys_subtitulo"]					="";		
+					$words["sys_titulo2"]					="";		
+					$words["sys_subtitulo2"]				="";
+					$words["sys_asunto"]					="";				
+					$words["sys_pie"]						="1A72-009-027";		
+									
+					$words["fecha"]							=$this->sys_date;		
+					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
+					$template								=$this->__REPLACE($template,$words);					
+
+
 				}	
-
 			}	
+			
+			
 
-			return                  					$template;
+			return                  					array(
+				array(
+					"format"		=>"A4",					
+					"html"			=>$template,					
+					"orientation"	=>"P",					
+				),			
+				array(
+					"format"		=>"A4",					
+					"html"			=>$template,					
+					"orientation"	=>"P",					
+				),			
+
+			);	
+;
 		}	
 	}
 ?>
