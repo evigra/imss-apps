@@ -191,17 +191,19 @@
 		}		
    		public function __FORMATO($option)
     	{
-			$template="";	
-			$datos										=$this->__BROWSE($option);
+				
+			$datos										=$this->__BROWSE($option);			
+			if(@$datos["data"])							$datos=$datos["data"];		
 			
-			if(@$datos["data"])							$datos=$datos["data"];			
+			$return=array();	
 
 			foreach($datos as $dato)
 			{				
 				$words									=$dato;			
 				
 				if(is_array($words) AND count($words)>0)
-				{	
+				{
+					$template="";	
 					$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
 					$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
 					$words["trabajador_nombre"]				=str_replace("/"," ",$words["trabajador_nombre"]);
@@ -222,7 +224,17 @@
 					$words["fecha"]							=$this->sys_date;		
 					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
 					$template								=$this->__REPLACE($template,$words);					
+					
+					$return[]=				array(
+						"format"		=>"A4",					
+						"html"			=>$template,					
+						"orientation"	=>"P",					
+					);
+
+					
 					////////////////////////////////////////
+				
+					$template="";
 					$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
 					$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
 					$words["trabajador_nombre"]				=str_replace("/"," ",$words["trabajador_nombre"]);
@@ -244,6 +256,12 @@
 					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
 					$template								=$this->__REPLACE($template,$words);					
 
+					$return[]=				array(
+						"format"		=>"A4",					
+						"html"			=>$template,					
+						"orientation"	=>"P",					
+					);
+
 
 				}	
 			}	
@@ -251,11 +269,6 @@
 			
 
 			return                  					array(
-				array(
-					"format"		=>"A4",					
-					"html"			=>$template,					
-					"orientation"	=>"P",					
-				),			
 				array(
 					"format"		=>"A4",					
 					"html"			=>$template,					
