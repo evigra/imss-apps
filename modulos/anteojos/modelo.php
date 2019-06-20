@@ -212,18 +212,18 @@
 					$words["RT"]							=" &nbsp;  &nbsp; ";
 					$words["EG"]							=" &nbsp;  &nbsp; ";														
 					$words[ $dato["tipo"] ]					="&nbsp;<b>X</b>&nbsp;";
-					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_RECETA")),$words);
+					$words2									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_RECETA")),$words);
 					
-					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
-					$words["sys_subtitulo"]					="";		
-					$words["sys_titulo2"]					="";		
-					$words["sys_subtitulo2"]				="";
-					$words["sys_asunto"]					="";				
-					$words["sys_pie"]						="1A72-009-027";		
+					$words2["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
+					$words2["sys_subtitulo"]					="";		
+					$words2["sys_titulo2"]					="";		
+					$words2["sys_subtitulo2"]				="";
+					$words2["sys_asunto"]					="";				
+					$words2["sys_pie"]						="1A72-009-027";		
 									
 					$words["fecha"]							=$this->sys_date;		
 					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
-					$template								=$this->__REPLACE($template,$words);					
+					$template								=$this->__REPLACE($template,$words2);					
 					
 					$return[]=				array(
 						"format"		=>"A4",					
@@ -237,12 +237,6 @@
 					$template="";
 					$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
 					$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
-					$words["trabajador_nombre"]				=str_replace("/"," ",$words["trabajador_nombre"]);
-					$words["trabajador_puesto"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_puesto"], 143,"-"));					
-					$words["trabajador_departamento"]		=str_replace("-","&nbsp;",str_pad($words["trabajador_departamento"], 40,"-"));					
-					$words["RT"]							=" &nbsp;  &nbsp; ";
-					$words["EG"]							=" &nbsp;  &nbsp; ";														
-					$words[ $dato["tipo"] ]					="&nbsp;<b>X</b>&nbsp;";
 					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_DOTACION")),$words);
 					
 					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
