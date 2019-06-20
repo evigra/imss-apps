@@ -268,15 +268,7 @@
 			
 			
 
-			return                  					array(
-				array(
-					"format"		=>"A4",					
-					"html"			=>$template,					
-					"orientation"	=>"P",					
-				),			
-
-			);	
-;
+			return $return;
 		}	
 	}
 ?>
