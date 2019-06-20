@@ -244,7 +244,7 @@
 					$words["sys_titulo2"]					="";		
 					$words["sys_subtitulo2"]				="";
 					$words["sys_asunto"]					="";				
-					$words["sys_pie"]						="1A72-009-027";		
+					$words["sys_pie"]						="1A72-009-028";		
 									
 					$words["fecha"]							=$this->sys_date;		
 					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
