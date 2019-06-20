@@ -246,7 +246,7 @@
 					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_DOTACION")),$words);
 					
 					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
-					$words["sys_subtitulo"]					="";		
+					$words["sys_subtitulo"]					="TARJETA DE CONTROL DE DOTACION DE ANTEOJOS";		
 					$words["sys_titulo2"]					="";		
 					$words["sys_subtitulo2"]				="";
 					$words["sys_asunto"]					="";				
