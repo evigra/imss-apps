@@ -2,7 +2,7 @@
 
 	var map;
 	var geocoder;
-	var gMEvent				=undefined;
+	var gMEvent					=undefined;
 
 	var Polyline				=undefined;	
 	var Polygon					=undefined;	
@@ -43,8 +43,9 @@
 	{								
 		class_one		=options["class_one"];
 		class_one_id	=options["class_one_id"];
+		class_section	=options["class_section"];
 		
-		class_field		=options["class_field"];
+		class_field		=options["class_field"];		
 		class_field_id	=options["class_field_id"];
 		
 		class_many		=options["class_many"];
@@ -54,7 +55,8 @@
 		var options_row={
 			"class_one":		class_one, 	
 			"class_one_id":		class_one_id, 	
-			"class_field":		class_field, 
+			"class_section":	class_section,
+			"class_field":		class_field, 						
 			"class_field_id":	class_field_id, 			
 		};				
 		$.ajax(
@@ -81,6 +83,7 @@
 		class_many		=options["class_many"];
 		object			=options["object"];		
 				
+		//alert(class_section);		
 		var require="";				
 		$("." + class_field).each(function()
 		{
@@ -183,13 +186,22 @@
 					options["id"]				=id;					
 					options["object"]			=class_one;
 					options["class_many"]		=class_one;						
+
+					for(ivariables in variables)
+					{
+						if(variables[ivariables]=="write")
+							options["class_section"]	=variables[ivariables];	
+						if(variables[ivariables]=="delete")
+							options["class_section"]	=variables[ivariables];	
+					}
 										
 					many2one_get(options);													
 					for(ivariables in variables)
 					{
-						options["class_section"]	=variables[ivariables];	
+						
 						if(variables[ivariables]=="write")
 						{
+							options["class_section"]	=variables[ivariables];	
 							$("div#create_"+ class_field).dialog({
 								open: function(event, ui){
 									var dialog = $(this).closest('.ui-dialog');
@@ -207,23 +219,15 @@
 							});							
 						}
 						if(variables[ivariables]=="delete")
-						{
-							many2one_post(options);	
+						{				
+							options["class_section"]	=variables[ivariables];	
+							enviar = confirm("Borrar datos");														
+							if(enviar==true)
+							{
+								many2one_post(options);	
+							}									
 						}
 					}					
-					/*					
-					for(ivariables in variables)
-					{
-						var input="";
-						if($("input#"+ivariables).length>0) {}
-						else	
-						{	
-							input="<input id=\""+ivariables+"\" name=\""+ivariables+"\" value=\"" + variables[ivariables] + "\" type=\"hidden1\">";						
-							$("form").append(input);
-						}			
-					}
-					*/	
-
 				});
 			}	   		
 		}	
@@ -986,8 +990,6 @@ styles:
 	
     function odometro(item)	 
     {    	
-
-    	
     	if(item["ot"]["battery"])			item["ba"]  =item["ot"]["battery"];
     	else								item["ba"]  =0;
     	if(item["al"])						item["al"]  =item["al"];
@@ -1058,7 +1060,7 @@ styles:
 			var tablero="\
 				<table>\
 					<tr><td width=\"40\"  style=\"color:#fff;\"><a href=\"#\"onclick=\"command_device('Bloquear motor'," + item["de"] +")\"><img width=\"32\" src=\"../sitio_web/img/swich_off.png\"></a></td>\
-					<td style=\"color:#fff;\">" + tablero1 + "</td></tr>\
+					<td style=\"color:#fff;\"><a href=\"tel:" + item["te"] +"\">" + tablero1 + "</a></td></tr>\
 					<tr><td width=\"40\"  style=\"color:#fff;\"><a href=\"#\"onclick=\"command_device('Activar motor'," + item["de"] +")\"><img width=\"32\" src=\"../sitio_web/img/swich_on.png\"></a></td>\
 					<td style=\"color:#fff;\">" +tablero2 + "</td></tr>\
 				</table>\
@@ -1119,12 +1121,18 @@ styles:
 				if(vehicle["ty"]=="deviceStopped")		icon_status="stop.png";
 				if(vehicle["ty"]=="deviceMoving")		icon_status="car_signal1.png";
 				if(vehicle["ty"]=="deviceOnline")		icon_status="car_signal1.png";
-				if(vehicle["ty"]=="deviceOffline")		icon_status="car_signal0.png";
+				if(vehicle["ty"]=="deviceOffline")		
+				{
+					icon_status="car_signal0.png";
+					if(vehicle["ho"]==1)	icon_status="car_signal1.png";
+				}	
 				if(vehicle["ty"]=="ignitionOn")			icon_status="swich_on.png";
 				if(vehicle["ty"]=="ignitionOff")		icon_status="swich_off.png";
 				
 				if(vehicle["sp"]<5 && vehicle["ty"]=="deviceOnline")	icon_status="stop.png";
 				if(vehicle["sp"]>5 && vehicle["ty"]=="deviceOnline")	icon_status="car_signal1.png";
+				
+				
 				
 				
 				if(icon_status!="")
@@ -1676,11 +1684,17 @@ styles:
 				var url		= location.href;		
 				var arrUrl 	= url.split("/");
 				
-				var clase	=arrUrl[ arrUrl.length -2 ];				
+				var clase	=arrUrl[ arrUrl.length -2 ];
+				var str_get	="";								
+
+				$(".modulo_principal").each(function()
+				{
+					str_get	+="&" + $(this).attr("id") + "=" +$(this).val();			
+				});
 
 				$("form")
 					.attr("target","_blank")
-					.attr("action","&sys_action=print_pdf")
+					.attr("action","&sys_action=print_pdf"+str_get)
 					.submit();
 				$("form")
 					.attr("action","")
