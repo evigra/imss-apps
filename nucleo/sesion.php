@@ -26,9 +26,9 @@
 		$_SESSION["var"]["print"]			=array("print_report","print_excel","print_pdf");		
 		$_SESSION["var"]["datetime"]		=date("Y-m-d H:i:s" , strtotime ("-7 hour", strtotime(date("Y-m-d H:i:s"))));
 		$_SESSION["var"]["date"]			=date("Y-m-d" , strtotime ("-7 hour", strtotime(date("Y-m-d H:i:s"))));		
-		$_SESSION["var"]["modulo"]			=substr($_SESSION["var"]["vpath"],0, strpos($_SESSION["var"]["vpath"], "/"));
+		$_SESSION["var"]["modulo"]			=substr(@$_SESSION["var"]["vpath"],0, strpos(@$_SESSION["var"]["vpath"], "/"));
 		$_SESSION["var"]["modulo_path"] 	="modulos/". $_SESSION["var"]["modulo"] ."/index.php";
-		$_SESSION["var"]["folders"] 		=substr_count($_SESSION["var"]["vpath"], "/");
+		$_SESSION["var"]["folders"] 		=substr_count(@$_SESSION["var"]["vpath"], "/");
 		$_SESSION["var"]["import"]			=array(
 												"type"		=>"replace",
 												"fields"	=>",",
@@ -69,33 +69,36 @@
 			break;
 			exit;
 		}
-		else
-		#*/ 
-		
-		if(@file_exists($pre_path	."nucleo/general.php"))
+		else if(@file_exists($pre_path	."nucleo/general.php"))
 		{
 			require_once($pre_path	."nucleo/basededatos.php");
 			require_once($pre_path	."nucleo/auxiliar.php");
 			require_once($pre_path	."nucleo/general.php");		
-
-
-							
-			$objeto					=new general();         
-
-			$comando_sql			="SELECT * FROM modulos ";		
-			$modulos 				=$objeto->__EXECUTE($comando_sql);    
 	
+			$objeto					=new general();         
+			
+			
+			
+			$comando_sql			="SELECT * FROM modulos ";
+
+			$modulos 				=$objeto->__EXECUTE($comando_sql);    
+			
+			
+			
+			#/*
 			foreach($modulos as $modulo)
 			{
 				if(file_exists($pre_path	."modulos/{$modulo["clase"]}/modelo.php")) 				
 					require_once($pre_path	."modulos/{$modulo["clase"]}/modelo.php");	
 			}
+			#*/
+			
 			if(@$_REQUEST["setting_company"]>0)
 			{
 				$comando_sql="
 					SELECT 
-						admin_soles37.FN_ImgFile('../modulos/user/img/user.png',files_id,0,0) as img_files_id,
-						admin_soles37.FN_ImgFile('../modulos/user/img/user.png',files_id,180,0) as img_files_id_med, c.*		
+						FN_ImgFile('../modulos/user/img/user.png',files_id,0,0) as img_files_id,
+						FN_ImgFile('../modulos/user/img/user.png',files_id,180,0) as img_files_id_med, c.*		
 					FROM company c WHERE id={$_REQUEST["setting_company"]}
 				";		
 				$modulos 		=$objeto->__EXECUTE($comando_sql);    
@@ -107,4 +110,4 @@
 		}				
 		$pre_path.="../";
 	}
-?>	
+?>

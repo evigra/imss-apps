@@ -16,7 +16,7 @@
 			if(!isset($_SESSION["user"]["l18n"])) 		@$_SESSION["user"]["l18n"]			="es_MX";
 			
 			@$_SESSION["user"]["huso_h"]				=5;
-			#@$_SESSION["user"]["huso_h"]				=6;
+			#@$_SESSION["user"]["huso_h"]				=6F;
 						 
 			if(!is_array($option)) 						$option=array();
 						
@@ -44,11 +44,13 @@
 			
 			#ini_set('display_errors', 1);				
 			
-			if(in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]))
+			#$this->__PRINT_R($_SERVER["SERVER_NAME"]);
+			
+			if(isset($_SESSION["var"]["server_error"]) AND in_array(@$_SERVER["SERVER_NAME"],@$_SESSION["var"]["server_error"]))
 			{	
 				#error_reporting(-1);
 			}
-			if(in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_true"]))
+			if(isset($_SESSION["var"]["server_true"]) AND in_array(@$_SERVER["SERVER_NAME"],@$_SESSION["var"]["server_true"]))
 			{	
 				#ini_set('display_errors', 0);	
 			}
@@ -78,8 +80,7 @@
 				if(!isset($_SESSION["pdf"]["PDF_HEADER_LOGO"]))			$_SESSION["pdf"]["PDF_HEADER_LOGO"]			="tcpdf_logo.jpg";   	# [pt=point, mm=millimeter, cm=centimeter, in=inch
 				if(!isset($_SESSION["pdf"]["PDF_HEADER_LOGO_WIDTH"]))	$_SESSION["pdf"]["PDF_HEADER_LOGO_WIDTH"]	=20;   	
 				if(!isset($_SESSION["pdf"]["PDF_MARGIN_TOP"]))			$_SESSION["pdf"]["PDF_MARGIN_TOP"]			=50;   	
-				
-				
+								
 				if(@$this->sys_private["section"]=="delete")
 				{
 					$this->__PRE_DELETE(@$this->sys_private["id"]);				
@@ -88,11 +89,9 @@
 				$this->__FIND_FIELD_ID();		
 				$this->__FIND_FIELDS();
 								
-				if(@$_SESSION["var"]["vpath"]==$this->sys_name."/" AND substr(@$this->sys_private["action"],0,6)=="__SAVE")
+				if(@$_SESSION["var"]["vpath"]==$this->sys_name."/")
 				{	
 					$this->__PRE_SAVE();
-				    $words["system_message"]    			=@$this->__SAVE_MESSAGE;
-				    $words["system_js"]     				=@$this->__SAVE_JS;	            
 				}									
 				$this->__FIND_FIELDS(@$this->sys_private["id"]);
 			}	
@@ -111,7 +110,7 @@
     		{    			
     			$this->__FIND_FIELD_ID();
     			    			
-    			$id		=$option;
+    			$this->sys_private["id"]		=$option;
     			$option	=array();
 				
     			$option["where"]=array(    			
@@ -145,7 +144,6 @@
     			{
     				$select				="";
     				$html_title			=array();
-					$html_title_clean	=array();
     				foreach($option["select"] as $campo => $title)
     				{
     					$font		=$title;
@@ -173,8 +171,6 @@
 							$__REPORT_TITLES				=$this->__REPORT_TITLES($option_report_titles);
 													
 							$html_title["$campo"]			=$__REPORT_TITLES["html"];	
-							/////////////////////////////////////
-							$html_title_clean["$campo"]		=$__REPORT_TITLES["html"];															
 						}
 						#*/
     				}
@@ -348,9 +344,9 @@
 
     		$this->sys_sql		="SELECT $select FROM $from $where  $group  $having $order $limit";
     		
-    		#$option["echo"]="GENERAL :: {$this->sys_object}";
-    		if(isset($option["echo"])  AND in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]))
+    		if(isset($option["echo"])  AND in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]) AND @$this->sys_private["action"]!="print_pdf")
     		{
+    		
              	echo "<div class=\"echo\" title=\"{$option["echo"]}\">".$this->sys_sql."</div>";
    			}
    			$return["data"] 	= $this->__EXECUTE($this->sys_sql);
@@ -374,9 +370,7 @@
 						);
 						$__REPORT_TITLES				=$this->__REPORT_TITLES($option_report_titles);
 												
-						$html_title["$campo"]			=$__REPORT_TITLES["html"];
-						//////////////////////	
-						$html_title_clean["$campo"]		=$__REPORT_TITLES["html"];								
+						$html_title["$campo"]			=$__REPORT_TITLES["html"];					
 					}
 				}    			
 			}
@@ -407,15 +401,13 @@
 						$__REPORT_TITLES				=$this->__REPORT_TITLES($option_report_titles);
 												
 						$html_title["$campo"]			=$__REPORT_TITLES["html"];	
-						$html_title_clean["$campo"]		=$__REPORT_TITLES["html"];								
 					}
-					#*/
 				}	
 			}	
    			
    			
    			
-			$this->sys_title		=$html_title;
+			$this->sys_title												=$html_title;
 			if(!isset($_SESSION["modules"]))					
 				$_SESSION["modules"]										=array();
 			if(!isset($_SESSION["modules"][$this->sys_object]))	
@@ -423,18 +415,6 @@
 			if(!isset($_SESSION["modules"][$this->sys_object]["title"]))	
 				$_SESSION["modules"][$this->sys_object]["title"]			=$html_title;
 						
-			$this->sys_title_pdf	=$html_title;
-   			   			
-   			if(isset($html_title))			
-   			{
-   				$this->sys_title		=$html_title;
-   				$this->sys_title_pdf	=$html_title;
-   			}		
-			if(isset($html_title_clean))	
-			{
-				$this->sys_title_pdf	= $html_title_clean;
-			}	
-			
     		if($id!="")						$return					= $return["data"];
 
     		if(!isset($return["total"]) AND isset($return["data"]))
@@ -444,8 +424,6 @@
     		
 			if(is_array(@$return["data"]))
 			{
-				
-			
 				foreach($this->sys_fields as $campo => $value)
 				{	
 					#if(@$this->sys_fields[$campo]["relation"]=="many2one")
@@ -537,37 +515,10 @@
 						}				
 						elseif(!isset($this->sys_fields["$campo"]["relation"]))
 						{
-								if(count(@$this->sys_fields["$campo"])>1 )
-								{
-									$fields	.="$campo='$valor',";
-								}
-
-
-							
-							/*
-							if(is_null(@$this->sys_private["field"]) OR @$this->sys_private["id"]=="") 
+							if(count(@$this->sys_fields["$campo"])>1 )
 							{
-								if(count(@$this->sys_fields["$campo"])>1 )
-								{
-									if(!is_array($valor))	
-										$fields	.="$campo='$valor',";
-								}
+								$fields	.="$campo='$valor',";
 							}
-							else
-							{
-								if(count(@$this->sys_fields["$campo"])>2 and @$this->sys_fields["$campo"]["type"]!='primary key')
-								{
-									if(!is_array($valor))	
-									{					
-										if(@$data_anterior["data"][0][$campo]!=$valor)		
-											@$modificados.=" 
-												<b>{$this->sys_fields["$campo"]["title"]}</b>= $valor
-											";
-										$fields	.="$campo='$valor',";
-									}	
-								}
-							}
-							*/	
 						}
 						else			$fields	.="$campo='$valor',";
 					}    
@@ -610,7 +561,6 @@
 						if(@$modificados!="")
 						{
 							$data_historicos="descripcion='<font>$user_name</font> <b>MODIFICO</b> los valores $modificados'";	
-							#$data_historicos="descripcion='{$_SESSION["user"]["matricula"]}<b>MODIFICO</b> los valores $modificados'";	
 						}	
 					}	
 
@@ -630,15 +580,19 @@
 						$this->__MESSAGE_OPTION["title"]	=$option["title"];
 						$option["close"]=1;
 						
+						
+						if(isset($this->sys_private["id"]) AND $this->sys_private["id"]!="")
+							$return=$this->sys_private["id"];
 						if($insert==1)
 						{
 							$option["close"]	=1;
 						
 							$data = $this->__EXECUTE("SELECT LAST_INSERT_ID() AS ID",$option); 
 							unset($option["close"]);
-							$this->sys_private["id"]=$data[0]["ID"];
+							$return=$data[0]["ID"];
+							#$this->sys_private["id"]=$data[0]["ID"];
 						}	
-						$return=@$this->sys_private["id"];
+						#$return=@$this->sys_private["id"];
 						
 						foreach($many2one as $campo =>$valores)	
 						{										
@@ -650,7 +604,7 @@
 							
 							if($this->sys_recursive<3)
 							{								
-								if($recursive=0)	$recursive=	$this->sys_recursive + 1;
+								if($recursive<=0)	$recursive=	$this->sys_recursive + 1;
 								$eval="																			
 									$"."option"."_obj_$campo		=array(
 										\"recursive\"	=>$recursive,
@@ -674,7 +628,7 @@
 											if(isset($"."class_field_m))
 											{			
 												if(!(isset($"."valor_campo[$"."class_field_m]) AND @$"."valor_campo[$"."class_field_m]==\"\"))
-												 	$"."valor[$"."class_field_m]						=$"."this->sys_private[\"id\"];
+												 	$"."valor[$"."class_field_m]						=$"."return;
 											}
 											$"."primary_field					=@$"."this->sys_fields[\"$campo\"][\"obj\"]->sys_private[\"field\"];
 											
@@ -720,6 +674,9 @@
 					
 					$class_one		=$datas["class_one"];
 					$class_field	=$datas["class_field"];
+					$class_section	=$datas["class_section"];
+					
+					#$this->__PRINT_R($datas);
 					
 					if(!isset($_SESSION["SAVE"]["$class_one"][$class_field]))
 					{	
@@ -742,21 +699,24 @@
 					if(!isset($_SESSION["SAVE"]["$class_one"][$class_field]["data"]))	
 					{
 						$_SESSION["SAVE"]["$class_one"][$class_field]["data"]=array();
-						#$_SESSION["SAVE"]["$class_one"][$class_field]["title"]=array();
 					}
 					if(isset($datas["class_field_id"]) AND $datas["class_field_id"]>=0 )
 					{
 						$active_id		=$datas["class_field_id"];						
-						$_SESSION["SAVE"]["$class_one"][$class_field]["data"][$active_id]	=	$row;							
+						
+						if($class_section=="delete")
+						{							
+							unset($_SESSION["SAVE"]["$class_one"][$class_field]["data"][$active_id]);
+						}	
+						else
+							$_SESSION["SAVE"]["$class_one"][$class_field]["data"][$active_id]	=	$row;							
 					}
 					else
 					{	
 						$_SESSION["SAVE"]["$class_one"][$class_field]["data"][]	=	$row;
-					}
-					
+					}					
 					$_SESSION["SAVE"]["$class_one"][$class_field]["total"]	=	count($_SESSION["SAVE"]["$class_one"][$class_field]["data"]);
 					
-					#$this->__PRINT_R($_SESSION["SAVE"]["$class_one"]);
 				}		
 			}
     	}
@@ -782,14 +742,14 @@
     		
 	   		if(is_array($option))
     		{
-				if(isset($option["echo"])  AND $this->sys_enviroments	=="DEVELOPER")
+				if(isset($option["echo"])  AND $this->sys_enviroments	=="DEVELOPER" AND @$this->sys_private["action"]!="print_pdf")
 				{
 		        	echo "<div class=\"echo\" style=\"display:none;\" title=\"{$option["echo"]}\">".$this->sys_sql."</div>";
 		        }	
     			if(isset($option["open"]))	
     			{    			
     				$this->abrir_conexion();
-    				if(isset($option["e_open"])  AND $this->sys_enviroments	=="DEVELOPER")
+    				if(isset($option["e_open"])  AND $this->sys_enviroments	=="DEVELOPER" AND @$this->sys_private["action"]!="print_pdf")
     					echo "<br><b>CONECCION ABIERTA</b><br>$comando_sql<br>{$option["e_open"]}";    				
     			}	
     		}
@@ -799,7 +759,7 @@
 			{
 				$resultado	= @$this->OPHP_conexion->query($comando_sql);
 				
-				if(isset($this->OPHP_conexion->error) AND in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]) AND $this->OPHP_conexion->error!="" AND $this->sys_enviroments	=="DEVELOPER")
+				if(isset($this->OPHP_conexion->error) AND in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]) AND $this->OPHP_conexion->error!="" AND $this->sys_enviroments	=="DEVELOPER" AND @$this->sys_private["action"]!="print_pdf")
 				{					
 					echo "
 						<div class=\"echo\" style=\"display:none;\" title=\"ERROR {$this->sys_object}\">
@@ -813,7 +773,7 @@
 			else
 			{
 				$resultado=array();
-				if(isset($option["echo"])  AND $this->sys_enviroments	=="DEVELOPER")
+				if(isset($option["echo"])  AND $this->sys_enviroments	=="DEVELOPER"  AND @$this->sys_private["action"]!="print_pdf")
 					echo "<div class=\"echo\" style=\"display:none;\" title=\"Coneccion\">Error en la conecion</div>";
 			}	
 
@@ -851,7 +811,7 @@
     			if(isset($option["close"]))	
     			{
     				$this->cerrar_conexion();
-    				    if(isset($option["e_close"]) AND in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]))
+    				    if(isset($option["e_close"]) AND in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]) AND @$this->sys_private["action"]!="print_pdf")
     					echo "<br><b>CONECCION CERRADA</b><br>{$option["e_close"]}";
     			}	
     		}
