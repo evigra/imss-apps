@@ -1,21 +1,28 @@
-
-  <img src="../sitio_web/img/logo2.png" alt=" " width="130"/>             
-  <div class="login">
-      <p>
-        <label for="user">Usuario:</label>
-        <input type="text" name="user" id="user" >
-      </p>
-
-      <p>
-        <label for="pass">Contraseña:</label>
-        <input type="password" name="pass" id="pass" >
-      </p>
-      <p class="login-submit">
-        <button id="action" type="submit" class="login-button">Login</button>
-      </p>      
-      <p class="forgot-password">
-        <a href="index.html">Recuperar Contraseña?</a>
-      </p>
+<div id = "contenedor" style="background-color:#373737;"> 
+	<table border="0" width="600">
+		<tr>
+			<td width="50"></td>
+			<td align="center" colspan="3"><img width="200" src="../sitio_web/img/logo.png" alt=" " /></td>
+			<td width="50"></td>			
+		</tr>
+		<tr><td align="center" colspan="5" height="60">{mensaje_sesion}</td></tr>
+		<tr>
+			<td></td>
+			<td width="100"></td>
+			<td align="center">
+				<div class="login">
+					<p>
+						{user}
+						{pass}
+					</p>
+					<p class="login-submit">
+						<button id="action" type="submit" class="login-button">Login</button>						
+					</p>      
+					<a href="index.html">Recuperar Contraseña?</a>
+				</div>  			
+			</td>
+			<td width="100"></td>
+			<td></td>
+		</tr>
+	<table>
   </div>
-  {mensaje_sesion}
-
