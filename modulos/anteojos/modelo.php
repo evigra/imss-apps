@@ -24,8 +24,7 @@
 			    "type"              => "input",
 			    "attr"             => array(
 					"required",
-			    ),			    			    
-				
+			    ),			    			    				
 			),
 			"trabajador_horario"	    =>array(
 			    "title"             => "Horario",
@@ -33,7 +32,6 @@
   			    "attr"             => array(
 			    	"readonly"=>"readonly"
 			    ),			    			    
-
 			),
 			"trabajador_puesto"	    =>array(
 			    "title"             => "Puesto",
@@ -118,16 +116,6 @@
 			    "type"              => "input",
 			),			
 		
-			"bifocal"	    =>array(
-			    "title"             => "Bifocal",
-			    "type"              => "autocomplete",
-			    "procedure"       	=> "autocomplete_tipos",
-			    "relation"          => "many2one",
-			    "class_name"       	=> "anteojos_tipo",
-			    "class_field_l"    	=> "descripcion",				# Label
-			    "class_field_o"    	=> "bifocal",
-			    "class_field_m"    	=> "descripcion",			    
-			),
 			"medico"	    =>array(
 			    "title"             => "Medico",
 			    "type"              => "input",
@@ -144,12 +132,32 @@
 			    "title"             => "Folio",
 			    "type"              => "hidden",
 			),				
+			"lente_costo"	    =>array(
+			    "title"             => "Costo",
+			    "type"              => "hidden",
+			),				
+
+			"lente_id"	    =>array(
+			    "title"             => "Bifocal",
+			    "description"       => "Responsable del dispositivo",
+			    "type"              => "autocomplete",
+			    "procedure"       	=> "__AUTOCOMPLETE",
+			    #"relation"          => "one2many",
+			    "relation"          => "many2one",
+			    "class_name"       	=> "contrato_lente_detalle",
+			    "class_field_l"    	=> "nombre",				# Label
+			    "class_field_o"    	=> "lente_id",
+			    "class_field_m"    	=> "id",			    
+			),			
+			
 		);				
 		##############################################################################	
 		##  Metodos	
 		##############################################################################
    		public function __SAVE($datas=NULL,$option=NULL)
     	{
+    		#$this->__PRINT_R($datas);
+
     		if($this->sys_private["section"]=="create")
     		{
 				$datas["fecha_registro"]	=$_SESSION["var"]["datetime"];
@@ -178,22 +186,37 @@
 			
     	    return $return;
 		}				
-   		public function __GENERAR_PDF()
-    	{
-			$_SESSION["pdf"]	=array();	
+
+		public function __REPORT_ANTEOJOS($option=array())
+		{
+			if($option=="")					$option				=array();			
+			if(!isset($option["where"]))	$option["where"]	=array();
+			if(!isset($option["select"]))	$option["select"]	=array();
+						
+			$option["select"][]						="lente_id";
+			$option["select"]["sum(lente_costo)"]	="lente_costo";
+
+			$option["group"]						="lente_id";
 			
-			$_SESSION["pdf"]["title"]				="INSTITUTO MEXICANO DEL SEGURO SOCIAL";
-			$_SESSION["pdf"]["subject"]				="ANTEOJOS";
-			$_SESSION["pdf"]["save_name"]			="";
-			$_SESSION["pdf"]["PDF_MARGIN_TOP"]		=10;
+			$option["echo"]						="lente_id";
 			
-			$_SESSION["pdf"]["template"]			=$this->__FORMATO($this->sys_private["id"]);
-		}		
-   		public function __FORMATO($option)
-    	{
-				
-			$datos										=$this->__BROWSE($option);			
+			
+			return $option;
+		}
+
+		public function __BROWSE($option=array())
+		{
+			$return = parent::__BROWSE($option);			
+			return $return;
+		}
+
+		##############################################################################	
+   		public function __PDF($Output="I")
+    	{				
+			$datos										=$this->__BROWSE($this->sys_private["id"]);			
 			if(@$datos["data"])							$datos=$datos["data"];		
+			
+			#$this->__PRINT_R($datos);
 			
 			$return=array();	
 
@@ -214,40 +237,37 @@
 					$words[ $dato["tipo"] ]					="&nbsp;<b>X</b>&nbsp;";
 					$words2									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_RECETA")),$words);
 					
-					$words2["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
-					$words2["sys_subtitulo"]					="";		
+					$words2["sys_title"]					="DELEGACION REGIONAL COLIMA";				
+					$words2["sys_subtitle"]					="";		
 					$words2["sys_titulo2"]					="";		
 					$words2["sys_subtitulo2"]				="";
 					$words2["sys_asunto"]					="";				
 					$words2["sys_pie"]						="1A72-009-027";		
 									
 					$words["fecha"]							=$this->sys_date;		
-					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
+					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO");
 					$template								=$this->__REPLACE($template,$words2);					
 					
 					$return[]=				array(
 						"format"		=>"A4",					
 						"html"			=>$template,					
 						"orientation"	=>"P",					
-					);
-
-					
-					////////////////////////////////////////
-				
+					);					
+					////////////////////////////////////////				
 					$template="";
 					$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
 					$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
 					$words									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_DOTACION")),$words);
 					
-					$words["sys_titulo"]					="DELEGACION REGIONAL COLIMA";		
-					$words["sys_subtitulo"]					="TARJETA DE CONTROL DE DOTACION DE ANTEOJOS";		
+					$words["sys_title"]						=$words2["sys_title"];
+					$words["sys_subtitle"]					="TARJETA DE CONTROL DE DOTACION DE ANTEOJOS";		
 					$words["sys_titulo2"]					="";		
 					$words["sys_subtitulo2"]				="";
 					$words["sys_asunto"]					="";				
 					$words["sys_pie"]						="1A72-009-028";		
 									
 					$words["fecha"]							=$this->sys_date;		
-					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO_IMSS");
+					$template								.=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO");
 					$template								=$this->__REPLACE($template,$words);					
 
 					$return[]=				array(
@@ -255,15 +275,10 @@
 						"html"			=>$template,					
 						"orientation"	=>"P",					
 					);
-
-
 				}	
-			}	
-			
-			
-
-			return $return;
+			}				
+			$_SESSION["pdf"]["template"]=$return;		
+			@parent::__PDF("I");
 		}	
 	}
 ?>
-

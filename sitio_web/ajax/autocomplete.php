@@ -15,6 +15,7 @@
 		);													
 		$"."objeto   	=new {$class_name}($"."option"."_obj_{$class_name});
 	";		
+	#echo $eval;
 	eval($eval);					
 
 
@@ -27,7 +28,10 @@
 			$"."datas		=$"."objeto->{$procedure}();
 		";		
 		eval($eval);
+		#$objeto->__PRINT_R($datas);
 		$datas			=$datas["data"];
+		
+		
 		
 		foreach($datas as $index => $data)
 		{

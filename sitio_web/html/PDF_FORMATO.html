@@ -1,21 +1,28 @@
-<table width="770" border="0">
+<table width="550" border ="1">
 	<tr>
-		<td height="10" width="150" align="left" >
-			 {company_id.img_files_id_med} 
+		<td height="420" align="center">
+			<table width="100%" border="0" style="padding:3px;">					
+				<tr>
+					<td height="10" width="70" align="center">
+						<img src="sitio_web/img/logo2.png">
+					</td>
+					<td width="550" align="left">
+						<font size="16"><b>INSTITUTO MEXICANO DEL SEGURO SOCIAL</b></font><br>
+						<font size="13"><b>{sys_title}</b></font><br>
+						<font size="10"><b>{sys_subtitle}</b></font><br>			
+					</td>						
+				</tr>
+			</table>	
+			
+			<table width="100%" border ="0" style="padding:5px;">					
+				<tr>
+					<td align="center">
+						{sys_asunto}
+						{sys_modulo}
+						{sys_pie}
+					</td>
+				</tr>
+			</table>				
 		</td>
-		<td align="left">
-			<font size="16"><b>{company_id.nombre}</b></font><br>
-			<font size="13"><b>{sys_title}</b></font><br>
-			<font size="10"><b>{sys_subtitle}</b></font><br>			
-		</td>						
 	</tr>
-	<tr>
-		<td colspan="2" height="650" align="center">{sys_modulo}</td>										
-	</tr>
-	<tr>
-		<td colspan="2" color="#ccc" align="center"><br><br>{company_id.domicilio_fiscal}</td>
-	</tr>
-	<tr>
-		<td colspan="2" color="#ccc" align="center">{company_id.razonSocial} {company_id.RFC} {company_id.email} {company_id.telefono}</td>															
-	</tr>	
 </table>		

@@ -48,16 +48,9 @@
 		public function __SESSION()
 		{  
 			$redireccionar= "<script>window.location=\"../webHome/\";</script>";
-			if(is_array($_SESSION))
+			if(is_array($_SESSION) AND isset($_SESSION["user"]) AND is_array($_SESSION["user"]) AND isset($_SESSION["user"]["name"]))
 			{
-				if(array_key_exists("user",$_SESSION))
-				{
-					if(is_array($_SESSION["user"]))
-					{
-						if(array_key_exists("name",$_SESSION["user"]) AND $_SESSION["user"]["name"]!="")
-							$redireccionar= "";					
-					}					
-				}			
+				$redireccionar= "";					
 			}
 			//orden_venta/&sys_action=print_pdf&sys_section=write&sys_id=90&sys_pdf=S
 			if($this->sys_private["action"]=="print_pdf")
@@ -66,19 +59,13 @@
 			}
 			if($redireccionar!="")
 			{
-				$_SESSION=array();
-				$_SESSION["user"]="Invitado";
+				#$_SESSION=array();
+				#$_SESSION["user"]="Invitado";
 				echo $redireccionar;
 				exit();
 			}
 			
     	}
-    	/*    	
-		public function __SAVE_ALERT($option)
-		{  
-
-		} 
-		*/   	
 		public function __MENU_SEGUIMIENTO()
 		{  
 				$view			=$this->__TEMPLATE("sitio_web/html/menu_seguimiento");				
@@ -202,7 +189,7 @@
 				curl_setopt($ch,CURLOPT_POSTFIELDS,$option["post"]);
 			}	
 			
-			if(isset($option["user"]))
+			if(isset($option["user"]) AND isset($option["pass"]))
 			{
 				curl_setopt($ch, CURLOPT_USERPWD, $option["user"].":".$option["pass"]);
 				curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
@@ -212,6 +199,12 @@
 			if(isset($option["location"]))			curl_setopt($ch,CURLOPT_FOLLOWLOCATION, $option["location"]);	# true or false
 			if(isset($option["referer"]))			curl_setopt($ch,CURLOPT_REFERER, $option["referer"]);			# true or false
 			if(isset($option["service"]))			curl_setopt($ch,CURLOPT_SERVICE_NAME, $option["service"]);		# true or false
+			if(isset($option["ip"]))				curl_setopt($ch,CURLOPT_HTTPHEADER, array(
+					"REMOTE_ADDR: {$option["ip"]}",
+		            "X_FORWARDED_FOR: {$option["ip"]}",
+		            "HTTP_X_REAL_IP: {$option["ip"]}",       
+                )
+            );		
 			
 			
 			curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
@@ -230,23 +223,34 @@
 				"return"	=>$resultado,				
 			);
 						
-			curl_close ($ch);
-			
+			curl_close ($ch);			
 			return $return;
 		}
 		public function __WA($data)
-    	{    		    		    	
-			$sesion 			=array("apikey"=>"NJQ6UF3POVNMC00SFEWL");
+    	{   
+    		$apikey				="ZUYJGBXXPZ4TBFDJSQZH";		#mio
+    		 		    		    	
+			$sesion 			=array("apikey"=>"BQ0MZWAVJ1G0T3CMQ4TL");		#System
 			
 			$url 				="https://panel.apiwha.com/send_message.php";
 			$vars 				=$sesion;				
-			$vars["number"]		=$data["telefono"];
 						
-			#$vars["number"]		="5213414208060";
-			$vars["text"]		=$data["mensaje"];
+			if(in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_true"]))	
+				$vars["number"]		=$data["telefono"];
+			else	
+				$vars["number"]		="5213141182618";
 
-			$option				=array("url"=>$url,"post"=>$vars);			
-			$respuesta			=$this->__curl($option);			
+			if($vars["number"]!="")
+			{	
+				$vars["text"]		=$data["mensaje"];
+
+				$option				=array(
+					"url"			=>$url,
+					"post"			=>$vars
+				);
+				return				$this->__curl($option);	
+			}
+			return	"Error";						
     	}			
 		public function WS_TAECEL($data)
     	{    		    		    	
@@ -348,6 +352,8 @@
 						    
 				    if(isset($_SESSION["company"]["razonSocial"]) AND isset($_SESSION["user"]["name"]))
 				    {
+					    $words["companys"]           	=@$this->__COMPANYS();
+
 					    $words["sys_empresa"]        	=$_SESSION["company"]["nombre"];
 					    $words["system_company"]       	=$_SESSION["company"]["nombre"];
 					    $words["system_domicilio"]     	=$_SESSION["company"]["domicilio_fiscal"];
@@ -359,7 +365,6 @@
 					    $words["system_logo"]           =$this->__SHOW_FILE($_SESSION["company"]["files_id"]);
 					    $words["system_img"]           	=$this->__HTML_USER();
 					    $words["sys_page"]           	=@$this->request["sys_page"];
-					    $words["companys"]           	=@$this->__COMPANYS();
 					}
 			    }
 			    else
@@ -641,7 +646,7 @@
 					company
 				WHERE 1=1
 					AND nombre is not null
-					AND estatus=1
+					AND estatus IN (1,-1)
 					AND tipo_company='SYSTEM'
 			"; 
 
@@ -745,8 +750,6 @@
 				$this->request["$campo"]	=$valor;
 				unset($_REQUEST[$campo]);
 			}
-				
-			
 			return 	$valor;		
 		}
 		##############################################################################
@@ -769,6 +772,15 @@
 						
 						unset($_REQUEST["$request_campo"]);
 					}
+					else if(isset($_REQUEST["auto_$campo"]))
+					{
+						$valor					=$_REQUEST["auto_$campo"];
+						
+						$this->sys_fields["$campo"]["values"][0][$this->sys_fields["$campo"]["class_field_l"]]=$valor;
+
+						unset($_REQUEST["auto_$campo"]);
+					}
+
 					else if(isset($_REQUEST["sys_filter_". $request_campo]))
 					{
 						$valor					=$_REQUEST["sys_filter_". $request_campo];
@@ -1086,22 +1098,34 @@
 				$pdf->SetFooterMargin($_SESSION["pdf"]["PAGE"]);
 
 			$pdf->SetFont('helvetica', '', 9);
-			$pdf->AddPage();
 
-			$html = @$_SESSION["pdf"]["template"];			
-			unset($_SESSION["pdf"]["template"]);
+			if(!is_array($_SESSION["pdf"]["template"]))
+			{
+				$_SESSION["pdf"]["template"]			=array(
+					array(
+						"format"		=>"A4",					
+						"html"			=>$_SESSION["pdf"]["template"],					
+						"orientation"	=>"P",					
+					),			
+				);	
+			}	
+			$datos=$_SESSION["pdf"]["template"];
+			foreach($datos as $dato)
+			{
+				$pdf->AddPage($dato["orientation"],$dato["format"]);	
+				$pdf->writeHTML($dato["html"], true, 0, true, 0);
+			}
 
-			$pdf->writeHTML($html, true, 0, true, 0);
-			$pdf->lastPage();
+			$pdf->lastPage();			
 
 			if(!isset($_SESSION["pdf"]["save_name"]))	$_SESSION["pdf"]["save_name"]=$_SESSION["pdf"]["title"];
-
-			
 			
 			if($Output=="S")
 				$_SESSION["pdf"]["file"] =$pdf->Output("prueba.pdf", $Output);
 			else	
 				$pdf->Output($_SESSION["pdf"]["save_name"], $Output);
+				
+			unset($_SESSION["pdf"]);
 			exit;
 		}		
     	##############################################################################    
@@ -2371,6 +2395,48 @@
 			$option["type_view"]="kanban";
 			return $this->__SYS_REPORT($option);
         }				
+    	##############################################################################    
+		public function __VIEW_GRAPH($option=array())
+		{
+			$return		="";
+			$fila		="";
+			$datas 		=$this->__BROWSE($option);
+			
+		    foreach($datas["data"] as $row_id=>$row)			
+		    {
+		    	$columna="";
+		    	$title="";
+				foreach($row as $field=>$fieldvalue)			
+				{			
+					echo " $field ";
+					if(isset($this->sys_fields[$field]["title"]) AND $fila=="")
+					{
+						if($title=="")	$title="'{$this->sys_fields[$field]["title"]}'";
+						else			$title.=",'{$this->sys_fields[$field]["title"]}'";
+					}										
+					if($columna=="")	$columna	="'$fieldvalue'";			
+					else				$columna	.=",$fieldvalue";	
+				}
+				
+				if($fila=="")	$fila="[$columna]";				
+				else			$fila.=",[$columna]";
+			}	
+			if($title!="")
+				$fila="[$title],$fila";
+			
+			
+			if($fila!="")
+			{				
+				$return=array(
+					"data"=>$fila,	
+					"html"=>"<div id='chart_div' style='width: 100%; height: 500px;'></div>"
+				);			
+			}
+			
+			
+			return $return;
+		}    	
+
 		###################################
 		public function __VIEW_REPORT($option=array())
 		{
@@ -2386,7 +2452,7 @@
 				if(!isset($option["template_title"]))	$option["template_title"]	=$this->sys_var["module_path"]."html/report_title";
 				if(!isset($option["template_body"]))	$option["template_body"]	=$this->sys_var["module_path"]."html/report_body";			
 			}
-			else
+			elseif($option["type_view"]=="kanban")
 			{
 				if(!isset($option["template_body"]))	$option["template_body"]	=$this->sys_var["module_path"]."html/kanban";						
 			}
@@ -3053,11 +3119,6 @@
 			$sData .='domainId=solesgps&';
 			$sData .='login=e.vizcaino@solesgps.com&';
 			$sData .='passwd=Vz4sPioUm7&';
-
-
-			#$sData .='domainId=test&';
-			#$sData .='login=e.vizcaino&';
-			#$sData .='passwd=r94uf43n&';
 			
 			//No es posible utilizar el remitente en América pero sí en España y Europa
 			$sData .='senderId='.$sSenderId.'&';
@@ -3067,6 +3128,8 @@
 
 			//Tiempo máximo de espera para conectar con el servidor = 5 seg
 			$timeOut = 5; 
+			
+			/*
 			$fp = fsockopen('www.altiria.net', 80, $errno, $errstr, $timeOut);
 			if (!$fp) 
 			{
@@ -3153,6 +3216,7 @@
 					return $output; 
 				}     
 			}
+			*/
 		}					
 		public function __NIVEL_SESION($nivel)
 		{  
@@ -3198,6 +3262,7 @@
 		
 		function cerrar_conexion()
 		{
+			
 		    $this->OPHP_conexion->close();
 		}	
 		
@@ -3211,44 +3276,76 @@
 						
 		    if(is_array($data))
 		    {
-		        foreach($data as $valor)
+		    	#$this->__PRINT_R($data);
+		        foreach($data as $field=>$valor)
 				{    		    													   
-				    #if($valor=="maps")                  $file="http://maps.google.com/maps/api/js";
-				    if($valor=="maps")                  $file="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTDTeSJ3Uu3hHCy73RzGoJbx6vmKcmmUI";
-				    else if($valor=="responsivevoice")  $file="https://code.responsivevoice.org/responsivevoice.js";
+				    if(is_string($valor) AND $valor=="maps")                  $file="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTDTeSJ3Uu3hHCy73RzGoJbx6vmKcmmUI";
+				    elseif(is_string($valor) AND $valor=="responsivevoice")  $file="https://code.responsivevoice.org/responsivevoice.js";
+				    elseif(is_string($field) AND $field=="graph")  			$file="https://www.gstatic.com/charts/loader.js";
 				    else                                $file="$valor.js";
 				        		        		    
 				    $return.="<script src=\"$file\"></script>";    		        		    
 				        		    
-				    if($valor=="maps")	$return.="
-				    	<script src=\"../sitio_web/js/maplabel-compiled.js\"></script>
-				    ";    		    
+				    if(is_string($valor) AND $valor=="maps")	
+				    {
+				    	$return.="
+				    		<script src=\"../sitio_web/js/maplabel-compiled.js\"></script>
+				    	";    		    
+				    }
+				    if(is_string($field) AND $field=="graph")	
+				    {
+				    	$grafica="AreaChart";
+				    	
+				    	if(is_array($valor))
+				    	{
+				    		if(isset($valor["data"]))
+				    			$datos=$valor["data"];
+				    		if(isset($valor["type"]))	
+				    			$grafica=$valor["type"];
+				    	}
+				    	else				    	
+				    		$datos=$valor;
+				    
+						$return.="
+							<script type='text/javascript'>
+								google.charts.load('current', {'packages':['corechart']});
+								google.charts.setOnLoadCallback(drawChart);								
+								function drawChart() 
+								{
+									var data = google.visualization.arrayToDataTable([$datos]);
+									var options = {
+										title: 'Company Performance',
+										hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+										vAxis: {minValue: 0}
+									};
+									var chart = new google.visualization.".$grafica."(document.getElementById('chart_div'));
+									chart.draw(data, options);
+								}									
+							</script>			
+						";							
+				    }    		    
 				}		
 			}
 			return $return;
     	} 
     	public function __HTML_USER()
     	{
-    		#$this->__PRINT_R($_SESSION);
-    	    $return="";
-    	    #$img=@$_SESSION["user"]["img_files_id_min"];
-    	    $img=@$_SESSION["user"]["img_files_id_sup_chi"];
+    	    $return		="";
+    	    $img		=@$_SESSION["user"]["img_files_id_sup_chi"];
     	    $return="    
-    	    	<!--	            	        
-    	        <img src=\"../sitio_web/img/settings.png\" height=\"20\">
-    	        -->
     	        <font id=\"setting\" title=\"Ajustes\">
     	            {$img}
     	        </font>
     	    ";
-
-
     	    return  $return;
     	}
     	
-		public function __FILE_CSS($data)
+		public function __FILE_CSS($data=null)
 		{
-		    $return="";  
+			$return="";
+			if(is_null($data) AND isset($this->sys_var["module_path"]))
+				$data=array("../" . $this->sys_var["module_path"] . "css/index");
+		    
             foreach($data as $valor)
     		{    		
     		    $file="$valor.css";
@@ -3333,6 +3430,7 @@
 			        		if(@$icon=="")
 			        		{
 			        			if($etiqueta=="create") 	$icon="ui-icon-document";
+			        			if($etiqueta=="graph") 		$icon="ui-icon-signal";
 			        			if($etiqueta=="write") 		$icon="ui-icon-pencil";
 			        			if($etiqueta=="report") 	$icon="ui-icon-note";			        		
 			        			if($etiqueta=="kanban") 	$icon="ui-icon-newwin";			        		
@@ -3342,13 +3440,13 @@
 			        			if($etiqueta=="import") 	$icon="ui-icon ui-icon-arrowthickstop-1-s";			        						        			
 			        		}
 			        		
-		        			if(in_array($etiqueta,array("create","write","report","kanban")))	
+		        			if(in_array($etiqueta,array("create","write","report","kanban","graph")))	
 		        			{	##### ICONO #################
 		        				$text	="false";
 		        				$action	="1";
 		        				$name	="$etiqueta";
 		        			}
-		        			elseif(in_array(substr($etiqueta,0,5),array("creat","write","repor","kanba","actio")))	
+		        			elseif(in_array(substr($etiqueta,0,5),array("creat","write","repor","kanba","actio","graph")))	
 		        			{	##### TEXTO #################
 		        				$text	="true";
 		        				$action	="1";
@@ -3380,7 +3478,7 @@
 			        {
 			        	$sys_input.="$(\"#sys_action_{$this->sys_name}\").val(\"__SAVE\");";
 			        }	
-			        elseif(in_array($etiqueta,array("create","write","report","kanban")))	
+			        elseif(in_array($etiqueta,array("create","write","report","kanban","graph")))	
 			        {
 			        	$sys_input.="
 							$(\"#sys_action_{$this->sys_name}\").val(\"__clean_session\");
@@ -3389,7 +3487,7 @@
 			        		$(\"input.{$this->sys_name}\").val(\"\");							
 			        	";
 			        }	
-					elseif(in_array(substr($name,0,5),array("creat","write","repor","kanba","actio")))	    
+					elseif(in_array(substr($name,0,5),array("creat","write","repor","kanba","actio","graph")))	    
 			        {
 			        	$sys_input.="$(\"#sys_action_{$this->sys_name}\").val(\"$name\");";
 			        	
@@ -3628,6 +3726,7 @@
 				$comando_sql        ="
 					select
 						distinct(d.id) as d_id, 
+						md5(CONCAT(CURDATE(),d.id)) as md5_id,
 						d.*
 					from 	
 						devices d,
@@ -3663,7 +3762,9 @@
 				        <table class=\"select_devices\" device=\"{$vehicle["id"]}\" lat=\"\" lon=\"\" width=\"100%\" height=\"40\" border=\"0\">
 			        		<tr>
 				        		<td rowspan=\"2\"  width=\"50\" align=\"center\">
+				        			<a href=\"../map_espejo/&a={$vehicle["md5_id"]}\" target=\"_blank\">
 			        				<img height=\"25\" src=\"../sitio_web/img/car/vehiculo_{$vehicle["image"]}/i135.png\">
+			        				</a>
 			        			</td>
 			        			<td valign=\"bottom\">{$vehicle["name"]}</td>
 			        			<td width=\"25\" rowspan=\"2\" class=\"event_device\"> - </td>

@@ -63,7 +63,7 @@
     	$objeto->words["module_body"]               =$objeto->__VIEW_WRITE();
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);
 
-		$objeto->__GENERAR_PDF();	
+		#$objeto->__GENERAR_PDF();	
 	    
     	$module_title								="Modificar ";
 		
@@ -142,7 +142,7 @@
 	}
 
     
-	$objeto->words["module_title"]              ="$module_title Anteojos";
+	$objeto->words["module_title"]              ="$module_title Contrato";
 	
 	
 	

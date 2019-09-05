@@ -14,6 +14,17 @@
 			    "title"             => "partida",
 			    "type"              => "input",
 			),
+			"contrato_id"	    =>array(
+			    "title"             => "Contrato",
+			    "type"              => "autocomplete",
+			    "procedure"       	=> "autocomplete_contrato",
+			    "relation"          => "many2one",
+			    "class_name"       	=> "contrato",
+			    "class_field_l"    	=> "nombre",				# Label
+			    "class_field_o"    	=> "contrato_id",
+			    "class_field_m"    	=> "id",			    
+			),
+			
 			"descripcion"	    =>array(
 			    "title"             => "Descripcion",
 				"title_filter"		=> "Descripcion",
@@ -26,6 +37,11 @@
 			    "title"             => "Unidad",
 			    "type"              => "input",
 			),
+			"costo"	    =>array(
+			    "title"             => "Costo",
+			    "type"              => "input",
+			),
+
 		);				
 		##############################################################################	
 		##  Metodos	
@@ -43,4 +59,3 @@
 		
 	}
 ?>
-

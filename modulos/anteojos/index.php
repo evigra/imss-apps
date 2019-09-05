@@ -63,7 +63,7 @@
     	$objeto->words["module_body"]               =$objeto->__VIEW_WRITE();
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);
 
-		$objeto->__GENERAR_PDF();	
+		#$objeto->__GENERAR_PDF();	
 	    
     	$module_title								="Modificar ";
 		
@@ -95,13 +95,15 @@
 		$module_right=array(
 		    array("create"=>"Crear"),
 		    #array("write"=>"Modificar"),
-		    #array("kanban"=>"Kanban"),
+		    array("kanban"=>"Kanban"),
 		    array("report"=>"Reporte"),
-		);
-	
+		);	
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
-	   	$option=array();
-    	$objeto->words["module_body"]               =$objeto->__VIEW_KANBAN($option);	
+		
+		$option=array();		
+    	$option										=$objeto->__REPORT_ANTEOJOS($option);
+		$data										=$objeto->__VIEW_KANBAN($option);		
+		$objeto->words["module_body"]				=$data["html"];
     }    
     else
     {
@@ -115,6 +117,21 @@
 
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
 		$option=array();
+		
+		if($objeto->__NIVEL_SESION("<=20")==true)	 // NIVEL ADMINISTRADOR 
+		{
+			$option["template_title"]	=$objeto->sys_var["module_path"]."html/medico/report_title";
+			$option["template_body"]	=$objeto->sys_var["module_path"]."html/medico/report_body";			
+		}
+		if($objeto->__NIVEL_SESION(">=50")==true)	 // NIVEL MEDICO  
+		{
+			$option["template_title"]	=$objeto->sys_var["module_path"]."html/personal/report_title";
+			$option["template_body"]	=$objeto->sys_var["module_path"]."html/personal/report_body";			
+		}
+
+
+		
+		
 		$data										= $objeto->__VIEW_REPORT($option);		
 		$objeto->words["module_body"]				=$data["html"];
 		$module_title								="Reporte de ";

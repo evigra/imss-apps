@@ -14,16 +14,6 @@
 			    "title"             => "Company",
 			    "type"              => "input",
 			),
-			"trabajador_ids"	    =>array(
-			    "title"             => "Horario",
-			    "type"              => "form",
-			    #"relation"          => "many2one",			    
-			    "relation"          => "one2many",
-			    "class_name"       	=> "trabajador",			    
-			    "class_field_o"    	=> "id",
-			    "class_field_m"    	=> "company_id",				
-			),
-			
 			"razonSocial"	    	=>array(
 			    "title"             => "Razon Social",
 			    "type"              => "input",
