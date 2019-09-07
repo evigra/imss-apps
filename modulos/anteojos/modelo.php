@@ -203,14 +203,52 @@
 			
 			return $option;
 		}
+		##############################################################################	
 
 		public function __BROWSE($option=array())
 		{
 			$return = parent::__BROWSE($option);			
 			return $return;
 		}
+		##############################################################################	
+
+		public function __VIEW_GRAPH($option_graph=array(),$template=NULL)
+		{
+			$option				=array();	
+			$option["select"][]	="contrato_detalle.nombre";
+			$option["select"][]	="count(*)";
+			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
+			$option["group"]	="anteojos.lente_id";			
+			$option_graph["PieChart"]	=$option;						
+
+			$option				=array();	
+			$option["select"][]	="contrato_detalle.nombre";
+			$option["select"][]	="count(*)";
+			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
+			$option["group"]	="anteojos.lente_id";
+			$option_graph["AreaChart"]	=$option;
+
+			$option				=array();	
+			$option["select"][]	="contrato_detalle.nombre";
+			$option["select"][]	="anteojos.lente_costo";
+			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
+			
+			$option_graph["ColumnChart"]=$option;
+
+			$option				=array();	
+			$option["select"][]	="contrato_detalle.nombre";
+			$option["select"][]	="count(*)";
+			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
+			$option["group"]	="anteojos.lente_id";
+
+			$option_graph["BarChart"]	=$option;
+			$option_graph["LineChart"]	=$option;
+
+			return parent::__VIEW_GRAPH($option_graph);
+		}
 
 		##############################################################################	
+		
    		public function __PDF($Output="I")
     	{				
 			$datos										=$this->__BROWSE($this->sys_private["id"]);			
@@ -222,10 +260,22 @@
 
 			foreach($datos as $dato)
 			{				
-				$words									=$dato;			
+				$words									=$dato;
 				
 				if(is_array($words) AND count($words)>0)
 				{
+					$nroMes = date("m", strtotime($dato["fecha_registro"])); //Coloca la fecha que desees
+					$nroDia = date("d", strtotime($dato["fecha_registro"])); //Coloca la fecha que desees
+					
+					if($nroDia<=15)
+					{
+						$quincena=$nroMes*2-1;
+					}
+					else
+						$quincena=$nroMes*2;
+#*/				
+					$words["quincena"]						="$quincena / $nroMes";
+				
 					$template="";	
 					$words["trabajador_clave"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_clave"], 15,"-"));
 					$words["trabajador_nombre"]				=str_replace("-","&nbsp;",str_pad($words["trabajador_nombre"], 65,"-"));
@@ -235,6 +285,9 @@
 					$words["RT"]							=" &nbsp;  &nbsp; ";
 					$words["EG"]							=" &nbsp;  &nbsp; ";														
 					$words[ $dato["tipo"] ]					="&nbsp;<b>X</b>&nbsp;";
+										
+					$words["lente_id"]						=$this->sys_fields["lente_id"]["values"][0][$this->sys_fields["lente_id"]["class_field_l"]];
+					
 					$words2									=array_merge(array("sys_modulo" => $this->__TEMPLATE($this->sys_var["module_path"] . "html/PDF_RECETA")),$words);
 					
 					$words2["sys_title"]					="DELEGACION REGIONAL COLIMA";				
@@ -279,6 +332,7 @@
 			}				
 			$_SESSION["pdf"]["template"]=$return;		
 			@parent::__PDF("I");
-		}	
+		}
+			
 	}
 ?>

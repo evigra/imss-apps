@@ -57,17 +57,31 @@
 		    array("create"=>"Crear"),
 		    #array("write"=>"Modificar"),
 		    array("kanban"=>"Kanban"),
+		    array("graph"=>"Grafica"),
 		    array("report"=>"Reporte"),
 		);		
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
     	$objeto->words["module_body"]               =$objeto->__VIEW_WRITE();
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);
-
-		#$objeto->__GENERAR_PDF();	
 	    
-    	$module_title								="Modificar ";
-		
+    	$module_title								="Modificar ";		
     }	
+	if($objeto->sys_private["section"]=="graph")
+	{
+		#BOTONES SECCION DERECHA
+		$module_right=array(
+		    array("create"=>"Crear"),
+		    array("graph"=>"Grafica"),
+		    array("report"=>"Reporte"),
+		);
+	
+		#CARGANDO VISTA PARTICULAR Y CAMPOS
+		
+		$data												=$objeto->__VIEW_GRAPH();		
+		$objeto->words["module_body"]						=$data["html"];
+    }    
+
+	
     elseif($objeto->sys_private["section"]=="show")
 	{
 		#BOTONES SECCION IZQUIERDA
@@ -112,6 +126,7 @@
 		    array("create"=>"Crear"),
 		    #array("write"=>"Modificar"),
 		    array("kanban"=>"Kanban"),
+		    array("graph"=>"Grafica"),
 		    array("report"=>"Reporte"),		    
 		);
 
