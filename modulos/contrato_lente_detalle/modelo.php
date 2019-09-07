@@ -32,8 +32,6 @@
     	{	
     		$option								=array();
     		
-    		#$option["echo"]						="LENTE DETALLE";
-    		
     		#if($this->sys_private["section"]=="create" OR $this->sys_private["section"]=="write")
     		{
     			$option["select"]					="contrato.*, contrato_detalle.*";
@@ -44,7 +42,6 @@
     		$option["where"]					=array();    		
     		$option["where"][]					="contrato.fecha_inicio <='{$_SESSION["var"]["date"]}'";
     		$option["where"][]					="contrato.fecha_fin 	>='{$_SESSION["var"]["date"]}'";
-    		
     		
 			$return 							=$this->__BROWSE($option);    				
 			return $return;			
