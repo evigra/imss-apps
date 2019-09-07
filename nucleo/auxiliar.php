@@ -2437,8 +2437,7 @@
 					
 			if(@file_exists($template.".html"))				
 				$template=$this->__TEMPLATE($template);
-			
-			
+						
 			$files_js	=array();
 			$return		=array();
 			$files_js["graph"]=array();
@@ -2453,11 +2452,6 @@
 					$title="";
 					foreach($row as $field=>$fieldvalue)			
 					{			
-						if(isset($this->sys_fields[$field]["title"]) AND $fila=="")
-						{
-							if($title=="")	$title="'{$this->sys_fields[$field]["title"]}'";
-							else			$title.=",'{$this->sys_fields[$field]["title"]}'";
-						}										
 						if($columna=="")	$columna	="'$fieldvalue'";			
 						else				$columna	.=",$fieldvalue";	
 					}
@@ -2465,21 +2459,11 @@
 					if($fila=="")	$fila="[$columna]";				
 					else			$fila.=",[$columna]";
 				}	
-				if($title!="")
-					$fila="[$title],$fila";
-								
-				if($fila!="" AND is_null($template))
-				{				
-					@$html.="<div id='$graph' style='width: 100%; height: 500px;'></div>";
-				}
-								
-				#/*
 				$files_js["graph"][]=array(
-					"title"=>"['Lente','costo'],",
+					"title"=>$option["title"],
 					"type"=>$graph,
 					"data"=>$fila,
 				);			    		
-				#*/
 			}	
 			if(!is_null($template))	$html=$template;
 			
