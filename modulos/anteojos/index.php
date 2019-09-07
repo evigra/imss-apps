@@ -66,7 +66,7 @@
 	    
     	$module_title								="Modificar ";		
     }	
-	if($objeto->sys_private["section"]=="graph")
+	elseif($objeto->sys_private["section"]=="graph")
 	{
 		#BOTONES SECCION DERECHA
 		$module_right=array(
