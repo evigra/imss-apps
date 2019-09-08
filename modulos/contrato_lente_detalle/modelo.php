@@ -30,8 +30,9 @@
 		}				   		
 		public function __AUTOCOMPLETE()		
     	{	
-    		$option								=array();
-    		
+    		if(!is_array($option))				$option					=array();
+    		if(!isset($option["where"]))		$option["where"]		=array();    		
+
     		#if($this->sys_private["section"]=="create" OR $this->sys_private["section"]=="write")
     		{
     			$option["select"]					="contrato.*, contrato_detalle.*";
@@ -39,7 +40,6 @@
     			$option["where"][]					="contrato_detalle.nombre LIKE '%{$_GET["term"]}%'";
     		}
     		
-    		$option["where"]					=array();    		
     		$option["where"][]					="contrato.fecha_inicio <='{$_SESSION["var"]["date"]}'";
     		$option["where"][]					="contrato.fecha_fin 	>='{$_SESSION["var"]["date"]}'";
     		
