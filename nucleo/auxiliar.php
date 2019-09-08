@@ -2461,6 +2461,7 @@
 				}	
 				$files_js["graph"][]=array(
 					"title"=>$option["title"],
+					"label"=>$option["label"],
 					"type"=>$graph,
 					"data"=>$fila,
 				);			    		
@@ -3332,6 +3333,8 @@
 				    	{
 							$grafica="AreaChart";
 							$title="";
+							$label="";
+							
 							if(is_array($data_graph))
 							{
 								if(isset($data_graph["data"]))
@@ -3340,15 +3343,14 @@
 									$type=$data_graph["type"];
 								if(isset($data_graph["title"]))	
 									$title=$data_graph["title"];
-									
-							
+								if(isset($data_graph["label"]))	
+									$label=$data_graph["label"];
+																
 								if(substr($type,0,9)=="AreaChart")		$grafica=substr($type,0,9);		
 								if(substr($type,0,8)=="PieChart")		$grafica=substr($type,0,8);
 								if(substr($type,0,11)=="ColumnChart")	$grafica=substr($type,0,11);
 								if(substr($type,0,8)=="BarChart")		$grafica=substr($type,0,8);
 								if(substr($type,0,9)=="LineChart")		$grafica=substr($type,0,11);
-								
-								
 								
 							}
 							else				    	
@@ -3362,8 +3364,8 @@
 									{
 										var data = google.visualization.arrayToDataTable([$title"."$datos]);
 										var options = {
-											title: 'Company Performance',
-											hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+											title: '$label',
+											hAxis: {title: 'Year',  },
 											vAxis: {minValue: 0}
 										};
 										var chart = new google.visualization.".$grafica."(document.getElementById('$type'));

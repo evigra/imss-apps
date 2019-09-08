@@ -220,6 +220,7 @@
 			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
 			$option["group"]	="anteojos.lente_id";			
 			$option["title"]	="['Lente','Cantidad'],";
+			$option["label"]	="Cantidad de lentes";
 			$option_graph["PieChart"]	=$option;						
 			$option_graph["AreaChart"]	=$option;
 			
@@ -229,6 +230,7 @@
 			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
 			$option["group"]	="anteojos.lente_id";
 			$option["title"]	="['Lente','Cantidad'],";
+			$option["label"]	="Cantidad de lentes";
 			$option_graph["ColumnChart"]=$option;
 
 			$option				=array();	
@@ -236,6 +238,7 @@
 			$option["select"][]	="sum(anteojos.lente_costo)";
 			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
 			$option["group"]	="anteojos.lente_id";
+			$option["label"]	="Costo de lentes";
 			$option["title"]	="['Lente','Costo'],";
 			
 			$option_graph["BarChart"]	=$option;
