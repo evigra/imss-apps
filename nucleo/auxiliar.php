@@ -2460,8 +2460,8 @@
 					else			$fila.=",[$columna]";
 				}	
 				$files_js["graph"][]=array(
-					"title"=>$option["title"],
-					"label"=>$option["label"],
+					"title"=>@$option["title"],
+					"label"=>@$option["label"],
 					"type"=>$graph,
 					"data"=>$fila,
 				);			    		
