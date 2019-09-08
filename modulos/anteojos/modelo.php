@@ -230,7 +230,6 @@
 			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
 			$option["group"]	="anteojos.lente_id";
 			$option["title"]	="['Lente','Cantidad'],";
-			$option["label"]	="Cantidad de lentes";
 			$option_graph["ColumnChart"]=$option;
 
 			$option				=array();	

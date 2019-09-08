@@ -3364,9 +3364,7 @@
 									{
 										var data = google.visualization.arrayToDataTable([$title"."$datos]);
 										var options = {
-											title: '$label',
-											hAxis: {title: 'Year',  },
-											vAxis: {minValue: 0}
+											title: '',
 										};
 										var chart = new google.visualization.".$grafica."(document.getElementById('$type'));
 										chart.draw(data, options);
