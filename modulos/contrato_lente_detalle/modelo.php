@@ -30,7 +30,7 @@
 		}				   		
 		public function __AUTOCOMPLETE()		
     	{	
-    		if(!is_array($option))				$option					=array();
+    		$option					=array();
     		if(!isset($option["where"]))		$option["where"]		=array();    		
 
     		#if($this->sys_private["section"]=="create" OR $this->sys_private["section"]=="write")
