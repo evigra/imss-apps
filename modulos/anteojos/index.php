@@ -26,10 +26,11 @@
 		);
 		#BOTONES SECCION DERECHA
 		$module_right=array(
-		    #array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
+		    array("create"	=>"Crear"),
+		    #array("write"	=>"Modificar"),
+		    array("kanban"	=>"Kanban"),
+		    array("graph"	=>"Grafica"),
+		    array("report"	=>"Reporte"),		    
 		);
 		
 		$module_title								="Crear ";
@@ -54,12 +55,12 @@
 		}	
 		#BOTONES SECCION DERECHA
 		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("graph"=>"Grafica"),
-		    array("report"=>"Reporte"),
-		);		
+		    array("create"	=>"Crear"),
+		    #array("write"	=>"Modificar"),
+		    array("kanban"	=>"Kanban"),
+		    array("graph"	=>"Grafica"),
+		    array("report"	=>"Reporte"),		    
+		);
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
     	$objeto->words["module_body"]               =$objeto->__VIEW_WRITE();
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);
@@ -70,9 +71,11 @@
 	{
 		#BOTONES SECCION DERECHA
 		$module_right=array(
-		    array("create"=>"Crear"),
-		    array("graph"=>"Grafica"),
-		    array("report"=>"Reporte"),
+		    array("create"	=>"Crear"),
+		    #array("write"	=>"Modificar"),
+		    array("kanban"	=>"Kanban"),
+		    array("graph"	=>"Grafica"),
+		    array("report"	=>"Reporte"),		    
 		);
 	
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
@@ -80,8 +83,6 @@
 		$data												=$objeto->__VIEW_GRAPH();		
 		$objeto->words["module_body"]						=$data["html"];
     }    
-
-	
     elseif($objeto->sys_private["section"]=="show")
 	{
 		#BOTONES SECCION IZQUIERDA
@@ -91,11 +92,12 @@
 		);
 		#BOTONES SECCION DERECHA
 		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
-		);		
+		    array("create"	=>"Crear"),
+		    #array("write"	=>"Modificar"),
+		    array("kanban"	=>"Kanban"),
+		    array("graph"	=>"Grafica"),
+		    array("report"	=>"Reporte"),		    
+		);
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
     	$objeto->words["module_body"]               =$objeto->__VIEW_WRITE();	
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);
@@ -107,11 +109,12 @@
 	{
 		#BOTONES SECCION DERECHA
 		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("report"=>"Reporte"),
-		);	
+		    array("create"	=>"Crear"),
+		    #array("write"	=>"Modificar"),
+		    array("kanban"	=>"Kanban"),
+		    array("graph"	=>"Grafica"),
+		    array("report"	=>"Reporte"),		    
+		);
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
 		
 		$option=array();		
@@ -123,11 +126,11 @@
     {
 		#BOTONES SECCION DERECHA
 		$module_right=array(
-		    array("create"=>"Crear"),
-		    #array("write"=>"Modificar"),
-		    array("kanban"=>"Kanban"),
-		    array("graph"=>"Grafica"),
-		    array("report"=>"Reporte"),		    
+		    array("create"	=>"Crear"),
+		    #array("write"	=>"Modificar"),
+		    array("kanban"	=>"Kanban"),
+		    array("graph"	=>"Grafica"),
+		    array("report"	=>"Reporte"),		    
 		);
 
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
@@ -145,8 +148,6 @@
 		}
 
 
-		
-		
 		$data										= $objeto->__VIEW_REPORT($option);		
 		$objeto->words["module_body"]				=$data["html"];
 		$module_title								="Reporte de ";
