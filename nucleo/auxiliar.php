@@ -3370,6 +3370,7 @@
 																		
 										options = {
 											width: 600,
+											heigth: 600,
 										};																	
 								";			
 							}
