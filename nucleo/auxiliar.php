@@ -3367,14 +3367,8 @@
 										data.addColumn('string', 'From');
 										data.addColumn('string', 'To');
 										data.addColumn('number', 'Weight');
-										data.addRows([ $datos ]);	
-																		
-										options = {
-											width: 600,
-											heigth: 600,
-										};																	
+										data.addRows([ $datos ]);																			
 								";			
-								
 							}
 							else
 							{
