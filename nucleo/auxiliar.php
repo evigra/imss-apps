@@ -2453,7 +2453,7 @@
 					foreach($row as $field=>$fieldvalue)			
 					{			
 						if($columna=="")									$columna	="'$fieldvalue'";			
-						elseif($graph=="sankey" AND is_string($fieldvalue))	$columna	.=",'$fieldvalue";
+						elseif($graph=="Sankey" AND is_string($fieldvalue))	$columna	.=",'$fieldvalue";
 						else												$columna	.=",$fieldvalue";	
 					}
 					
