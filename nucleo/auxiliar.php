@@ -3383,11 +3383,10 @@
 									google.charts.setOnLoadCallback(drawChart);								
 									function drawChart() 
 									{
-										var options;
+										var options={};
 										$script
 										var chart = new google.visualization.".$grafica."(document.getElementById('$type'));
-										chart.draw(data, options);								
-										
+										chart.draw(data, options);																		
 									}									
 								</script>			
 							";							
