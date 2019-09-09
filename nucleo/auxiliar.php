@@ -3356,19 +3356,38 @@
 							}
 							else				    	
 								$datos=$data_graph;
-			
+							
+							
+							if(substr($type,0,6)=="Sankey")
+							{
+								$script="
+										var data = new google.visualization.DataTable();
+										data.addColumn('string', 'From');
+										data.addColumn('string', 'To');
+										data.addColumn('number', 'Weight');
+										data.addRows([ $datos ]);								
+								";			
+							}
+							else
+							{
+								$script="
+										var data = google.visualization.arrayToDataTable([$title"."$datos]);
+										options = {
+											title: '$label',
+										};
+								";										
+							}			
 							$return.="
 								<script type='text/javascript'>
 									google.charts.load('current', {'packages':['corechart']});
 									google.charts.setOnLoadCallback(drawChart);								
 									function drawChart() 
 									{
-										var data = google.visualization.arrayToDataTable([$title"."$datos]);
-										var options = {
-											title: '$label',
-										};
+										var options;
+										$script
 										var chart = new google.visualization.".$grafica."(document.getElementById('$type'));
-										chart.draw(data, options);
+										chart.draw(data, options);								
+										
 									}									
 								</script>			
 							";							
