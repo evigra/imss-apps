@@ -251,7 +251,7 @@
 			$option["label"]	="Costo de lentes";
 			$option["title"]	="['Lente','Costo'],";			
 			
-			$option_graph["sankey"]	=$option;
+			$option_graph["Sankey"]	=$option;
 			
 
 			return parent::__VIEW_GRAPH($option_graph);
