@@ -3351,9 +3351,8 @@
 								if(substr($type,0,8)=="PieChart")		$grafica=substr($type,0,8);
 								if(substr($type,0,11)=="ColumnChart")	$grafica=substr($type,0,11);
 								if(substr($type,0,8)=="BarChart")		$grafica=substr($type,0,8);
-								if(substr($type,0,9)=="LineChart")		$grafica=substr($type,0,11);
-								if(substr($type,0,6)=="Sankey")			$grafica=substr($type,0,6);
-								
+								if(substr($type,0,9)=="LineChart")		$grafica=substr($type,0,9);
+								if(substr($type,0,6)=="Sankey")			$grafica=substr($type,0,6);								
 							}
 							else				    	
 								$datos=$data_graph;
