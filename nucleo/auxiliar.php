@@ -3361,6 +3361,7 @@
 							
 							if(substr($type,0,6)=="Sankey")
 							{
+								$packages="sankey";
 								$script="
 										var data = new google.visualization.DataTable();
 										data.addColumn('string', 'From');
@@ -3373,9 +3374,11 @@
 											heigth: 600,
 										};																	
 								";			
+								
 							}
 							else
 							{
+								$packages="corechart";
 								$script="
 										var data = google.visualization.arrayToDataTable([$title"."$datos]);
 										options = {
@@ -3385,7 +3388,7 @@
 							}			
 							$return.="
 								<script type='text/javascript'>
-									google.charts.load('current', {'packages':['corechart']});
+									google.charts.load('current', {'packages':['$packages']});
 									google.charts.setOnLoadCallback(drawChart);								
 									function drawChart() 
 									{
