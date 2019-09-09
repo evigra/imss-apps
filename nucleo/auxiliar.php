@@ -2452,8 +2452,9 @@
 					$title="";
 					foreach($row as $field=>$fieldvalue)			
 					{			
-						if($columna=="")	$columna	="'$fieldvalue'";			
-						else				$columna	.=",$fieldvalue";	
+						if($columna=="")									$columna	="'$fieldvalue'";			
+						elseif($graph=="sankey" AND is_string($fieldvalue))	$columna	.=",'$fieldvalue";
+						else												$columna	.=",$fieldvalue";	
 					}
 					
 					if($fila=="")	$fila="[$columna]";				
@@ -3351,6 +3352,7 @@
 								if(substr($type,0,11)=="ColumnChart")	$grafica=substr($type,0,11);
 								if(substr($type,0,8)=="BarChart")		$grafica=substr($type,0,8);
 								if(substr($type,0,9)=="LineChart")		$grafica=substr($type,0,11);
+								if(substr($type,0,6)=="Sankey")			$grafica=substr($type,0,6);
 								
 							}
 							else				    	
