@@ -247,9 +247,8 @@
 			$option["select"][]	="contrato_detalle.nombre";
 			$option["select"][]	="count(*)";
 			$option["from"]		="anteojos join contrato_detalle on anteojos.lente_id=contrato_detalle.id";
-			$option["group"]	="anteojos.lente_id";
+			$option["group"]	="anteojos.tipo";
 			$option["label"]	="Costo de lentes";
-			$option["title"]	="['Lente','Costo'],";			
 			
 			$option_graph["Sankey"]	=$option;
 			
