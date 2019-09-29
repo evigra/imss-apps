@@ -1,8 +1,7 @@
 	function auto_lente_id(ui)
 	{
 		$("input#lente_id[name='anteojos_lente_id']").val(ui.item.clave);					
-		$("input#auto_lente_id[name='anteojos_auto_lente_id']").val(ui.item.label);
-		
+		$("input#auto_lente_id[name='anteojos_auto_lente_id']").val(ui.item.label);		
 		$("input#lente_costo[name='anteojos_lente_costo']").val(ui.item.num1);
 	}			
 	function valida_matricula(tipo, obj)
@@ -38,8 +37,19 @@
 					var obj = $.parseJSON( response);
 					valida_matricula("trabajador", obj);
 				}
-			});
-			
+			});			
+
+
+			$.ajax({
+				type: 'GET',
+				url: '../modulos/personal/ajax/index.php',
+				contentType:"application/json",
+				data:"&matricula="+$(this).val(),				
+				success: function (response) 
+				{
+					var obj = $.parseJSON( response);
+					valida_matricula("trabajador", obj);
+				}
+			});			
 		});	
-});		
-		
+	});		

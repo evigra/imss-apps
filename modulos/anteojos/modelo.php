@@ -45,8 +45,7 @@
 			    "title"             => "Departamento",
 				"title_filter"		=> "Departamento",
 			    "type"              => "input",
-			    "attr"             => array(
-					
+			    "attr"             => array(					
 			    	"readonly"=>"readonly"
 			    ),			    
 			),										
@@ -136,13 +135,14 @@
 			    "title"             => "Costo",
 			    "type"              => "hidden",
 			),				
-
 			"lente_id"	    =>array(
 			    "title"             => "Bifocal",
 			    "description"       => "Responsable del dispositivo",
 			    "type"              => "autocomplete",
+			    "attr"             => array(
+					"required",
+			    ),			    			    				
 			    "procedure"       	=> "__AUTOCOMPLETE",
-			    #"relation"          => "one2many",
 			    "relation"          => "many2one",
 			    "class_name"       	=> "contrato_lente_detalle",
 			    "class_field_l"    	=> "nombre",				# Label
@@ -156,35 +156,51 @@
 		##############################################################################
    		public function __SAVE($datas=NULL,$option=NULL)
     	{
-    		#$this->__PRINT_R($datas);
-
+    		$guardar=1;	
     		if($this->sys_private["section"]=="create")
-    		{
-				$datas["fecha_registro"]	=$_SESSION["var"]["datetime"];
-				$datas["matricula_medico"]	=$_SESSION["user"]["email"];
-				$datas["medico"]			=$_SESSION["user"]["name"];
-
-				if(!isset($datas["folio"]) OR $datas["folio"]=="")
+    		{    		
+				$option_where								=array("where");
+				$option_where["where"][]					="trabajador_clave='{$datas["trabajador_clave"]}'";
+				
+				$data_where									=$this->__BROWSE($option_where);
+				
+				if($data_where["total"]>=2)	
 				{	
-					$option_folio				=array();
-					$option_folio["variable"]	= substr($datas["trabajador_departamento_id"],0,6);    /// CONFIGURACION DE FOLIO
-					$option_folio["subvariable"]= date ("Y");
-					$option_folio["tipo"]		= "folio";
-					$option_folio["subtipo"]	= "";
-					$option_folio["objeto"]		= $this->sys_object;
+					$guardar=0;				
 					
-					$datas["folio"]=$this->__FOLIOS($option_folio);
-				}	
+					$this->__MESSAGE_OPTION["text"]		="Favor de verificar, <br>> Ya hay {$data_where["total"]} lentes solicitados";
+					$this->__MESSAGE_OPTION["time"]		="5000";																	
+					$this->__MESSAGE_OPTION["title"]	="Error detectado";
+				}
+				else
+				{	
+					$datas["fecha_registro"]	=$_SESSION["var"]["datetime"];
+					$datas["matricula_medico"]	=$_SESSION["user"]["email"];
+					$datas["medico"]			=$_SESSION["user"]["name"];
+
+					if(!isset($datas["folio"]) OR $datas["folio"]=="")
+					{	
+						$option_folio				=array();
+						$option_folio["variable"]	= substr($datas["trabajador_departamento_id"],0,6);    /// CONFIGURACION DE FOLIO
+						$option_folio["subvariable"]= date ("Y");
+						$option_folio["tipo"]		= "folio";
+						$option_folio["subtipo"]	= "";
+						$option_folio["objeto"]		= $this->sys_object;
+						
+						$datas["folio"]=$this->__FOLIOS($option_folio);
+					}
+				}		
 			}    		
-    		    		    		    	
-			$return =	parent::__SAVE($datas,$option);
-			
-			if($this->sys_private["section"]=="create")
-			{
-				$this->PDF_PRINT($return);
-			}	
-			
-    	    return $return;
+			if($guardar==1)
+			{    		    		    		    	
+				$return =	parent::__SAVE($datas,$option);
+				
+				if($this->sys_private["section"]=="create")
+				{
+					$this->PDF_PRINT($return);
+				}
+				return $return;	
+			}			    	    
 		}				
 
 		public function __REPORT_ANTEOJOS($option=array())
@@ -261,10 +277,7 @@
    		public function __PDF($Output="I")
     	{				
 			$datos										=$this->__BROWSE($this->sys_private["id"]);			
-			if(@$datos["data"])							$datos=$datos["data"];		
-			
-			#$this->__PRINT_R($datos);
-			
+			if(@$datos["data"])							$datos=$datos["data"];					
 			$return=array();	
 
 			foreach($datos as $dato)

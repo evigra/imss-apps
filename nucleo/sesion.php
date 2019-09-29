@@ -4,7 +4,7 @@
 		$usuarios_sesion						="PHPSESSID";
 		session_name($usuarios_sesion);
 		@session_start();
-		session_cache_limiter('nocache,private');			
+		@session_cache_limiter('nocache,private');			
 		/*
 		if(count($_COOKIE) > 0 AND isset($_COOKIE["solesgps"])) 
 			$_SESSION=$_COOKIE["solesgps"];
@@ -17,7 +17,8 @@
 		if(!isset($_SESSION["var"]))			$_SESSION["var"]					=array();
 		if(!isset($_SESSION["var"]["menu"]))	$_SESSION["var"]["menu"]			="";
 		if(isset($_REQUEST["sys_menu"]))		$_SESSION["var"]["menu"]			=$_REQUEST["sys_menu"];
-		if(isset($_REQUEST["sys_vpath"]))		$_SESSION["var"]["vpath"]			=@$_REQUEST["sys_vpath"];
+		if(isset($_REQUEST["sys_vpath"]))		$_SESSION["var"]["vpath"]			=@$_REQUEST["sys_vpath"];		
+		if($_SESSION["var"]["menu"]=="")		$_SESSION["var"]["menu"]			=1;
 						
 		$_SESSION["var"]["false"]			=array(0,"0","false", "no");
 		$_SESSION["var"]["true"]			=array(1,"1","true", "yes","si");

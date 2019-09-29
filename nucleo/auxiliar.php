@@ -501,9 +501,13 @@
 				
 				$datas_menu =$this->__EXECUTE($comando_sql, $option_conf);			
 			
+				$menu_principal="";
 				$menu_html								="";
 				foreach($datas_menu as $data_menu)
 				{
+					if($_SESSION["var"]["menu"]==$data_menu["id"])
+						$menu_principal=$data_menu["name"];
+				
 					$link								=$data_menu["link"]."&sys_menu=".$data_menu["id"] . $data_menu["variables"];				
 					$alertas="";
 					if($data_menu["c_menu_id"]>0)
@@ -512,17 +516,19 @@
 								<center>{$data_menu["c_menu_id"]}</center>	
 							</div>					
 						";				
-					$menu_html.="				
-						<a href=\"{$link}\">	
-						<div class = \"menuHorizontal\" style=\"margin-top:4px; float:left; padding:5px 10px 5px 10px;\">
-							<div style=\"float:left;\">
-							{$data_menu["name"]}
-							</div>
-							$alertas
-						</div>
-						</a>
-					";	
+						@$option_html	.="
+							<li><a href=\"{$link}\">{$data_menu["name"]}</a></li>
+						";
 				}
+				$menu_html="				
+					<li><a href=\"#\"><font size=\"4\" style=\"color:SteelBlue;\"><b> {$menu_principal}</b></font></a>
+						<ul class=\"submenu\">
+							$option_html
+						</ul>
+					</li>					
+					<li>&nbsp; &nbsp; &nbsp; &nbsp; </li>					
+				";	
+
 				$words["system_menu"]		    		=$menu_html;
 						
 				$sys_menu								=@$_SESSION["var"]["menu"];			
@@ -561,18 +567,6 @@
 								<center>{$data_submenu["c_submenu_id"]}</center>	
 							</div>					
 						";				
-
-					$submenu_html	="
-						$submenu_html
-						<div style=\"height:25px;\" class=\"submenu\" active=\"{$data_submenu["name"]}\">	
-							<div style=\"float:left;\">
-								<font style=\"padding-left:5px; color:SteelBlue; font-size:13; font-weight:bold;\">
-									{$data_submenu["name"]}
-								</font>
-							</div>
-							$alertas
-						</div>
-					";
 				
 					#$datas_opcion  						=$menu->opcion_sesion($data_submenu["id"]);
 				
@@ -610,19 +604,15 @@
 
 						$link			=$data_opcion["link"]."&sys_menu={$sys_menu}" . $data_opcion["variables"];
 						$option_html	.="
-							<a href=\"{$link}\">
-								<div class=\"submenu2\">
-									{$data_opcion["name"]}
-									$alertas
-								</div>
-							</a>
+							<li><a href=\"{$link}\">{$data_opcion["name"]}</a></li>
 						";
 					}	
-					$submenu_html	="
-						$submenu_html
-						<div class=\"option d_none\"  active=\"{$data_submenu["name"]}\">
-							$option_html
-						</div>
+					$submenu_html	.="
+						<li><a href=\"#\"><b>{$data_submenu["name"]}</b></a>
+							<ul class=\"submenu\">
+								$option_html
+							</ul>
+						</li>					
 					";
 				}
 				$words["system_submenu"]	    		=$submenu_html;
@@ -2444,7 +2434,9 @@
 			foreach($option_graph as $graph =>$option)
 			{
 				$fila		="";
-				$datas 		=$this->__BROWSE($option);
+				
+				if(!isset($option["data"]))		$datas 				=$this->__BROWSE($option);
+				else							$datas["data"] 		=$option["data"];
 				
 				foreach($datas["data"] as $row_id=>$row)			
 				{
@@ -3364,9 +3356,9 @@
 								$packages="sankey";
 								$script="
 										var data = new google.visualization.DataTable();
-										data.addColumn('string', 'From');
-										data.addColumn('string', 'To');
-										data.addColumn('number', 'Weight');
+										data.addColumn('string', 'De');
+										data.addColumn('string', 'A');
+										data.addColumn('number', 'Cantidad');
 										data.addRows([ $datos ]);																			
 								";			
 							}
@@ -3655,8 +3647,7 @@
 											.dialog(\"destroy\")
 											.hide();										
 								
-										var formData = new FormData($(\"form\")[0]);
-										
+										var formData = new FormData($(\"form\")[0]);										
 										var subiendo=datos;
 										
 										subiendo.url		='../sitio_web/ajax/general.php&seccion_import=subiendo_archivo&sys_name={$this->sys_name}&date=".date("YmdHis")."';
@@ -3674,21 +3665,21 @@
 											});				
 
 											var preparar=datos;
-											preparar.url		='../sitio_web/ajax/general.php&seccion_import=preparar_tabla&sys_name={$this->sys_name}&date=".date("YmdHis")."';										
+											preparar.url		='../sitio_web/ajax/general.php&seccion_import=preparar_tabla&sys_name={$this->sys_name}&date=".date("YmdHis")."';
 											preparar.success	=function (response) 
 											{
 												var html=$(\"#message\").html() + response;											
 												$(\"#message\").html(html);												
 												
 												var cargar=datos;
-												cargar.url		='../sitio_web/ajax/general.php&seccion_import=cargar_tabla&sys_name={$this->sys_name}&date=".date("YmdHis")."&name='+obj.name;										
+												cargar.url		='../sitio_web/ajax/general.php&seccion_import=cargar_tabla&sys_name={$this->sys_name}&date=".date("YmdHis")."&name='+obj.name;
 												cargar.success	=function (response) 
 												{
 													var html=$(\"#message\").html() + response;											
 													$(\"#message\").html(html);												
 																										
 													var actualizar=datos;
-													actualizar.url		='../sitio_web/ajax/general.php&seccion_import=actualizando_datos&sys_name={$this->sys_name}&date=".date("YmdHis")."';										
+													actualizar.url		='../sitio_web/ajax/general.php&seccion_import=actualizando_datos&sys_name={$this->sys_name}&date=".date("YmdHis")."';
 													actualizar.success	=function (response) 
 													{
 														$(\"#import_pendiente\").html(response);												

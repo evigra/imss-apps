@@ -1,0 +1,13 @@
+            
+		    <tr  class={class}>
+		        <td width="50">
+                    {actions}
+		        </td>
+		        <td>{matricula}</td>
+		        <td>{puesto}</td>
+		        <td>{clave}</td>
+		        <td>{nombre}</td>  
+
+		    </tr>    
+            
+

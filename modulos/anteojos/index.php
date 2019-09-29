@@ -17,7 +17,7 @@
 	
 	$module_title									="";
 	
-    if($objeto->sys_private["section"]=="create")
+  	if($objeto->sys_private["section"]=="create")
 	{
 		#BOTONES SECCION IZQUIERDA
 		$module_left=array(
@@ -38,6 +38,7 @@
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);    
     	
     }	
+
     elseif($objeto->sys_private["section"]=="write")
 	{
 		#BOTONES SECCION IZQUIERDA
