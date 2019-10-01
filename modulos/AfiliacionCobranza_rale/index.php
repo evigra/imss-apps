@@ -1,5 +1,5 @@
 <?php	
-	$objeto											=new patron();
+	$objeto											=new AfiliacionCobranza_rale();
 	$objeto->__SESSION();
 	
 	# CARGANDO PLANTILLAS GENERALES
@@ -22,8 +22,7 @@
 		$module_left=array(
 		    array("action"=>"Guardar"),
 		    array("cancel"=>"Cancelar"),
-		);
-		
+		);		
 		#BOTONES SECCION DERECHA
 		$module_right=array(
 		    #array("create"=>"Crear"),
@@ -32,11 +31,9 @@
 		    array("report"=>"Reporte"),
 		);
 	
-	
 		$module_title								="Crear ";
     	$objeto->words["module_body"]               =$objeto->__VIEW_CREATE();	
-    	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);    
-    	
+    	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);        	
     }	
     elseif($objeto->sys_private["section"]=="write")
 	{
@@ -70,9 +67,8 @@
 		);
 	
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
-		$template_body								=$objeto->sys_module . "html/kanban";
-	   	$data										=$objeto->__BROWSE();
-    	$objeto->words["module_body"]               =$objeto->__VIEW_KANBAN($template_body,$data["data"]);	
+		$option=array();
+    	$objeto->words["module_body"]               =$objeto->__VIEW_KANBAN($option);	
     }    
     else
     {
@@ -86,17 +82,19 @@
 
 		$module_center=array(
 		    array("import"=>"Importar"),
+			array("procesar"=>"Pre Procesar"),
 		);    
 
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
-		$option=array();				
+		$option=array();
+		#$option["echo"]="aaaa";
 		$data										= $objeto->__VIEW_REPORT($option);
 		
 		$objeto->words["module_body"]				=$data["html"];
 		$module_title								="Reporte de ";
     }
     
-	$objeto->words["module_title"]              ="$module_title Usuarios";
+	$objeto->words["module_title"]              ="$module_title RALE";
 	
 	
 	

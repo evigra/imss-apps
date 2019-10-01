@@ -1,5 +1,5 @@
 <?php
-	class AfiliacionCobranza_ajuste extends general
+	class AfiliacionCobranza_rale extends general
 	{   
 		##############################################################################	
 		##  Propiedades	
@@ -13,77 +13,75 @@
 		);		
 		
 		var $mod_menu=array();
-		var $sys_table		="rale";
 		var $sys_fields		=array( 
 			"credito"	    =>array(
-			    "title"             => "credito",
+			    "title"             => "Credito",
 			    "type"              => "primary key",
 			    "title_filter"		=> "credito",
 			),
 
 			"registro_patronal"	    =>array(
-			    "title"             => "registro_patronal",
+			    "title"             => "Registro Patronal",
 			    "type"              => "input",
-			    "title_filter"		=> "registro_patronal",
+			    "title_filter"		=> "Registro Patronal",
 			),		
 			"movimiento"	    =>array(
-			    "title"             => "movimiento",
+			    "title"             => "Movimiento",
 				"title_filter"		=> "movimiento",
 			    "type"              => "input",
 			),
 			"fecha_movimiento"	    =>array(
-			    "title"             => "fecha_movimiento",
+			    "title"             => "Fecha Movimiento",
 			    "type"              => "input",
 			),
 			"sector"	    =>array(
 			    "title"             => "sector",
 			    "type"              => "input",
-		  
 			),
 
 			"ce"	    =>array(
-			    "title"             => "ce",
+			    "title"             => "CE",
 			    "type"              => "input",
 			),
 			"periodo"	    =>array(
-			    "title"             => "periodo",
+			    "title"             => "Periodo",
 			    "type"              => "input",
 			),
 			"td"	    =>array(
-			    "title"             => "td",
-				"title_filter"		=> "td",
+			    "title"             => "TD",
+				"title_filter"		=> "TD",
 			    "type"              => "input",
 			),
 			"falta"	    =>array(
-			    "title"             => "falta",
+			    "title"             => "Falta",
 			    "type"              => "input",
 			),
 			"fecha_notificacion"	    =>array(
-			    "title"             => "fecha_notificacion",
+			    "title"             => "F. Notificacion",
 			    "type"              => "input",
 			),			
 			"fecha_incidencia"	    =>array(
-			    "title"             => "fecha_incidencia",
+			    "title"             => "F. Incidencia",
 			    "type"              => "input",
 			),			
 			"fecha_inc"	    =>array(
-			    "title"             => "fecha_inc",
+			    "title"             => "Fecha inc",
 			    "type"              => "input",
 			),			
 			"dias"	    =>array(
-			    "title"             => "dias",
+			    "title"             => "Dias",
 			    "type"              => "input",
 			),			
 			"importe"	    =>array(
-			    "title"             => "importe",
+			    "title"             => "Importe",
 			    "type"              => "input",
 			),			
 			"sub_cont"	    =>array(
-			    "title"             => "sub_cont",
+			    "title"             => "Sub Cont",
 			    "type"              => "input",
 			),			
 			"observaciones"	    =>array(
-			    "title"             => "observaciones",
+			    "title"             => "Observaciones",
 			    "type"              => "input",
 			),			
 
@@ -94,7 +92,7 @@
 
    		public function __SAVE($datas=NULL,$option=NULL)
     	{
-    	    $id=parent::__SAVE($datas,$option);
+    	    return parent::__SAVE($datas,$option);
 		}				
 	}
 ?>

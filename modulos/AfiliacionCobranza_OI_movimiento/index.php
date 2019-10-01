@@ -1,6 +1,7 @@
 <?php	
-	$objeto											=new patron();
+	$objeto											=new AfiliacionCobranza_OI_movimiento();		
 	$objeto->__SESSION();
+	#$objeto->__PRINT_R($_SESSION);
 	
 	# CARGANDO PLANTILLAS GENERALES
 	$objeto->words["system_body"]               	=$objeto->__TEMPLATE($objeto->sys_html."system_body"); 		
@@ -12,7 +13,7 @@
 		
 	$module_left		="";	
 	$module_right		="";	
-	$module_center		="";
+	$module_center		="";	
 	
 	$module_title									="";
 	
@@ -23,7 +24,6 @@
 		    array("action"=>"Guardar"),
 		    array("cancel"=>"Cancelar"),
 		);
-		
 		#BOTONES SECCION DERECHA
 		$module_right=array(
 		    #array("create"=>"Crear"),
@@ -31,8 +31,7 @@
 		    array("kanban"=>"Kanban"),
 		    array("report"=>"Reporte"),
 		);
-	
-	
+		
 		$module_title								="Crear ";
     	$objeto->words["module_body"]               =$objeto->__VIEW_CREATE();	
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);    
@@ -45,20 +44,48 @@
 		    array("action"=>"Guardar"),
 		    array("cancel"=>"Cancelar"),
 		);
+
+		if($objeto->__NIVEL_SESION("<=20")==true)	 // NIVEL ADMINISTRADOR 
+		{
+			$module_center=array(
+				array("action_aprovar"=>"Aprovar"),
+				array("action_cancelar"=>"Cancelar"),
+			);	    			
+		}	
 		#BOTONES SECCION DERECHA
 		$module_right=array(
 		    array("create"=>"Crear"),
 		    #array("write"=>"Modificar"),
 		    array("kanban"=>"Kanban"),
 		    array("report"=>"Reporte"),
+		);		
+		#CARGANDO VISTA PARTICULAR Y CAMPOS
+    	$objeto->words["module_body"]               =$objeto->__VIEW_WRITE();
+    	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);
+
+    	$module_title								="Modificar ";		
+    }	
+    elseif($objeto->sys_private["section"]=="show")
+	{
+		#BOTONES SECCION IZQUIERDA
+		$module_left=array(
+		    array("action"=>"Guardar"),
+		    array("cancel"=>"Cancelar"),
 		);
-		
+		#BOTONES SECCION DERECHA
+		$module_right=array(
+		    array("create"=>"Crear"),
+		    #array("write"=>"Modificar"),
+		    array("kanban"=>"Kanban"),
+		    array("report"=>"Reporte"),
+		);		
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
     	$objeto->words["module_body"]               =$objeto->__VIEW_WRITE();	
     	$objeto->words                              =$objeto->__INPUT($objeto->words,$objeto->sys_fields);
     		    
-    	$module_title								="Modificar ";
+    	$module_title								="Formato ";
     }	
+
 	elseif($objeto->sys_private["section"]=="kanban")
 	{
 		#BOTONES SECCION DERECHA
@@ -70,9 +97,8 @@
 		);
 	
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
-		$template_body								=$objeto->sys_module . "html/kanban";
-	   	$data										=$objeto->__BROWSE();
-    	$objeto->words["module_body"]               =$objeto->__VIEW_KANBAN($template_body,$data["data"]);	
+	   	$option=array();
+    	$objeto->words["module_body"]               =$objeto->__VIEW_KANBAN($option);	
     }    
     else
     {
@@ -81,22 +107,39 @@
 		    array("create"=>"Crear"),
 		    #array("write"=>"Modificar"),
 		    array("kanban"=>"Kanban"),
-		    #array("report"=>"Reporte"),
+		    array("report"=>"Reporte"),		    
 		);
 
-		$module_center=array(
-		    array("import"=>"Importar"),
-		);    
-
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
-		$option=array();				
-		$data										= $objeto->__VIEW_REPORT($option);
-		
+		$option=array();
+		$data										= $objeto->__VIEW_REPORT($option);		
 		$objeto->words["module_body"]				=$data["html"];
 		$module_title								="Reporte de ";
     }
     
-	$objeto->words["module_title"]              ="$module_title Usuarios";
+
+    if($objeto->__NIVEL_SESION("<=20")==true)	 // NIVEL ADMINISTRADOR 
+    {
+    	$module_right_admin=array(
+		    array("report_pendiente"=>"","icon"=>"ui-icon-help"),
+		    array("report_cancelados"=>"","icon"=>"ui-icon-closethick"),
+		    array("report_aprovados"=>"","icon"=>"ui-icon-check"),
+		);	    
+		$module_right=array_merge($module_right, $module_right_admin);		
+	/*	
+	}
+    if($objeto->__NIVEL_SESION("<=10")==true)   // NIVEL SUPER ADMINISTRADOR
+    {
+		*/
+    	$module_right_admin=array(
+		    array("report_especifico"=>"R Esp."),
+		    array("report_general"=>"R Gral."),
+		);	    
+		$module_right=array_merge($module_right, $module_right_admin);		
+	}
+
+    
+	$objeto->words["module_title"]              ="$module_title Anteojos";
 	
 	
 	

@@ -87,6 +87,7 @@
 
 		#CARGANDO VISTA PARTICULAR Y CAMPOS
 		$option=array();
+		#$option["echo"]="aaaa";
 		$data										= $objeto->__VIEW_REPORT($option);
 		
 		$objeto->words["module_body"]				=$data["html"];

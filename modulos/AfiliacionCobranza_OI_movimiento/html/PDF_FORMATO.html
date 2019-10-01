@@ -1,0 +1,186 @@
+<table width="100%" border="1">	
+	<tr>
+		<td height="70" align="center" valign="middle"  width="80%"><br><br>			
+			<font size="18">RECETA MEDICA DE ANTEOJOS</font>
+		</td>
+		<td align="center" width="20%"><br><br>
+			FOLIO<br><font size="20">{folio}</font>
+		</td>		
+	</tr>	
+	<tr>
+		<td colspan="3" height="70" align="center" valign="middle"  width="100%"><br><br>			
+			<b>PRESCRIPCION POR:</b> &nbsp; &nbsp;&nbsp; &nbsp;		
+			({RT}) RIESGO DE TRABAJO  &nbsp; &nbsp; &nbsp; &nbsp; 
+			({EG}) ENFERMEDAD GENERAL
+			
+			<br><br>{lugar} A {dias}  UNIDAD: {trabajador_departamento} &nbsp; &nbsp; &nbsp;		
+		</td>		
+	</tr>	
+	<tr>	
+		<td colspan="3" align="center">	
+			<br>
+			<table width="100%" border="0" style="padding-left:15px;">
+				<tr>
+					<td align="center"  colspan="3">
+						<br><br><b>DATOS DEL TRABAJADOR, JUBILADO O PENSIONADO</b><br><br>&nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td align="left">
+						<br>
+						<b>MATRICULA</b> <u>&nbsp; &nbsp;{trabajador_clave}</u>
+					</td>
+					<td align="left"  colspan="2">
+					<br>
+						<b>NOMBRE</b> <u>&nbsp; &nbsp;{trabajador_nombre}</u>
+					</td>
+				</tr>
+			</table>
+			<br>&nbsp;
+		</td>		
+	</tr>
+	<tr>	
+		<td colspan="3" align="center">				
+			<table width="100%" border="0" style="padding-left:5px;">
+				<tr>
+					<td align="center" colspan="2">
+						<br><br><b>PARA SER LLENADO POR EL MEDICO TRATANTE</b><br><br>&nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="65%">
+						<table width="110%" border="1">
+							<tr>
+								<td align="center" width="8%"></td>
+								<td align="center"><b>ESFERA</b></td>
+								<td align="center"><b>CILINDRO</b></td>
+								<td align="center"><b>EJE</b></td>					
+							</tr>
+							<tr>
+								<td align="center"><b>OD</b></td>
+								<td align="center">{od_esfera}</td>
+								<td align="center">{od_cilindro}</td>
+								<td align="center">{od_eje}</td>					
+							</tr>
+							<tr>
+								<td align="center"><b>OI</b></td>
+								<td align="center">{oi_esfera}</td>
+								<td align="center">{oi_cilindro}</td>
+								<td align="center">{oi_eje}</td>					
+							</tr>
+							<tr>
+								<td align="center"></td>
+								<td align="center"><b>ADD</b></td>
+								<td align="center">{add_cilindro}</td>
+								<td align="center"></td>					
+							</tr>
+						</table>
+					</td>
+					<td aling="right" width="35%">					
+						<table width="110%" border="1" style="padding-left:5px;">
+							<tr><td align="left"  width="40%"><b>DIP</b></td><td align="left">{dip}</td>	</tr>
+							<tr><td align="left"><b>PRISMA</b></td><td align="left">{prisma}</td>	</tr>
+							<tr><td align="left"><b>COLOR</b></td><td align="left">{color}</td>	</tr>
+						</table>							
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td>
+						<table width="110%" border="1" style="padding-left:5px;">
+							<tr><td align="left"  width="40%"><b>Bifocal</b></td><td align="left">{bifocal}</td>	</tr>
+						</table>							
+						<br>&nbsp;
+					</td>
+				</tr>
+			</table>
+		</td>		
+	</tr>
+	<tr>	
+		<td align="center">	
+			<table width="100%" border="0">
+				<tr><td align="center"><b>DIRECTOR DE LA UNIDAD </b></td></tr>
+				<tr><td height="55" ></td></tr>
+				<tr><td align="center"><b>  ---  </b></td></tr>
+			</table>
+		</td>		
+		<td align="center">	
+			<table width="100%" border="0">
+				<tr><td align="center"><b>MEDICO TRATANTE</b></td></tr>
+				<tr><td height="55" ></td></tr>
+				<tr><td align="center"><b>  --  </b></td></tr>
+			</table>
+		</td>		
+		<td align="center">	
+			<table width="100%" border="0">
+				<tr><td align="center"><b>SELLO DE LA UNIDAD MEDICA</b></td></tr>
+				<tr><td height="55" ></td></tr>
+				<tr><td align="center"> </td></tr>
+			</table>
+		</td>		
+	</tr>
+	
+	<tr>	
+		<td colspan="3" >	
+			<br>
+			<table width="100%" border="0" style="padding-left:15px;">
+				<tr>
+					<td colspan="2" align="center">
+						<br><br><b>SE AUTORIZA LA PRESCRIPCIÓN DESCRITA AL TRABAJADOR, JUBILADO Y PENSIONADO CON</b><br><br>&nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td width="35%" align="left">
+						<b>MATRICULA</b> 
+						<br>{trabajador_clave}
+					</td>
+					<td  align="left">
+						<b>SERVICIO O DEPARTAMENTO</b>
+						<br>{trabajador_departamento}<br>&nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td align="left">
+						<b>CATEGOGIA</b>
+						<br>{trabajador_puesto}
+					</td>
+				</tr>
+				<tr>
+					<td align="left">
+						<b>FECHA AUTORIZACION</b>
+						<br>ejemplo fecha
+					</td>
+					<td align="left">
+						<b>NO FOLIO</b>
+						<br>ejemplo folio<br>&nbsp;
+					</td>
+				</tr>
+			</table>
+		</td>		
+	</tr>
+	<tr>	
+		<td>	
+			<table width="100%"  style="padding-left:0px;">
+				<tr><td><b>AUTORIZACION</b></td></tr>
+				<tr><td height="55" ></td></tr>
+				<tr><td><b>---- </b></td></tr>
+			</table>
+		</td>		
+		<td>	
+			<table width="100%"  style="padding-left:0px;">
+				<tr><td><b>TRABAJADOR</b></td></tr>
+				<tr><td height="55"> </td></tr>
+				<tr><td>{trabajador_nombre}</td></tr>
+			</table>
+		</td>		
+		<td>	
+			<table width="100%" style="padding-left:0px;">
+				<tr><td><b>RECIBI DE CONFORMIDAD</b></td></tr>
+				<tr><td height="55" ></td></tr>
+				<tr><td>{trabajador_nombre}</td></tr>
+			</table>
+		</td>		
+	</tr>
+</table>			

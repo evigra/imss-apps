@@ -14,124 +14,72 @@
 		);		
 		var $sys_fields		=array( 
 			"rp_rale"	    =>array(
-			    "title"             => "Matricula",
+			    "title"             => "Registro Patronal",
 				"title_filter"		=> "Matricula",
-			    "showTitle"         => "si",
 			    "type"              => "primary key",
-			    "default"           => "",
-			    "value"             => "",			    
-			    "import"            => "10",			  
 			),
 			"rp_ema"	    =>array(
-			    "title"             => "Nombre",
+			    "title"             => "RP EMA",
 				"title_filter"		=> "Trabajador",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
-
 			),
 			"dv"	    =>array(
-			    "title"             => "Puesto ID",
-			    "showTitle"         => "si",
+			    "title"             => "DV",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
-
 			),
 			"rp_1"	    =>array(
 			    "title"             => "Puesto",
 				"title_filter"		=> "Puesto",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    			    
 			),			
 			"c1"	    =>array(
-			    "title"             => "Categoria ID",
-			    "showTitle"         => "si",
+			    "title"             => "C1",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"c2"	    =>array(
-			    "title"             => "Telefono",
+			    "title"             => "C2",
 				"title_filter"		=> "telefono",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			   
-			    "import"            => "01",			  
 			),
 			"rp_2"	    =>array(
 			    "title"             => "Estatus",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"rp_3"	    =>array(
 			    "title"             => "Tipo Empleado",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			      
 			),
 			"curp"	    =>array(
-			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
+			    "title"             => "CURP",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"sub"	    =>array(
-			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
+			    "title"             => "SUB",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"mpio"	    =>array(
 			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"nombre"	    =>array(
-			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
+			    "title"             => "Patron",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"domicilio"	    =>array(
-			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
+			    "title"             => "Domicilio",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"mpio_edo"	    =>array(
-			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
+			    "title"             => "Municipio",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),
 			"cp"	    =>array(
-			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
+			    "title"             => "CP",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 			"actividad"	    =>array(
 			    "title"             => "Tipo Contratacion",
-			    "showTitle"         => "si",
 			    "type"              => "input",
-			    "default"           => "",
-			    "value"             => "",			    
 			),			
 		);				
 		##############################################################################	
@@ -149,5 +97,16 @@
     		#$option=array("echo"=>"SAVE");
     	    $id=parent::__SAVE($datas,$option);
 		}				
+		public function __AUTOCOMPLETE()		
+    	{	
+    		$option					=array();
+    		if(!isset($option["where"]))		$option["where"]		=array();    		
+    		
+    		$option["where"][]					="rp_rale LIKE '%{$_GET["term"]}%'";
+    		    		
+			$return 							=$this->__BROWSE($option);    				
+			return $return;			
+		}									
+
 	}
 ?>

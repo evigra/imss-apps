@@ -394,10 +394,14 @@
 				if(!isset($_SESSION["pdf"]["subject"]))			$_SESSION["pdf"]["subject"]		=$this->words["html_head_title"];
 				if(!isset($_SESSION["pdf"]["template"]))				
 				{	
+					if(!isset($_SESSION["pdf"]["formato"]))		$_SESSION["pdf"]["formato"]		="sitio_web/html/PDF_FORMATO";
+
 					$_SESSION["pdf"]["template"]				=$template;
 
-					$words										=array_merge(array("sys_modulo" => $template),$words);					
-					@$template									=$this->__TEMPLATE("sitio_web/html/PDF_FORMATO");														
+					$words										=array_merge(array("sys_modulo" => $template),$words);			
+					
+					if($_SESSION["pdf"]["formato"]=="")			@$template						="{sys_modulo}";
+					else										@$template						=$this->__TEMPLATE($_SESSION["pdf"]["formato"]);
 					$template_lab              					=$this->__REPLACE($template,$words); 			
 					
 					$_SESSION["pdf"]["template"]				=$template_lab;					
@@ -1093,6 +1097,8 @@
 			
 			if(!is_array($_SESSION["pdf"]["template"]))
 			{
+				
+			
 				$_SESSION["pdf"]["template"]			=array(
 					array(
 						"format"		=>"A4",					
@@ -1111,12 +1117,11 @@
 			$pdf->lastPage();			
 
 			if(!isset($_SESSION["pdf"]["save_name"]))	$_SESSION["pdf"]["save_name"]=$_SESSION["pdf"]["title"];
-			#/*
+
 			if($Output=="S")
 				$_SESSION["pdf"]["file"] =$pdf->Output("prueba.pdf", $Output);
 			else	
 				$pdf->Output($_SESSION["pdf"]["save_name"], $Output);
-			#*/
 			
 			unset($_SESSION["pdf"]);
 			exit;
@@ -1245,7 +1250,7 @@
 
 
 						################################					    
-					    if($valor["type"]=="input")	
+					    if($valor["type"]=="input" OR $valor["type"]=="primary key")	
 					    {			        						        
 					        if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					        
 					        {
@@ -1265,8 +1270,6 @@
 					        	$words["$campo"]  		="{$valor["value"]}{$valor["br"]}$titulo";    
 					        	$words["$campo.md5"]  	=strtoupper(md5($valor["value"]))."{$valor["br"]}$titulo";
 					        }	
-					        
-					        
 					    } 
 					    ################################
 					    if($valor["type"]=="date")	
@@ -2078,10 +2081,10 @@
 					}				
 					else	
 					{			
-						$show	="<font data=\"&sys_section_{$this->sys_name}=show&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\"  class=\"sys_report ui-icon ui-icon-contact\"></font>";
-						$write	="<font data=\"&sys_section_{$this->sys_name}=write&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\"  class=\"sys_report ui-icon ui-icon-pencil\"></font>";
-						$delete	="<font data=\"&sys_section_{$this->sys_name}=delete&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={id}\"  class=\"sys_report ui-icon ui-icon-trash\"></font>";
-						$check	="<input class=\"view_report\" type=\"checkbox\" id=\"{$option["name"]}\" name=\"{$option["name"]}[{id}]\" value=\"{id}\">";
+						$show	="<font data=\"&sys_section_{$this->sys_name}=show&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={{$this->sys_private["field"]}}\"  class=\"sys_report ui-icon ui-icon-contact\"></font>";
+						$write	="<font data=\"&sys_section_{$this->sys_name}=write&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={{$this->sys_private["field"]}}\"  class=\"sys_report ui-icon ui-icon-pencil\"></font>";
+						$delete	="<font data=\"&sys_section_{$this->sys_name}=delete&sys_action_{$this->sys_name}=&sys_id_{$this->sys_name}={{$this->sys_private["field"]}}\"  class=\"sys_report ui-icon ui-icon-trash\"></font>";
+						$check	="<input class=\"view_report\" type=\"checkbox\" id=\"{$option["name"]}\" name=\"{$option["name"]}[{id}]\" value=\"{{$this->sys_private["field"]}}\">";
 					}	
                     
                     if(!is_null($option))
@@ -2708,6 +2711,15 @@
 					if(isset($template_option) AND !in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
 					{						
 						$button_create_js="
+							var options_$name={};
+
+							options_$name"."[\"class_one\"]			=\"{$template_option["class_one"]}\";
+							options_$name"."[\"class_field\"]		=\"{$template_option["class_field"]}\";												
+							options_$name"."[\"class_section\"]		=\"create\";
+							options_$name"."[\"class_many\"]			=\"{$template_option["class_field_value"]["class_name"]}\";
+							options_$name"."[\"object\"]				=\"{$template_option["class_field_value"]["class_name"]}\";
+						
+						
 							if($(\"font#create_$name\").length>0)
 							{	
 								{$browse["js"]}
@@ -2718,12 +2730,6 @@
 									text: 	false								
 								});
 
-								var options={};
-								options[\"class_one\"]			=\"{$template_option["class_one"]}\";
-								options[\"class_field\"]		=\"{$template_option["class_field"]}\";												
-								options[\"class_section\"]		=\"create\";
-								options[\"class_many\"]			=\"{$template_option["class_field_value"]["class_name"]}\";
-								options[\"object\"]				=\"{$template_option["class_field_value"]["class_name"]}\";
 
 	            				$(\"font#create_$name\").click(function()
 	            				{
@@ -2736,10 +2742,10 @@
 											},
 											buttons: {
 												\"Registrar\": function() {													
-													many2one_post(options);
+													many2one_post(options_$name);
 												},
 												\"Registrar y Cerrar\": function() {													
-													many2one_post(options);
+													many2one_post(options_$name);
 													$( this ).dialog(\"close\");
 												},
 												\"Cerrar\": function() {

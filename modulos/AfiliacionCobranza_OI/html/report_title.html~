@@ -1,8 +1,10 @@
 		    <tr class="{class} ui-widget-header" style="height:40px;">
 		        <td width="50" style="padding:8px ;">
 		        </td>        
-		        <td>{rp_rale}</td>
-		        <td>{nombre}</td>
-		        <td>{domicilio}</td>
-		        <td>{actividad}</td>
+		        <td>{matricula}</td>
+		        <td>{puesto}</td>
+		        <td>{departamento}</td>
+		        <td>{horario}</td>>  
 		    </tr>     
+
+
