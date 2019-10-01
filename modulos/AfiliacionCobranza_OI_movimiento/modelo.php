@@ -15,11 +15,11 @@
 			    "type"              => "input",
 			),
 			"credito"	    =>array(
-			    "title"             => "Credito",
+			    "title"             => "CREDITO",
 			    "type"              => "input",
 			),
 			"periodo"	    =>array(
-			    "title"             => "Periodo",				
+			    "title"             => "PERIODO",				
 			    "type"              => "input",			
 			),	
 			"td"	    =>array(
@@ -28,11 +28,11 @@
 			),
 			
 			"cuota_fija"	    =>array(
-			    "title"             => "Cuota Fija",
+			    "title"             => "CUOTA FIJA",
 			    "type"              => "input",
 			),			
 			"excedente"	    =>array(
-			    "title"             => "Excedente",
+			    "title"             => "EXCEDENTE",
 			    "type"              => "input",
 			),					
 			"pres"	    =>array(
@@ -41,35 +41,35 @@
 			),
 			
 			"riesgo_trabajo"	    =>array(
-			    "title"             => "Riesgo de Trabajo",
+			    "title"             => "RIESGO DE TRABAJO",
 			    "type"              => "input",
 			),
 			"invalidez_viudez"	    =>array(
-			    "title"             => "Invalidez Viudez",
+			    "title"             => "INVALIDEZ VIUDEZ",
 			    "type"              => "input",
 			),
 			"guarderia"	    =>array(
-			    "title"             => "Guarderia",
+			    "title"             => "GUARDERIA",
 			    "type"              => "input",
 			),
 			"total_cop"	    =>array(
-			    "title"             => "Total COP",
+			    "title"             => "TOTAL COP",
 			    "type"              => "input",
 			),
 			"actualizacion"	    =>array(
-			    "title"             => "Actualizacion",
+			    "title"             => "ACTUALIZACION",
 			    "type"              => "input",
 			),
 			"recargo"	    =>array(
-			    "title"             => "Recargo",
+			    "title"             => "RECARGO",
 			    "type"              => "input",
 			),
 			"gastos"	    =>array(
-			    "title"             => "Gastos",
+			    "title"             => "GASTOS",
 			    "type"              => "input",
 			),
 			"total"	    =>array(
-			    "title"             => "Total",
+			    "title"             => "TOTAL",
 			    "type"              => "input",
 			),
 #*/			

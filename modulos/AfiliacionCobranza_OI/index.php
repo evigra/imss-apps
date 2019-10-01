@@ -15,6 +15,12 @@
 	$module_center		="";
 	
 	$module_title									="";
+
+	$module_center=array(
+	    array("condonacion"		=>"Condonacion 90%"),
+		array("orden_ingreso"	=>"Orden de Ingreso 100%"),
+	);    
+
 	
     if($objeto->sys_private["section"]=="create")
 	{
