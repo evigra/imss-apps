@@ -63,7 +63,7 @@
 		}				
    		public function __PDF($Output="I")
     	{	
-    		$_SESSION["pdf"]["formato"]		="";
+    		#$_SESSION["pdf"]["formato"]		="";
 
 			if(!isset($_SESSION["pdf"]["template"]["html"]))
 			{

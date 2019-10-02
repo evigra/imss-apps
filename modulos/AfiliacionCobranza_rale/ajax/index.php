@@ -3,8 +3,7 @@
 	
 	$objeto				=new AfiliacionCobranza_rale();	
 	
-	$objeto->__PRINT_R($_REQUEST);	
-	
+	#$objeto->__PRINT_R($_REQUEST);	
 	
 	$option				=array();
 	$option["where"]	=array();	
@@ -23,13 +22,15 @@
 			{
 				$cuota_fija	=$importe;
 				$excedente	=(floor(($importe-$importe*0.1)*100))/100;
-				$total		=(floor(($importe-$importe*0.9)*100))/100; 
+				$total		=(floor(($importe-$importe*0.9)*100))/100;
+				$total_cop	=(floor(($importe-$importe*0.9)*100))/100;  
 			}
 			else
 			{
 				$cuota_fija	=$importe;
 				$excedente	=0;
 				$total		=$importe;
+				$total_cop	=$importe;
 			}
 		
 			$row[]=array(
@@ -47,12 +48,11 @@
 				"riesgo_trabajo"			=>"",
 				"invalidez_viudez"			=>"",
 				"guarderia"					=>"",
-				"total_cop"					=>"",
+				"total_cop"					=>$total_cop,
 				"actualizacion"				=>"",
 				"recargo"					=>"",
 				"gastos"					=>"",
 				"total"						=>$total,
-				#*/
 				"sys_action" 				=>"__SAVE",
 				"id"						=>"",
 			);		

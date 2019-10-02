@@ -1,39 +1,74 @@
     <table border="1" width="770">
         <tr>
-            <td colspan="3" align="left">{registro_patronal}</td>           
+            <td colspan="6" align="left">LOGO </td>           
+            <td colspan="2" align="left">DELEGACION REGIONAL<>SUBDELEGACION MANZANILLO</td>
+            <td colspan="3" align="left">FECHA</td>                	                	
+            <td colspan="3" align="left">ORDEN DE INGRESO</td>
+            <td  align="left"></td>
+        </tr>  
+        <tr>
+            <td colspan="4" align="left">{registro_patronal}</td>           
             <td colspan="4" align="left">{patron} </td>
             <td colspan="3" align="left">texto</td>                	                	
+            <td colspan="3" align="left"></td>
+            <td  align="left"></td>
+        </tr>  
+        <tr>
+            <td colspan="4" align="left">{totales_total}</td>           
+            <td colspan="7" align="left">IMPORTE CON LETRA </td>
+            <td colspan="3" align="left">SELLO AL REVERSO</td>                	                	
+            <td colspan="3" align="left"></td>
+            <td  align="left"></td>
         </tr>  
 		<tr>
-            <td colspan="12">&nbsp;</td>        
+            <td colspan="15">&nbsp;</td>        
         </tr>          
 		<tr>
-            <td colspan="12" height="350">
+            <td colspan="15" height="250">
             	{movimiento_ids}
             </td>        
         </tr>          
 		<tr>
-            <td colspan="12">
+            <td colspan="15">
 		
             </td>        
         </tr>          
-		    <tr>
-		    	<td colspan="4">OBSERVACIONES</td>           
-		        <td>CREDITO</td>
-		        <td>PER</td>                      
-		        <td>DOCUMENTO</td>
-		        <td></td>
-		        <td></td>
-		        <td></td>
-		        <td></td>                        
-		    </tr>    
+		<tr>
+            <td rowspan="7" colspan="2"></td>
+            <td rowspan="7"></td>
+            <td rowspan="7"></td>
+            <td rowspan="7"></td>
+            <td>COP</td>
+            <td>$COP</td>
+            <td colspan="3">FECHA LIMITE DE PAGO</td>
+            <td rowspan="7"></td>
+            <td rowspan="7"></td>
+            <td rowspan="7"></td>
+            <td rowspan="7"></td>
+            <td rowspan="7"></td>
+        </tr>          
+        <tr><td>ACT</td><td>$ACT</td><td colspan="3">FECHA LIMITE DE PAGO</td></tr>
+        <tr><td>RM</td><td>$RM</td><td col	span="3">FECHA LIMITE DE PAGO</td></tr>
+	    <tr>
+	    	<td rowspan="4" colspan="5" >OBSERVACIONES</td>           
+	        <td rowspan="4">CREDITO</td>
+	        <td rowspan="4">PER</td>                      
+	        <td rowspan="4">DOCUMENTO</td>
+	        <td colspan="2">O ACT VAR UDIS</td>
+	        <td rowspan="4">{totales_cop}</td>
+	        <td rowspan="4">{totales_actualizacion}</td>
+	        <td rowspan="4">{totales_rec_mora}</td>
+	        <td rowspan="4">{totales_gasto}</td>
+	        <td rowspan="4">{totales_total}</td>
+	    </tr>    
+	    <tr><td colspan="2">RECARGOS POR PLAZO</td></tr>
+	    <tr><td colspan="2">RECARGOS PAGO EXTERM</td></tr>
+	    <tr><td colspan="2">SUMAS</td></tr>    
 
 		<tr>
-            <td colspan="3">Lugar de elaboracion </td>        
+            <td colspan="5">Lugar de elaboracion </td>        
             <td colspan="3">FORMULO </td>        
-            <td colspan="3">REVISO</td>
+            <td colspan="4">REVISO</td>
             <td colspan="3">AUTORIZO</td>                
-
         </tr>          
-
     </table>
