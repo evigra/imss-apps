@@ -394,14 +394,16 @@
 				if(!isset($_SESSION["pdf"]["subject"]))			$_SESSION["pdf"]["subject"]		=$this->words["html_head_title"];
 				if(!isset($_SESSION["pdf"]["template"]))				
 				{	
-					if(!isset($_SESSION["pdf"]["formato"]))		$_SESSION["pdf"]["formato"]		="sitio_web/html/PDF_FORMATO";
+					if(!isset($_SESSION["pdf"]["formato"]))		
+						$_SESSION["pdf"]["formato"]		="sitio_web/html/PDF_FORMATO";
 
 					$_SESSION["pdf"]["template"]				=$template;
 
 					$words										=array_merge(array("sys_modulo" => $template),$words);			
 					
 					if($_SESSION["pdf"]["formato"]=="")			@$template						="{sys_modulo}";
-					else										@$template						=$this->__TEMPLATE($_SESSION["pdf"]["formato"]);
+					else										
+					@$template						=$this->__TEMPLATE($_SESSION["pdf"]["formato"]);
 					$template_lab              					=$this->__REPLACE($template,$words); 			
 					
 					$_SESSION["pdf"]["template"]				=$template_lab;					
