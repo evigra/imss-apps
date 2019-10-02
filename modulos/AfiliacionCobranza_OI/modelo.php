@@ -79,7 +79,7 @@
 				);
 				$_SESSION["pdf"]["template"]=$return;		
 			}
-			
+					
 			
 /*
 			$datos										=$this->__BROWSE($this->sys_private["id"]);			

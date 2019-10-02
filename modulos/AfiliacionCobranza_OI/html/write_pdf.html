@@ -1,70 +1,97 @@
-    <table border="1" width="770">
+    <table border="0" width="770">
         <tr>
-            <td colspan="6" align="left"><img height="50" src="http://imss-apps.com/sitio_web/img/logo2.png"></td>           
-            <td colspan="2" align="left">DELEGACION REGIONAL<>SUBDELEGACION MANZANILLO</td>
-            <td colspan="3" align="left">FECHA</td>                	                	
-            <td colspan="3" align="left">ORDEN DE INGRESO</td>
-            <td  align="left"></td>
-        </tr>  
-        <tr>
-            <td colspan="4" align="left">{registro_patronal}</td>           
-            <td colspan="4" align="left">{patron} </td>
-            <td colspan="3" align="left">texto</td>                	                	
-            <td colspan="3" align="left"></td>
-            <td  align="left"></td>
-        </tr>  
-        <tr>
-            <td colspan="4" align="left">{totales_total}</td>           
-            <td colspan="7" align="left">IMPORTE CON LETRA </td>
-            <td colspan="3" align="left">SELLO AL REVERSO</td>                	                	
-            <td colspan="3" align="left"></td>
-        </tr>  
-		<tr>
-            <td colspan="15">&nbsp;</td>        
-        </tr>          
-		<tr>
-            <td colspan="15" height="250">
-            	{movimiento_ids}
-            </td>        
-        </tr>          
-		<tr>
-            <td colspan="15">
-		
-            </td>        
-        </tr>          
-		<tr>
-            <td rowspan="7" colspan="5"></td>
-            <td>COP</td>
-            <td>$COP</td>
-            <td colspan="3">FECHA LIMITE DE PAGO</td>
-            <td rowspan="7" colspan="5"></td>
-        </tr>          
-        <tr><td>ACT</td><td>$ACT</td><td colspan="3" >FECHA LIMITE DE PAGO</td></tr>
-        <tr><td>RM</td><td>$RM</td><td colspan="3"  >FECHA LIMITE DE PAGO</td></tr>
-        <tr><td>RM</td><td>$RM</td><td colspan="3" >FECHA LIMITE DE PAGO</td></tr>
-        <tr><td>RM</td><td>$RM</td><td colspan="3" >FECHA LIMITE DE PAGO</td></tr>
-        <tr><td>RM</td><td>$RM</td><td colspan="3" >FECHA LIMITE DE PAGO</td></tr>
-        <tr><td>RM</td><td>$RM</td><td colspan="3" >FECHA LIMITE DE PAGO</td></tr>
-	    <tr>
-	    	<td rowspan="4" colspan="5" >OBSERVACIONES</td>           
-	        <td rowspan="4">CREDITO</td>
-	        <td rowspan="4">PER</td>                      
-	        <td rowspan="4">DOCUMENTO</td>
-	        <td colspan="2">O ACT VAR UDIS</td>
-	        <td rowspan="4">{totales_cop}</td>
-	        <td rowspan="4">{totales_actualizacion}</td>
-	        <td rowspan="4">{totales_rec_mora}</td>
-	        <td rowspan="4">{totales_gasto}</td>
-	        <td rowspan="4">{totales_total}</td>
-	    </tr>    
-	    <tr><td colspan="2">RECARGOS POR PLAZO</td></tr>
-	    <tr><td colspan="2">RECARGOS PAGO EXTERM</td></tr>
-	    <tr><td colspan="2">SUMAS</td></tr>    
+            <td width="70" align="left">
+            	<img height="50" src="http://imss-apps.com/sitio_web/img/logo2.png">
+            </td>           
+            <td width="250" align="left">
+				DIRECCION DE AFILIACION COBRANZA<br>
+				COORDINACION DE COBRANZA<br>
+				DIVICION DE COBRANZA FISCAL Y CONVENIOS
+            </td>           
 
-		<tr>
-            <td colspan="5">Lugar de elaboracion </td>        
-            <td colspan="3">FORMULO </td>        
-            <td colspan="4">REVISO</td>
-            <td colspan="3">AUTORIZO</td>                
-        </tr>          
-    </table>
+            <td  width="450" align="rigth">
+				<table border="1">
+					<tr>
+						<td align="center" width="200" height="48"><font size="12">DELEGACION REGIONAL COLIMA</font><br>SUBDELEGACION MANZANILLO</td>
+						<td align="center" width="100">FECHA<br>{fecha}</td>                	                	
+						<td align="center" width="150">ORDEN DE INGRESO<br>{folio}</td>
+					</tr>  
+				</table>           
+            </td>
+        </tr>  
+        <tr>
+            <td colspan="2"  width="770">                        
+				<table border="1" width="100%">
+					<tr>
+						<td colspan="3" align="left">{registro_patronal}</td>           
+						<td colspan="5" align="left">{patron} </td>
+						<td colspan="3" align="left">texto</td>                	                	
+						<td colspan="3" align="left"></td>
+						<td  align="left"></td>
+					</tr>  
+					<tr>
+						<td colspan="3" align="left">{totales_total}</td>           
+						<td colspan="8" align="left">IMPORTE CON LETRA <br>{letra_totales_total}</td>
+						<td colspan="3" align="left">SELLO AL REVERSO</td>                	                	
+						<td colspan="3" align="left"></td>
+					</tr>  
+					<tr>
+						<td colspan="15" height="250">
+							{movimiento_ids}
+						</td>        
+					</tr>          
+					<tr>
+						<td rowspan="7" colspan="5" width="200"></td>
+						<td width="45">COP</td>
+						<td width="45">$COP</td>
+						<td colspan="3" width="170">FECHA LIMITE DE PAGO</td>
+						<td rowspan="7" colspan="5"></td>
+					</tr>          
+					<tr><td>ACT</td><td>{ACT}</td><td colspan="3" >{fecha}</td></tr>
+					<tr><td>RM</td><td>{RM}</td><td width="45">REG PAT</td><td colspan="2" width="124">{fecha}</td></tr>
+					<tr><td>G EJEC</td><td>{eje}</td><td>TOTAL</td><td colspan="2">{total}</td></tr>
+					<tr><td colspan="5" >{letra}</td></tr>
+					<tr><td colspan="5" >{jefe}</td></tr>
+					<tr><td colspan="5" >JEFE DE OFICINA</td></tr>
+					<tr>
+						<td colspan="5" >OBSERVACIONES</td>           
+						<td>CREDITO</td>
+						<td>PER</td>                      
+						<td>DOCUM</td>
+						<td colspan="2">O ACT VAR UDIS</td>
+
+						<td>{totales_cop}</td>
+						<td width="85">{totales_actualizacion}</td>
+						<td width="60">{totales_rec_mora}</td>
+						<td width="50">{totales_gasto}</td>
+						<td width="60">{totales_total}</td>
+					</tr>    
+
+					<tr>
+						<td rowspan="4" colspan="5" >OBSERVACIONES</td>           
+						<td rowspan="4">CREDITO</td>
+						<td rowspan="4">PER</td>                      
+						<td rowspan="4">DOCUM</td>
+						<td colspan="2">O ACT VAR UDIS</td>
+						<td rowspan="4">{totales_cop}</td>
+						<td rowspan="4" width="85">{totales_actualizacion}</td>
+						<td rowspan="4" width="60">{totales_rec_mora}</td>
+						<td rowspan="4" width="50">{totales_gasto}</td>
+						<td rowspan="4" width="60">{totales_total}</td>
+					</tr>    
+					<tr><td colspan="2">RECARGOS POR PLAZO</td></tr>
+					<tr><td colspan="2">RECARGOS PAGO EXTERM</td></tr>
+					<tr><td colspan="2">SUMAS</td></tr>    
+
+					<tr>
+						<td colspan="5">Lugar de elaboracion </td>        
+						<td colspan="3">FORMULO </td>        
+						<td colspan="4">REVISO</td>
+						<td colspan="3">AUTORIZO</td>                
+					</tr>          
+				</table>            
+            
+            
+            </td>
+        </tr>  
+	</table>
