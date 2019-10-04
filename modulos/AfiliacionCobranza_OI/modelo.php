@@ -30,17 +30,45 @@
 			),		
 			"folio"	    =>array(
 			    "title"             => "Folio",
-			    "type"              => "input",
+			    "type"              => "value",
 			),
 			"subtotal"	    =>array(
 			    "title"             => "SubTotal",
+			    "type"              => "hidden",
+			),
+			"fecha"	    =>array(
+			    "title"             => "Fecha",
+			    "type"              => "value",
+			),
+			"letra_total"	    =>array(
+			    "title"             => "IMPORTE CON LETRA",
 			    "type"              => "input",
 			),
-
 			"total"	    =>array(
 			    "title"             => "Total",
-			    "type"              => "input",
+			    "type"              => "hidden",
 			),
+			"total_cuota_fija"	    =>array(
+			    "title"             => "Cuota",
+			    "type"              => "hidden",
+			),
+			"total_excedente"	    =>array(
+			    "title"             => "Excedente",
+			    "type"              => "hidden",
+			),
+			"total_cop"	    =>array(
+			    "title"             => "COP",
+			    "type"              => "hidden",
+			),
+			"total_recargo"	    =>array(
+			    "title"             => "Recargo",
+			    "type"              => "hidden",
+			),
+			"total_gasto"	    =>array(
+			    "title"             => "Gasto",
+			    "type"              => "hidden",
+			),
+
 			"movimiento_ids"	    =>array(
 			    "type"              => "form",
 			    "relation"          => "one2many",
@@ -56,15 +84,37 @@
 		public function __CONSTRUCT($option=array())
 		{	
 			$_SESSION["pdf"]["formato"]		="";		    	    
+									
     	    parent::__CONSTRUCT($option);
 		}				
-				
-
-
    		public function __SAVE($datas=NULL,$option=NULL)
     	{
-    	    $return=parent::__SAVE($datas,$option);
-    	    return $return;
+    		$guardar						=1;	
+    		$datas["letra_total"]			=$this->NUM_A_LETRA($datas["total"],1);
+    		$datas["fecha"]					=$_SESSION["var"]["datetime"];
+    		    	        	    
+			if(!isset($datas["folio"]) OR $datas["folio"]=="")
+			{	
+				$option_folio				=array();
+				$option_folio["variable"]	= substr($datas["trabajador_departamento_id"],0,2);    /// CONFIGURACION DE FOLIO
+				$option_folio["subvariable"]= date ("Y");
+				$option_folio["tipo"]		= "Orden Ingreso";
+				$option_folio["subtipo"]	= "";
+				$option_folio["objeto"]		= $this->sys_object;
+				
+				$datas["folio"]				=$this->__FOLIOS($option_folio);
+			}
+    	    
+    	    $return							=parent::__SAVE($datas,$option);
+    	        	    
+			if($guardar==1)
+			{    		    		    		    					
+				if($this->sys_private["section"]=="create")
+				{
+					$this->PDF_PRINT($return);
+				}
+				return $return;	
+			}			    	    
 		}				
    		public function __PDF($Output="I")
     	{	

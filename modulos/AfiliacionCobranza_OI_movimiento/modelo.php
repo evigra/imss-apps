@@ -78,25 +78,26 @@
 		##  Metodos	
 		##############################################################################
    		public function __SAVE($datas=NULL,$option=NULL)
-    	{    		
+    	{    
     	    $return=parent::__SAVE($datas,$option);
+    	    
+    	    foreach($_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"] as $row)
+    	    {
+				@$total_total+=@$row["total"];
+				@$total_cuota+=@$row["cuota_fija"];
+				@$total_excedente+=@$row["excedente"];
+				@$total_cop+=@$row["total_cop"];
+				@$total_actualizacion+=@$row["actualizacion"];
+				@$total_recargo+=@$row["recargo"];
+				@$total_gasto+=@$row["gastos"];
+    	    }
+    	    
+    	    $return["js"]="alert('a');";
     	    
     	    #$this->__PRINT_R($_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]);
     	    return $return;
 
 		}
-		/*				   		
-		public function autocomplete()		
-    	{	
-    		$option					=array();
-    		$option["where"]		=array();    		
-    		
-    		$option["where"][]		="nombre LIKE '%{$_GET["term"]}%'";
-    		
-			$return =$this->__BROWSE($option);    				
-			return $return;			
-		}
-		*/				
 		public function __BROWSE($option=array())
     	{	
     		if(!is_array($option))				$option					=array();

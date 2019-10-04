@@ -13,8 +13,8 @@
 				<table border="1">
 					<tr>
 						<td align="center" width="205" height="33"><font size="12">DELEGACION REGIONAL COLIMA</font><br>SUBDELEGACION MANZANILLO</td>
-						<td align="center" width="135">FECHA<br>{fecha}</td>                	                	
-						<td align="center" width="170">ORDEN DE INGRESO<br>{folio}</td>
+						<td align="center" valign="center" width="125"><b><font size="14">{fecha}</font></b></td>                	                	
+						<td align="center" width="180">ORDEN DE INGRESO<br><b><font size="20">{folio}</font></b></td>
 					</tr>  
 				</table>           
             </td>
@@ -23,20 +23,20 @@
             <td colspan="2"  width="770">                        
 				<table border="1" width="100%">
 					<tr>
-						<td colspan="3" align="left">{registro_patronal}</td>           
-						<td colspan="5" align="left">{patron} </td>
-						<td colspan="3" align="left">texto</td>                	                	
+						<td colspan="2" align="left" style="margin: 5px 5px 5px 5px;">{registro_patronal}</td>           
+						<td colspan="6" align="left" style="padding-left:15px;">{patron} </td>
+						<td colspan="3" align="left"></td>                	                	
 						<td colspan="3" align="left"></td>
 						<td  align="left"></td>
 					</tr>  
 					<tr>
-						<td colspan="3" align="left">{totales_total}</td>           
-						<td colspan="8" align="left">IMPORTE CON LETRA <br>{letra_totales_total}</td>
+						<td colspan="2" align="left">{total}</td>           
+						<td colspan="9" align="left">{letra_total}</td>
 						<td colspan="3" align="left">SELLO AL REVERSO</td>                	                	
 						<td colspan="3" align="left"></td>
 					</tr>  
 					<tr>
-						<td colspan="15" height="250">
+						<td colspan="15" height="240">
 							{movimiento_ids}
 						</td>        
 					</tr>          
@@ -50,21 +50,23 @@
 					<tr><td>ACT</td><td>{ACT}</td><td colspan="3" >{fecha}</td></tr>
 					<tr><td>RM</td><td>{RM}</td><td width="45">REG PAT</td><td colspan="2" width="124">{fecha}</td></tr>
 					<tr><td>G EJEC</td><td>{eje}</td><td>TOTAL</td><td colspan="2">{total}</td></tr>
-					<tr><td colspan="5" >{letra}</td></tr>
+					<tr><td colspan="5" >{letra_total}</td></tr>
 					<tr><td colspan="5" >{jefe}</td></tr>
 					<tr><td colspan="5" >JEFE DE OFICINA</td></tr>
 					<tr>
-						<td colspan="5" >OBSERVACIONES</td>           
-						<td>CREDITO</td>
-						<td>PER</td>                      
-						<td>DOCUM</td>
-						<td colspan="2">O ACT VAR UDIS</td>
+						<td colspan="4" >SUMAS</td>           
+						<td>{total_cuota_fija}</td>
+						<td>{total_excedente}</td>
+						<td>{per}</td>                      
+						<td>{doc}</td>
+						<td>{aa}</td>
+						<td>{aa}</td>
 
-						<td>{totales_cop}</td>
-						<td width="85">{totales_actualizacion}</td>
-						<td width="60">{totales_rec_mora}</td>
-						<td width="50">{totales_gasto}</td>
-						<td width="60">{totales_total}</td>
+						<td>{total_cop}</td>
+						<td width="85">{total_actualizacion}</td>
+						<td width="60">{total_recargo}</td>
+						<td width="50">{total_gasto}</td>
+						<td width="60">{total}</td>
 					</tr>    
 
 					<tr>

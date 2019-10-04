@@ -511,7 +511,7 @@
 						}				
 						elseif(!isset($this->sys_fields["$campo"]["relation"]))
 						{
-							if(count(@$this->sys_fields["$campo"])>1 )
+							if(isset($this->sys_fields["$campo"]) AND count(@$this->sys_fields["$campo"])>1 )
 							{
 								$fields	.="$campo='$valor',";
 							}

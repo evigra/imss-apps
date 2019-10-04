@@ -1701,11 +1701,22 @@
 					        if(!in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))					        
 					        {
 								if(@$this->sys_private["section"]=="show")
-									$words["$campo"]  ="";
-								else					        
-									$words["$campo"]  ="<input type=\"hidden\" id=\"$campo\" name=\"{$this->sys_name}_$campo\" $attr value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name}\">";
-							}					        	
-					        else	$words["$campo"]  ="";						           
+								{
+									$words["$campo"]  		="{$valor["value"]}{$valor["br"]}$titulo";
+									$words["$campo.md5"]  	=strtoupper(md5($valor["value"]))."{$valor["br"]}$titulo";
+								}	
+								else
+								{					        
+									$words["$campo"]  		="<input id=\"$campo\" $style autocomplete=\"off\" type=\"hidden\" $attr name=\"{$this->sys_name}_$campo\" value=\"{$valor["value"]}\" class=\"formulario {$this->sys_name} {$this->sys_object} $class\">";
+								}					        										
+							}
+					        else	
+					        {
+					        	$words["$campo"]  		="{$valor["value"]}{$valor["br"]}$titulo";    
+					        	$words["$campo.md5"]  	=strtoupper(md5($valor["value"]))."{$valor["br"]}$titulo";
+					        }	
+					    
+					    
 					    }    
 					    ################################
 					    if($valor["type"]=="img")	
@@ -3899,7 +3910,7 @@
 		switch($_moneda)
 		{
 			case 1:
-			$_nommoneda='COLONES';
+			$_nommoneda='PESOS';
 			break;
 			case 2:
 			$_nommoneda='DÓLARES';
@@ -3912,7 +3923,7 @@
 		$tempnum = explode('.',$numero);
 
 		if ($tempnum[0] !== ""){
-			$numf = milmillon($tempnum[0]);
+			$numf = $this->milmillon($tempnum[0]);
 			if ($numf == "UNO"){
 				$numf = substr($numf, 0, -1);
 			}
@@ -3992,50 +4003,50 @@
 		{
 		$numd = "NOVENTA ";
 		if ($numdero > 90)
-		$numd = $numd."Y ".(unidad($numdero - 90));
+		$numd = $numd."Y ".($this->unidad($numdero - 90));
 		}
 		else if ($numdero >= 80 && $numdero <= 89)
 		{
 		$numd = "OCHENTA ";
 		if ($numdero > 80)
-		$numd = $numd."Y ".(unidad($numdero - 80));
+		$numd = $numd."Y ".($this->unidad($numdero - 80));
 		}
 		else if ($numdero >= 70 && $numdero <= 79)
 		{
 		$numd = "SETENTA ";
 		if ($numdero > 70)
-		$numd = $numd."Y ".(unidad($numdero - 70));
+		$numd = $numd."Y ".($this->unidad($numdero - 70));
 		}
 		else if ($numdero >= 60 && $numdero <= 69)
 		{
 		$numd = "SESENTA ";
 		if ($numdero > 60)
-		$numd = $numd."Y ".(unidad($numdero - 60));
+		$numd = $numd."Y ".($this->unidad($numdero - 60));
 		}
 		else if ($numdero >= 50 && $numdero <= 59)
 		{
 		$numd = "CINCUENTA ";
 		if ($numdero > 50)
-		$numd = $numd."Y ".(unidad($numdero - 50));
+		$numd = $numd."Y ".($this->unidad($numdero - 50));
 		}
 		else if ($numdero >= 40 && $numdero <= 49)
 		{
 		$numd = "CUARENTA ";
 		if ($numdero > 40)
-		$numd = $numd."Y ".(unidad($numdero - 40));
+		$numd = $numd."Y ".($this->unidad($numdero - 40));
 		}
 		else if ($numdero >= 30 && $numdero <= 39)
 		{
 		$numd = "TREINTA ";
 		if ($numdero > 30)
-		$numd = $numd."Y ".(unidad($numdero - 30));
+		$numd = $numd."Y ".($this->unidad($numdero - 30));
 		}
 		else if ($numdero >= 20 && $numdero <= 29)
 		{
 		if ($numdero == 20)
 		$numd = "VEINTE ";
 		else
-		$numd = "VEINTI".(unidad($numdero - 20));
+		$numd = "VEINTI".($this->unidad($numdero - 20));
 		}
 		else if ($numdero >= 10 && $numdero <= 19)
 		{
@@ -4093,7 +4104,7 @@
 		}
 		}
 		else
-		$numd = unidad($numdero);
+		$numd = $this->unidad($numdero);
 		return $numd;
 		}
 
@@ -4104,73 +4115,73 @@
 		{
 		$numce = "NOVECIENTOS ";
 		if ($numc > 900)
-		$numce = $numce.(decena($numc - 900));
+		$numce = $numce.($this->decena($numc - 900));
 		}
 		else if ($numc >= 800 && $numc <= 899)
 		{
 		$numce = "OCHOCIENTOS ";
 		if ($numc > 800)
-		$numce = $numce.(decena($numc - 800));
+		$numce = $numce.($this->decena($numc - 800));
 		}
 		else if ($numc >= 700 && $numc <= 799)
 		{
 		$numce = "SETECIENTOS ";
 		if ($numc > 700)
-		$numce = $numce.(decena($numc - 700));
+		$numce = $numce.($this->decena($numc - 700));
 		}
 		else if ($numc >= 600 && $numc <= 699)
 		{
 		$numce = "SEISCIENTOS ";
 		if ($numc > 600)
-		$numce = $numce.(decena($numc - 600));
+		$numce = $numce.($this->decena($numc - 600));
 		}
 		else if ($numc >= 500 && $numc <= 599)
 		{
 		$numce = "QUINIENTOS ";
 		if ($numc > 500)
-		$numce = $numce.(decena($numc - 500));
+		$numce = $numce.($this->decena($numc - 500));
 		}
 		else if ($numc >= 400 && $numc <= 499)
 		{
 		$numce = "CUATROCIENTOS ";
 		if ($numc > 400)
-		$numce = $numce.(decena($numc - 400));
+		$numce = $numce.($this->decena($numc - 400));
 		}
 		else if ($numc >= 300 && $numc <= 399)
 		{
 		$numce = "TRESCIENTOS ";
 		if ($numc > 300)
-		$numce = $numce.(decena($numc - 300));
+		$numce = $numce.($this->decena($numc - 300));
 		}
 		else if ($numc >= 200 && $numc <= 299)
 		{
 		$numce = "DOSCIENTOS ";
 		if ($numc > 200)
-		$numce = $numce.(decena($numc - 200));
+		$numce = $numce.($this->decena($numc - 200));
 		}
 		else if ($numc >= 100 && $numc <= 199)
 		{
 		if ($numc == 100)
 		$numce = "CIEN ";
 		else
-		$numce = "CIENTO ".(decena($numc - 100));
+		$numce = "CIENTO ".($this->decena($numc - 100));
 		}
 		}
 		else
-		$numce = decena($numc);
+		$numce = $this->decena($numc);
 
 		return $numce;
 		}
 
 		function miles($nummero){
 		if ($nummero >= 1000 && $nummero < 2000){
-		$numm = "MIL ".(centena($nummero%1000));
+		$numm = "MIL ".($this->centena($nummero%1000));
 		}
 		if ($nummero >= 2000 && $nummero <10000){
-		$numm = unidad(Floor($nummero/1000))." MIL ".(centena($nummero%1000));
+		$numm = $this->unidad(Floor($nummero/1000))." MIL ".($this->centena($nummero%1000));
 		}
 		if ($nummero < 1000)
-		$numm = centena($nummero);
+		$numm = $this->centena($nummero);
 
 		return $numm;
 		}
@@ -4179,13 +4190,13 @@
 		if ($numdmero == 10000)
 		$numde = "DIEZ MIL";
 		if ($numdmero > 10000 && $numdmero <20000){
-		$numde = decena(Floor($numdmero/1000))."MIL ".(centena($numdmero%1000));
+		$numde = $this->decena(Floor($numdmero/1000))."MIL ".($this->centena($numdmero%1000));
 		}
 		if ($numdmero >= 20000 && $numdmero <100000){
-		$numde = decena(Floor($numdmero/1000))." MIL ".(miles($numdmero%1000));
+		$numde = $this->decena(Floor($numdmero/1000))." MIL ".($this->miles($numdmero%1000));
 		}
 		if ($numdmero < 10000)
-		$numde = miles($numdmero);
+		$numde = $this->miles($numdmero);
 
 		return $numde;
 		}
@@ -4194,22 +4205,22 @@
 		if ($numcmero == 100000)
 		$num_letracm = "CIEN MIL";
 		if ($numcmero >= 100000 && $numcmero <1000000){
-		$num_letracm = centena(Floor($numcmero/1000))." MIL ".(centena($numcmero%1000));
+		$num_letracm = $this->centena(Floor($numcmero/1000))." MIL ".($this->centena($numcmero%1000));
 		}
 		if ($numcmero < 100000)
-		$num_letracm = decmiles($numcmero);
+		$num_letracm = $this->decmiles($numcmero);
 		return $num_letracm;
 		}
 
 		function millon($nummiero){
 		if ($nummiero >= 1000000 && $nummiero <2000000){
-		$num_letramm = "UN MILLON ".(cienmiles($nummiero%1000000));
+		$num_letramm = "UN MILLON ".($this->cienmiles($nummiero%1000000));
 		}
 		if ($nummiero >= 2000000 && $nummiero <10000000){
-		$num_letramm = unidad(Floor($nummiero/1000000))." MILLONES ".(cienmiles($nummiero%1000000));
+		$num_letramm = $this->unidad(Floor($nummiero/1000000))." MILLONES ".($this->cienmiles($nummiero%1000000));
 		}
 		if ($nummiero < 1000000)
-		$num_letramm = cienmiles($nummiero);
+		$num_letramm = $this->cienmiles($nummiero);
 
 		return $num_letramm;
 		}
@@ -4218,40 +4229,41 @@
 		if ($numerodm == 10000000)
 		$num_letradmm = "DIEZ MILLONES";
 		if ($numerodm > 10000000 && $numerodm <20000000){
-		$num_letradmm = decena(Floor($numerodm/1000000))."MILLONES ".(cienmiles($numerodm%1000000));
+		$num_letradmm = $this->decena(Floor($numerodm/1000000))."MILLONES ".($this->cienmiles($numerodm%1000000));
 		}
 		if ($numerodm >= 20000000 && $numerodm <100000000){
-		$num_letradmm = decena(Floor($numerodm/1000000))." MILLONES ".(millon($numerodm%1000000));
+		$num_letradmm = $this->decena(Floor($numerodm/1000000))." MILLONES ".($this->millon($numerodm%1000000));
 		}
 		if ($numerodm < 10000000)
-		$num_letradmm = millon($numerodm);
+		$num_letradmm = $this->millon($numerodm);
 
 		return $num_letradmm;
 		}
 
-		function cienmillon($numcmeros){
+		public function cienmillon($numcmeros){
 		if ($numcmeros == 100000000)
 		$num_letracms = "CIEN MILLONES";
 		if ($numcmeros >= 100000000 && $numcmeros <1000000000){
-		$num_letracms = centena(Floor($numcmeros/1000000))." MILLONES ".(millon($numcmeros%1000000));
+		$num_letracms = $this->centena(Floor($numcmeros/1000000))." MILLONES ".($this->millon($numcmeros%1000000));
 		}
 		if ($numcmeros < 100000000)
-		$num_letracms = decmillon($numcmeros);
+		$num_letracms = $this->decmillon($numcmeros);
 		return $num_letracms;
 		}
 
-		function milmillon($nummierod){
-		if ($nummierod >= 1000000000 && $nummierod <2000000000){
-		$num_letrammd = "MIL ".(cienmillon($nummierod%1000000000));
-		}
-		if ($nummierod >= 2000000000 && $nummierod <10000000000){
-		$num_letrammd = unidad(Floor($nummierod/1000000000))." MIL ".(cienmillon($nummierod%1000000000));
-		}
-		if ($nummierod < 1000000000)
-		$num_letrammd = cienmillon($nummierod);
+		public function milmillon($nummierod)
+		{
+			if ($nummierod >= 1000000000 && $nummierod <2000000000){
+			$num_letrammd = "MIL ".($this->cienmillon($nummierod%1000000000));
+			}
+			if ($nummierod >= 2000000000 && $nummierod <10000000000){
+			$num_letrammd = $this->unidad(Floor($nummierod/1000000000))." MIL ".($this->cienmillon($nummierod%1000000000));
+			}
+			if ($nummierod < 1000000000)
+			$num_letrammd = $this->cienmillon($nummierod);
 
-		return $num_letrammd;
-	} 
+			return $num_letrammd;
+		} 
 
 
 
