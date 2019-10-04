@@ -1,9 +1,6 @@
 <?php
-	require_once("../../../nucleo/sesion.php");
-	
+	require_once("../../../nucleo/sesion.php");	
 	$objeto				=new AfiliacionCobranza_rale();	
-	
-	#$objeto->__PRINT_R($_REQUEST);	
 	
 	$option				=array();
 	$option["where"]	=array();	
@@ -13,16 +10,16 @@
 	$data										= $objeto->__BROWSE($option);
 	if(isset($data["data"]))
 	{	
-		$total_total=0;
-		$total_cuota=0;
-		$total_excedente=0;
-		$total_cop=0;
+		$total_total		=0;
+		$total_cuota		=0;
+		$total_excedente	=0;
+		$total_cop			=0;
 		$total_actualizacion=0;
-		$total_recargo=0;
-		$total_gasto=0;
+		$total_recargo		=0;
+		$total_gasto		=0;
 
 
-		$row=array();
+		$row				=array();
 
 		foreach($data["data"] as $row_data)
 		{
@@ -86,16 +83,15 @@
 			#$excedente	=(floor(($total_cop-$total_cop*0.1)*100))/100;
 			
 			@$return=array(
-				"total"=>(floor(($total_total)*100))/100,
-				"cuota"=>(floor(($total_cuota)*100))/100,
-				"excedente"=>(floor(($total_excedente)*100))/100,
-				"cop"=>(floor(($total_cop)*100))/100,
-				/*
-				"actualizacion"=>$row["actualizacion"],
-				"recargo"=>$row["recargo"],
-				"gasto"=>$row["gastos"],
-				"count"=>count($row),
-				*/
+				"total"			=>(floor(($total_total)*100))/100,
+				"cuota"			=>(floor(($total_cuota)*100))/100,
+				"excedente"		=>(floor(($total_excedente)*100))/100,
+				"cop"			=>(floor(($total_cop)*100))/100,
+
+				"actualizacion"	=>0,
+				"recargo"		=>0,
+				"gasto"			=>0,
+				"count"			=>count($row),
 			);	
 			echo json_encode($return);			
 		}

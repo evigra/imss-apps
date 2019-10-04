@@ -83,6 +83,17 @@
 		##############################################################################
 		public function __CONSTRUCT($option=array())
 		{	
+			
+			if(in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
+			{
+				$this->sys_fields["total_cuota_fija"]["type"]	="value";
+				$this->sys_fields["total_excedente"]["type"]	="value";
+				$this->sys_fields["total_cop"]["type"]			="value";
+				$this->sys_fields["total_recargo"]["type"]		="value";
+				$this->sys_fields["total_gasto"]["type"]		="value";
+				$this->sys_fields["total"]["type"]				="value";						
+			}
+					
 			$_SESSION["pdf"]["formato"]		="";		    	    
 									
     	    parent::__CONSTRUCT($option);
