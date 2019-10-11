@@ -18,7 +18,6 @@
 		$total_recargo		=0;
 		$total_gasto		=0;
 
-
 		$row				=array();
 
 		foreach($data["data"] as $row_data)

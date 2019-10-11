@@ -85,6 +85,7 @@
 				$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"][$index]=$datas["row"];
 
 				#$this->__PRINT_R($datas);
+				if(!isset($datas["row"]["total_cop"]) OR $datas["row"]["total_cop"]=="")			$datas["row"]["total_cop"]=0;
 				if(!isset($datas["row"]["actualizacion"]) OR $datas["row"]["actualizacion"]=="")	$datas["row"]["actualizacion"]=0;
 				if(!isset($datas["row"]["recargo"]) OR $datas["row"]["recargo"]=="")				$datas["row"]["recargo"]=0;
 				if(!isset($datas["row"]["gastos"]) OR $datas["row"]["gastos"]=="")					$datas["row"]["gastos"]=0;

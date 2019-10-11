@@ -1754,7 +1754,11 @@
     	##############################################################################    
 		public function __MANY2ONE($option)		
 		{
+			#$this->__PRINT_R($option);
+
+
 			$class_id			=@$option["class_id"];
+						
 			$class_one			=@$option["class_one"];
 			$class_one_id		=@$option["class_one_id"];
 			$class_section		=@$option["class_section"];
@@ -1835,7 +1839,8 @@
 
 
 					$"."words[\"$campo\"]  							=$"."this->__REPLACE($"."view,$"."obj_$campo"."words);												
-				";											
+				";							
+				#$this->__PRINT_R($eval);				
 				eval($eval);	
 			}
 			return $words;

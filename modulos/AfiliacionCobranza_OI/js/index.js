@@ -11,11 +11,18 @@
 			success: function (response) 
 			{		
 				var obj = $.parseJSON( response);
-				
-				//options_movimiento_ids["class_id"]		=response;
-				//options_movimiento_ids["class_section"]	="delete";
-				
+
+				options_movimiento_ids["class_one"]				="AfiliacionCobranza_OI";
+				options_movimiento_ids["class_field"]			="movimiento_ids";
+				options_movimiento_ids["class_field_id"]		=obj["count"];
+				options_movimiento_ids["class_id"]				=obj["count"];
+				options_movimiento_ids["id"]					=obj["count"];
+				options_movimiento_ids["object"]				=options_movimiento_ids["class_one"];
+				options_movimiento_ids["class_many"]			=options_movimiento_ids["class_one"];
+				options_movimiento_ids["class_section"]			="delete";
+												
 				many2one_post(options_movimiento_ids);
+
 				
 				setTimeout(function()
 				{  
