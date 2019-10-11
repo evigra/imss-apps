@@ -29,6 +29,7 @@
 			    "title_filter"      => "Nombre",
 			    "type"              => "input",
 			),
+
 			"email"	    =>array(
 			    "title"             => "Mail",
 			    "title_filter"      => "Mail",
@@ -42,6 +43,11 @@
 			    "title"             => "Password",
 			    "type"              => "password",
 			),
+			"departamento_id"	    =>array(
+			    "title"             => "ID Departamento",
+			    "type"              => "input",
+			),
+
 			/*
 			"files_id"	    =>array(
 			    "title"             => "Imagen",

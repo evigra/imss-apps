@@ -28,6 +28,20 @@
 			    "type"              => "input",
 			    "title_filter"		=> "Patron",
 			),		
+			"jefe"	    =>array(
+			    "title"             => "Jefe de Oficina",
+			    "type"              => "input",
+			),		
+			"formulo"	    =>array(
+			    "title"             => "Formulo",
+			    "type"              => "input",
+			),		
+			"reviso"	    =>array(
+			    "title"             => "Reviso",
+			    "type"              => "input",
+			),		
+
+
 			"folio"	    =>array(
 			    "title"             => "Folio",
 			    "type"              => "value",
@@ -83,9 +97,10 @@
 		##############################################################################
 		public function __CONSTRUCT($option=array())
 		{	
-			
-			if(in_array(@$this->sys_private["action"],$_SESSION["var"]["print"]))
+			if(in_array(@$_REQUEST["sys_action"],$_SESSION["var"]["print"]))
 			{
+				$this->sys_fields["patron"]["type"]				="value";
+				$this->sys_fields["registro_patronal"]["type"]	="value";
 				$this->sys_fields["total_cuota_fija"]["type"]	="value";
 				$this->sys_fields["total_excedente"]["type"]	="value";
 				$this->sys_fields["total_cop"]["type"]			="value";
@@ -96,6 +111,9 @@
 					
 			$_SESSION["pdf"]["formato"]		="";		    	    
 									
+									
+			#$this->__PRINT_R($_SESSION["user"]);						
+			
     	    parent::__CONSTRUCT($option);
 		}				
    		public function __SAVE($datas=NULL,$option=NULL)
@@ -103,11 +121,12 @@
     		$guardar						=1;	
     		$datas["letra_total"]			=$this->NUM_A_LETRA($datas["total"],1);
     		$datas["fecha"]					=$_SESSION["var"]["datetime"];
+	   		$datas["fecha"]					=$_SESSION["var"]["datetime"];
     		    	        	    
 			if(!isset($datas["folio"]) OR $datas["folio"]=="")
 			{	
 				$option_folio				=array();
-				$option_folio["variable"]	= substr($datas["trabajador_departamento_id"],0,2);    /// CONFIGURACION DE FOLIO
+				$option_folio["variable"]	= substr($_SESSION["user"]["departamento_id"],0,2);    /// CONFIGURACION DE FOLIO
 				$option_folio["subvariable"]= date ("Y");
 				$option_folio["tipo"]		= "Orden Ingreso";
 				$option_folio["subtipo"]	= "";

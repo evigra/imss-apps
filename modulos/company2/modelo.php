@@ -5,7 +5,6 @@
 		##  Propiedades	
 		##############################################################################
 		var $sys_enviroments	="DEVELOPER";
-		var $sys_table			="company";
 		var $sys_fields		=array(
 			"id"			=>array(
 			    "title"             => "id",
@@ -15,14 +14,12 @@
 			    "title"             => "Company",
 			    "type"              => "input",
 			),
-
 			"razonSocial"	    	=>array(
 			    "title"             => "Razon Social",
 			    "type"              => "input",
 			),
 			"nombre"	    	=>array(
 			    "title"             => "Nombre",
-			    "titleShow"         => "false",
 			    "title_filter"		=> "Nombre",
 			    "type"              => "input",
 			),			
@@ -36,13 +33,10 @@
 			),
 			"estatus"	    =>array(
 			    "title"             => "Estatus",
-			    "title_filter"		=> "Estatus",
 			    "type"              => "select",
 			    "source"            => array(
-			    	""				=>"En proceso",
-			    	"1"				=>"Vigente",
-			    	"-1"			=>"Suspendido",
-			    	"0"				=>"Cancelado",			    	
+			    	"1"=>"Vigente",
+			    	"0"=>"Cancelado"
 			    ),
 			),
 			"web"	    =>array(
@@ -64,7 +58,6 @@
 			),						
 			"img_files_id_med"	    =>array(
 			    "title"             => "Logo",
-			    "titleShow"         => "false",
 			    "type"              => "show_file",
 			),
 			"img_files_id_chi"	    =>array(
@@ -120,27 +113,7 @@
 			    "type"              => "input",
 			),			
 			"domicilio_fiscal"	=>array(
-			    "title"             => "Lugar de entrega",
-			    "type"              => "input",
-			),			
-			"estado"	=>array(
-			    "title"             => "Estado",
-			    "type"              => "input",
-			),			
-			"municipio"	=>array(
-			    "title"             => "Municipio",
-			    "type"              => "input",
-			),			
-			"cp"	=>array(
-			    "title"             => "CP",
-			    "type"              => "input",
-			),			
-			"colonia"	=>array(
-			    "title"             => "Colonia",
-			    "type"              => "input",
-			),			
-			"calle"	=>array(
-			    "title"             => "Calle",
+			    "title"             => "Domicilio Fiscal",
 			    "type"              => "input",
 			),			
 			"tipo_company"	=>array(
@@ -172,20 +145,39 @@
 		{						
 			return parent::__CONSTRUCT($option);
 		}
+		public function __SAVE($datas=NULL,$option=NULL)
+    	{    	
+			if(isset($_SESSION["company"]) AND isset($_SESSION["company"]["id"]))
+				$datas["company_id"]			=$_SESSION["company"]["id"];
+    	    
+    	    if(!isset($datas["tipo_company"]) OR @$datas["tipo_company"]=="")	
+    	    	$datas["tipo_company"]			="COMPANY";
+
+    		parent::__SAVE($datas,$option);
+		}		
 		public function __BROWSE($option=NULL)
     	{    		
+    		
     		if(is_null($option))	$option=array();			
 			if(!isset($option["where"]))    	$option["where"]	=array();
 			if(!isset($option["select"]))   	$option["select"]	=array();
 
-			$option["select"]["FN_ImgFile('http://{$_SERVER["SERVER_NAME"]}/modulos/company/img/company2.png',files_id,0,0)"]		="img_files_id";
-			$option["select"]["FN_ImgFile('http://{$_SERVER["SERVER_NAME"]}/modulos/company/img/company2.png',files_id,300,300)"]	="img_files_id_med";				
-			$option["select"]["FN_ImgFile('http://{$_SERVER["SERVER_NAME"]}/modulos/company/img/company2.png',files_id,75,75)"]		="img_files_id_chi";
-			$option["select"]["FN_ImgFile('http://{$_SERVER["SERVER_NAME"]}/modulos/company/img/company2.png',files_id,10,10)"]		="img_files_id_sup_chi";
+			$option["select"]["FN_ImgFile('../modulos/users/img/user.png',files_id,0,0)"]		="img_files_id";
+			$option["select"]["FN_ImgFile('../modulos/users/img/user.png',files_id,300,300)"]	="img_files_id_med";				
+			$option["select"]["FN_ImgFile('../modulos/users/img/user.png',files_id,150,90)"]	="img_files_id_chi";
+			$option["select"]["FN_ImgFile('../modulos/users/img/user.png',files_id,40,24)"]	="img_files_id_sup_chi";
 			$option["select"][]					="company.*";			
 
+			$option["from"]						="company";			
+						
+			if(isset($_SESSION["company"]) AND isset($_SESSION["company"]["id"]))
+				$option["where"][]      		="company_id={$_SESSION["company"]["id"]}";
+			else if(isset($this->sys_id_company))	
+				$option["where"][]      		="company_id={$this->sys_id_company}";
 			$return 							=parent::__BROWSE($option);		
-		
+			
+			
+			
 			return	$return;     	
 		}				
 		public function __AUTOCOMPLETE()		
@@ -197,12 +189,5 @@
 			$return 							=$this->__BROWSE($option);    				
 			return $return;			
 		}							
-		public function __REPORT_ACTIVO($option=NULL)
-    	{    		
-    		$this->sys_fields["estatus"]["filter"]="1";    		    		    		
-			$return 				=$this->__VIEW_REPORT($option);
-			return	$return;     	
-		}						
-		
 	}
 ?>

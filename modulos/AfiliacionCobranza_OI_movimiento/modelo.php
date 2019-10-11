@@ -78,25 +78,68 @@
 		##  Metodos	
 		##############################################################################
    		public function __SAVE($datas=NULL,$option=NULL)
-    	{    
+    	{   
+    		if(isset($datas["class_field_id"]))
+    		{ 
+				$index=$datas["class_field_id"];    		
+				$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"][$index]=$datas["row"];
+
+				#$this->__PRINT_R($datas);
+				if(!isset($datas["row"]["actualizacion"]) OR $datas["row"]["actualizacion"]=="")	$datas["row"]["actualizacion"]=0;
+				if(!isset($datas["row"]["recargo"]) OR $datas["row"]["recargo"]=="")				$datas["row"]["recargo"]=0;
+				if(!isset($datas["row"]["gastos"]) OR $datas["row"]["gastos"]=="")					$datas["row"]["gastos"]=0;
+		
+		
+					$datas["row"]["total"]		=$datas["row"]["total_cop"] + $datas["row"]["actualizacion"] + $datas["row"]["recargo"] + $datas["row"]["gastos"];  
+			    
+			    foreach($_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"] as $index => $row)
+			    {
+					@$total_cuota			+=@$row["cuota_fija"];
+					@$total_excedente		+=@$row["excedente"];
+					@$total_cop				+=@$row["total_cop"];
+
+					@$total_actualizacion	+=@$row["actualizacion"];
+					@$total_recargo			+=@$row["recargo"];
+					@$total_gasto			+=@$row["gastos"];					
+
+					if(!isset($row["total_cop"]) OR $row["total_cop"]=="")			$row["total_cop"]=0;
+					if(!isset($row["actualizacion"]) OR $row["actualizacion"]=="")	$row["actualizacion"]=0;
+					if(!isset($row["recargo"]) OR $row["recargo"]=="")				$row["recargo"]=0;
+					if(!isset($row["gastos"]) OR $row["gastos"]=="")				$row["gastos"]=0;
+
+					$row["total"]			=@$row["total_cop"]+@$row["actualizacion"]+@$row["recargo"]+@$row["gastos"];
+
+					@$total_total			+=@$row["total"];
+					
+					$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"][$index]=$row;
+			    }    	    
+				
+				@$return=array(
+					"total"			=>(round(($total_total)*100,2))/100,
+					"cuota"			=>(round(($total_cuota)*100,2))/100,
+					"excedente"		=>(round(($total_excedente)*100,2))/100,
+					"cop"			=>(round(($total_cop)*100,2))/100,
+
+					"actualizacion"	=>@$total_actualizacion,
+					"recargo"		=>@$total_recargo,
+					"gasto"			=>@$total_gasto,
+					"count"			=>count($row),
+				);
+				/*
+				$option["js"]		="
+					alert('aaa');
+					asignar($.parseJSON(". json_encode($return) ."));
+				";
+	*/
+			}			
+
+    	
+    	
     	    $return=parent::__SAVE($datas,$option);
     	    
-    	    foreach($_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"] as $row)
-    	    {
-				@$total_total+=@$row["total"];
-				@$total_cuota+=@$row["cuota_fija"];
-				@$total_excedente+=@$row["excedente"];
-				@$total_cop+=@$row["total_cop"];
-				@$total_actualizacion+=@$row["actualizacion"];
-				@$total_recargo+=@$row["recargo"];
-				@$total_gasto+=@$row["gastos"];
-    	    }
+						
     	    
-    	    $return["js"]="alert('a');";
-    	    
-    	    #$this->__PRINT_R($_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]);
     	    return $return;
-
 		}
 		public function __BROWSE($option=array())
     	{	

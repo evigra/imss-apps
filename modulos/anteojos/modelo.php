@@ -149,6 +149,17 @@
 			    "class_field_o"    	=> "lente_id",
 			    "class_field_m"    	=> "id",			    
 			),			
+			"company_id"	    =>array(
+			    "title"             => "empresa",
+			    "titleShow"         => "no",			    
+			    "type"              => "autocomplete",
+			    "procedure"       	=> "__AUTOCOMPLETE",
+			    "relation"          => "many2one",
+			    "class_name"       	=> "company",
+			    "class_field_l"    	=> "nombre",				# Label
+			    "class_field_o"    	=> "company_id",
+			    "class_field_m"    	=> "id",			    
+			),			
 			
 		);				
 		##############################################################################	
@@ -275,7 +286,9 @@
 		##############################################################################	
 		
    		public function __PDF($Output="I")
-    	{				
+    	{	
+    		$_SESSION["pdf"]["formato"]					="";		    	    
+    					
 			$datos										=$this->__BROWSE($this->sys_private["id"]);			
 			if(@$datos["data"])							$datos=$datos["data"];					
 			$return=array();	

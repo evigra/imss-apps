@@ -1178,8 +1178,8 @@
 				
 					$(\"form\")
 						.attr(\"target\",\"_blank\")
-						.attr(\"action\",\"../{$option["module"]}/\");
-					////	.submit();
+						.attr(\"action\",\"../{$option["module"]}/\")
+					.submit();
 					$(\"form\")
 						.attr(\"action\",\"\")
 						.removeAttr(\"target\");			
@@ -3022,7 +3022,8 @@
 				$view_title     				=$this->__TEMPLATE($option["template_title"]);					//  HTML DEL REPORTE
 				$view_title						=str_replace("<td>", "<td class=\"title\">", $view_title);      // AGREGA la clase titulo
 				
-				$this->sys_title["style_tr"]	="background-color:#D5D5D5; heigth:60px;";
+				$this->sys_title["style_tr"]	="background-color:#b5b5b5; heigth:60px;";
+				$this->sys_title["style_tr"]	="background-color:#b5b5b5;";
 				#$this->sys_title["sys_class"]	="background-color:#D5D5D5; height:30px;";
 				
 				

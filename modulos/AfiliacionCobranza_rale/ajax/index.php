@@ -75,18 +75,18 @@
 		}
 		if(count($row)>0)
 		{
-			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["inicio"]=0;
-			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"]=$row;
-			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["total"]=count($row);
-			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["active_id"]=count($row);
+			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["inicio"]		=0;
+			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"]		=$row;
+			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["total"]		=count($row);
+			$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["active_id"]	=count($row);
 			
 			#$excedente	=(floor(($total_cop-$total_cop*0.1)*100))/100;
 			
 			@$return=array(
-				"total"			=>(floor(($total_total)*100))/100,
-				"cuota"			=>(floor(($total_cuota)*100))/100,
-				"excedente"		=>(floor(($total_excedente)*100))/100,
-				"cop"			=>(floor(($total_cop)*100))/100,
+				"total"			=>(round(($total_total)*100,2))/100,
+				"cuota"			=>(round(($total_cuota)*100,2))/100,
+				"excedente"		=>(round(($total_excedente)*100,2))/100,
+				"cop"			=>(round(($total_cop)*100,2))/100,
 
 				"actualizacion"	=>0,
 				"recargo"		=>0,
