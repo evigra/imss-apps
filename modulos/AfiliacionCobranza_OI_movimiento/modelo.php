@@ -91,7 +91,7 @@
 				if(!isset($datas["row"]["gastos"]) OR $datas["row"]["gastos"]=="")					$datas["row"]["gastos"]=0;
 		
 		
-					$datas["row"]["total"]		=$datas["row"]["total_cop"] + $datas["row"]["actualizacion"] + $datas["row"]["recargo"] + $datas["row"]["gastos"];  
+				$datas["row"]["total"]		=$datas["row"]["total_cop"] + $datas["row"]["actualizacion"] + $datas["row"]["recargo"] + $datas["row"]["gastos"];  
 			    
 			    foreach($_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"] as $index => $row)
 			    {
@@ -126,12 +126,12 @@
 					"gasto"			=>@$total_gasto,
 					"count"			=>count($row),
 				);
-				/*
-				$option["js"]		="
+				#/*
+				$this->__JS_SET("
 					alert('aaa');
-					asignar($.parseJSON(". json_encode($return) ."));
-				";
-	*/
+					//asignar($.parseJSON(". json_encode($return) ."));
+				");
+				#*/
 			}			
 
     	
