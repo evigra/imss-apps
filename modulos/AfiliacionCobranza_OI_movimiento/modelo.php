@@ -26,7 +26,6 @@
 			    "title"             => "TD",
 			    "type"              => "input",
 			),
-			
 			"cuota_fija"	    =>array(
 			    "title"             => "CUOTA FIJA",
 			    "type"              => "input",
@@ -38,8 +37,7 @@
 			"pres"	    =>array(
 			    "title"             => "PRES",
 			    "type"              => "input",
-			),
-			
+			),			
 			"riesgo_trabajo"	    =>array(
 			    "title"             => "RIESGO DE TRABAJO",
 			    "type"              => "input",
@@ -114,31 +112,23 @@
 					
 					$_SESSION["SAVE"]["AfiliacionCobranza_OI"]["movimiento_ids"]["data"][$index]=$row;
 			    }    	    
-				
-				@$return=array(
-					"total"			=>(round(($total_total)*100,2))/100,
-					"cuota"			=>(round(($total_cuota)*100,2))/100,
-					"excedente"		=>(round(($total_excedente)*100,2))/100,
-					"cop"			=>(round(($total_cop)*100,2))/100,
 
-					"actualizacion"	=>@$total_actualizacion,
-					"recargo"		=>@$total_recargo,
-					"gasto"			=>@$total_gasto,
-					"count"			=>count($row),
-				);
-				#/*
-				$this->__JS_SET("
-					alert('aaa');
-					//asignar($.parseJSON(". json_encode($return) ."));
+				echo $this->__JS_SET("
+					crea_tabla({
+						'total':'" . 		(round(($total_total)*100,2))/100 . "',
+						'cuota':'" . 		(round(($total_cuota)*100,2))/100 . "',
+						'excedente':'" . 	(round(($total_excedente)*100,2))/100 . "',
+						'cop':'" . 			(round(($total_cop)*100,2))/100 . "',
+						'actualizacion':'". $total_actualizacion . "',
+						'recargo':'" . 		$total_recargo . "',
+						'gasto':'" . 		$total_gasto . "',
+						'count':'" . 		count($row) . "'
+					});
 				");
 				#*/
 			}			
-
-    	
     	
     	    $return=parent::__SAVE($datas,$option);
-    	    
-						
     	    
     	    return $return;
 		}

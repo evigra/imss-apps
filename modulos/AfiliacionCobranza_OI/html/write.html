@@ -1,9 +1,25 @@
+{subtotal_excedente}        
+{subtotal_recargo}        
+{subtotal_actualizacion}        
+{subtotal_gasto} 
+{subtotal_cop}       
+{subtotal}       
+{subtotal_cuota_fija}
+{total_excedente}        
+{total_recargo}        
+{total_actualizacion}        
+{total_gasto}        
+{total}       
+
 <div class="mainTable">
-    <div class="module_subtitle">Propiedades generales</div>
     <table border="0" width="100%">
         <tr>
-            <td colspan="2" width="33%">{registro_patronal}</td>           
-            <td colspan="4">{patron} </td>                	
+            <td width="11%">{registro_patronal}</td>           
+            <td width="44%">{patron} </td>                	
+            <td></td>
+            <td width="11%">{umas}</td>
+            <td width="11%">{plazo}</td>                               
+            <td width="11%">{extemporaneo}</td>
         </tr>  
 		<tr>
             <td colspan="6">&nbsp;</td>        
@@ -11,10 +27,5 @@
 		<tr>
             <td colspan="6">{movimiento_ids}</td>        
         </tr>          
-		<tr>
-			<td>{subtotal}</td>        
-            <td>{total}</td>        
-        </tr>          
-
     </table>
 </div>	

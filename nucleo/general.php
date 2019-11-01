@@ -805,7 +805,7 @@
     		{
     			if(isset($option["close"]))	
     			{
-    				$this->cerrar_conexion();
+    				@$this->cerrar_conexion();
     				    if(isset($option["e_close"]) AND in_array($_SERVER["SERVER_NAME"],$_SESSION["var"]["server_error"]) AND @$this->sys_private["action"]!="print_pdf")
     					echo "<br><b>CONECCION CERRADA</b><br>{$option["e_close"]}";
     			}	

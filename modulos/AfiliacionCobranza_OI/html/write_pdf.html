@@ -23,83 +23,123 @@
             <td colspan="2"  width="770">                        
 				<table border="1" width="100%">
 					<tr>
-						<td colspan="3" align="left" style="margin: 5px 5px 5px 5px;"><font size="15">{registro_patronal}</font></td>           
-						<td colspan="8" align="left" style="padding-left:15px;"><font size="15">{patron}</font></td>
-						<td colspan="3" align="left"></td>
-						<td  align="left"></td>
+						<td colspan="2" align="center" ><font size="14">{registro_patronal}</font></td>           
+						<td colspan="10" align="left" style="padding-left:15px;" ><font size="14"> {patron}</font></td>
+						<td colspan="3" align="center"><br> &nbsp;
+						</td>                	                	
 					</tr>  
 					<tr>
-						<td colspan="3" align="right"><font size="15">$ {total}</font></td>           
-						<td colspan="8" align="left">{letra_total}</td>
-						<td colspan="3" align="left">SELLO AL REVERSO</td>                	                	
-						<td align="left"></td>
+						<td colspan="2" align="center"><font size="14">$ {total}</font></td>           
+						<td colspan="10" align="left"><font size="14"> {letra_total}</font></td>						
 					</tr>  
 					<tr>
-						<td colspan="15" height="220">
+						<td colspan="15" aling="center" height="280">
 							{movimiento_ids}
 						</td>        
 					</tr>          
 					<tr>
-						<td rowspan="6" colspan="5" width="215"></td>
-						<td width="50">COP</td>
-						<td  align="right" width="50">{total_cop}</td>
-						<td colspan="3" width="134">FECHA LIMITE DE PAGO</td>
-						<td rowspan="6" width="316" colspan="5"></td>
-					</tr>          
-					<tr><td>ACT</td><td align="right">$ {total_actualizacion}</td><td colspan="3" >{fecha}</td></tr>
-					<tr><td>RM</td><td align="right">$ {total_recargo}</td><td width="45">REG PAT</td><td colspan="2" width="89">{registro_patronal}</td></tr>
-					<tr><td>G EJEC</td><td>{total_gasto}</td><td>TOTAL</td><td colspan="2">$ {total}</td></tr>
-					<tr><td colspan="5" >{letra_total}</td></tr>
-					<tr><td colspan="5" >{jefe}</td></tr>
-					<tr>
-						<td  width="140" colspan="4" >SUMAS</td>           
-						<td width="75" align="right">{total_cuota_fija}</td>
-						<td align="right"> $ {total_excedente}</td>
-						<td>0.00</td>                      
-						<td>0.00</td>
-						<td>0.00</td>
-						<td>0.00</td>
-
-						<td align="right" width="61"> $ {total_cop}</td>
-						<td align="right" width="85"> $ {total_actualizacion}</td>
-						<td align="right" width="60"> $ {total_recargo}</td>
-						<td align="right" width="50"> $ {total_gasto}</td>
-						<td align="right" width="60"> $ {total}</td>
+						<td colspan="3" width="140">SUMAS</td>           
+						<td align="right" width="75">{subtotal_cuota_fija}</td>
+						<td align="right"  width="65"> $ {subtotal_excedente}</td>
+						<td width="37">0.00</td>                      
+						<td width="59">0.00</td>
+						<td width="75">0.00</td>
+						<td width="59" align="right" ><table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{subtotal_cop}</td></tr></table></td>
+						<td width="85" align="right" ><table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{subtotal_actualizacion}</td></tr></table></td>
+						<td width="60"align="right" ><table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{subtotal_recargo}</td></tr></table></td>
+						<td width="50" align="right" ><table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{subtotal_gasto}</td></tr></table></td>
+						<td width="60" align="right" ><table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{subtotal}</td></tr></table></td>
 					</tr>    
-
 					<tr>
-						<td rowspan="4" colspan="5" >OBSERVACIONES</td>           
+						<td rowspan="4" colspan="4" >OBSERVACIONES</td>           
 						<td rowspan="4">CREDITO</td>
 						<td rowspan="4">PER</td>                      
 						<td rowspan="4">DOCUM</td>
-						<td colspan="2">O ACT VAR UDIS</td>
-						<td rowspan="3"></td>
-						<td rowspan="3" width="85"></td>
-						<td rowspan="3" width="60"></td>
-						<td rowspan="3" width="50"></td>
-						<td rowspan="3" width="60"></td>
+						<td>O ACT UDIS</td>
+						<td rowspan="3"> </td>
+						<td>
+							<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{umas}</td></tr></table>
+						</td>
+						<td ></td>
+						<td rowspan="3" ></td>
+						<td rowspan="3" ></td>
 					</tr>    
-					<tr><td colspan="2">RECARGO PLAZO</td></tr>
-					<tr><td colspan="2">RECARGO P EXT</td></tr>
+					<tr><td>RECAR PLAZO</td><td rowspan="2"></td><td>
+						<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{plazo}</td></tr></table>
+					</td></tr>
+					<tr><td>RECAR EXT</td><td>
+						<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{extemporaneo}</td></tr></table>
+					</td></tr>
 					<tr>
-						<td colspan="2">SUMAS</td>
-						<td align="right"> $ {total_cop}</td>
-						<td align="right" 85="width"> $ {total_actualizacion}</td>
-						<td align="right" width="60"> $ {total_recargo}</td>
-						<td align="right" width="50"> $ {total_gasto}</td>
-						<td align="right" width="60"> $ {total}</td>
-						
+						<td>SUMAS</td>
+						<td align="right"> 
+							<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{subtotal_cop}</td></tr></table>
+						</td>
+						<td align="right" >
+							<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{total_actualizacion}</td></tr></table>
+						</td>
+						<td align="right" > 
+							<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{total_recargo}</td></tr></table>
+						</td>
+						<td align="right" > 
+							<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{total_gasto}</td></tr></table>
+						</td>
+						<td align="right" > 
+							<table width="100%"><tr><td width="15%">$</td><td  width="85%" align="right">{total}</td></tr></table>
+						</td>						
 					</tr>    
-
 					<tr>
-						<td colspan="5">Lugar de elaboracion </td>        
+						<td colspan="4">Lugar de elaboracion </td>        
 						<td colspan="3">{formulo}</td>        
-						<td colspan="4">{reviso}</td>
+						<td colspan="3">{reviso}</td>
 						<td colspan="3">{jefe}</td>                
 					</tr>          
 				</table>            
-            
-            
+				
+							<br><br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+							<table border="0" width="100%">
+								<tr>
+									<td width="60%"></td>
+									<td align="rigth">
+
+							<table border="1" width="297">
+								<tr>
+									<td>
+										<table border="0">
+											<tr>
+												<td rowspan="5" align="center"><img height="66" src="http://imss-apps.com/sitio_web/img/logo2.png"></td>
+												
+												<td  width="45" align="left">COP</td>
+												<td  width="55" align="rigth"><b>{total_cop}</b></td>
+												<td  width="130" colspan="2">FECHA LIMITE DE PAGO</td>
+											</tr>
+											<tr>
+												<td align="left"> ACT</td><td align="rigth"><b>{total_actualizacion}</b></td>
+												<td colspan="2"><b>{fecha}</b></td>
+											</tr>
+											<tr>
+												<td width="45" align="left">RM</td>
+												<td width="55" align="rigth"><b>{total_recargo}</b></td>
+												<td width="50" align="left"> REG PAT</td>
+												<td width="80" align="rigth"><b>{registro_patronal}</b></td>
+											</tr>
+											<tr>
+												<td align="left">G EJEC</td><td align="rigth"><b>{total_recargo}</b></td>
+												<td align="left"> TOTAL</td><td align="rigth"><b>{total}</b></td>
+											</tr>
+											<tr>
+												<td colspan="4" align="center">MALICHA<br>JEFE DE OFICINA</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+
+								</td>
+							</tr>
+							</table>	
+				
+				
             </td>
         </tr>  
 	</table>

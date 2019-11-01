@@ -1178,7 +1178,7 @@
 				
 					$(\"form\")
 						.attr(\"target\",\"_blank\")
-						.attr(\"action\",\"../{$option["module"]}/\")
+						.attr(\"action\",\"../{$option["module"]}/&sys_action=print_pdf\")
 					.submit();
 					$(\"form\")
 						.attr(\"action\",\"\")
@@ -2077,12 +2077,14 @@
                     if($class=="odd")   
                     {
                     	$class="even";
-                    	$style="background-color:#D5D5D5; height:30px;";	
+                    	$style="background-color:#D5D5D5; height:30px;";
+                    	$style="background-color:#D5D5D5; height:20px;";		
                     }	
                     else                
                     {
                     	$class="odd";
-                    	$style="background-color:#E5E5E5; heigth:30px;";	
+                    	$style="background-color:#E5E5E5; heigth:30px;";
+                    	$style="background-color:#E5E5E5; heigth:20px;";		
                     }	
                     
                     $actions				=array();
@@ -3028,7 +3030,7 @@
 				$view_title						=str_replace("<td>", "<td class=\"title\">", $view_title);      // AGREGA la clase titulo
 				
 				$this->sys_title["style_tr"]	="background-color:#b5b5b5; heigth:60px;";
-				$this->sys_title["style_tr"]	="background-color:#b5b5b5;";
+				$this->sys_title["style_tr"]	="background-color:#b5b5b5; heigth:20px;";
 				#$this->sys_title["sys_class"]	="background-color:#D5D5D5; height:30px;";
 				
 				
@@ -3317,8 +3319,13 @@
 		
 		function cerrar_conexion()
 		{
-			
-		    $this->OPHP_conexion->close();
+			if(isset($this->OPHP_conexion) AND is_object($this->OPHP_conexion))
+		    	@$this->OPHP_conexion->close();
+		    else
+		    {
+		    	echo "SE PRESENTO UNA FALLA EN LA CONECCION";	
+		    	exit();
+		    }	
 		}	
 		
 		
