@@ -44,7 +44,7 @@
 
 			"folio"	    =>array(
 			    "title"             => "Folio",
-			    "type"              => "value",
+			    "type"              => "hidden",
 			),
 			"subtotal"	    =>array(
 			    "title"             => "SubTotal",
@@ -143,6 +143,7 @@
 
 			if(in_array(@$_REQUEST["sys_action"],$_SESSION["var"]["print"]) )
 			{
+				$this->sys_fields["folio"]["type"]				="value";
 				$this->sys_fields["patron"]["type"]				="value";
 				$this->sys_fields["registro_patronal"]["type"]	="value";
 				$this->sys_fields["total_cuota_fija"]["type"]	="value";

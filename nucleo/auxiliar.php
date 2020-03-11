@@ -3342,7 +3342,9 @@
 				{    		    													   
 				    if(is_string($valor) AND $valor=="maps")                  $file="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTDTeSJ3Uu3hHCy73RzGoJbx6vmKcmmUI";
 				    elseif(is_string($valor) AND $valor=="responsivevoice")  $file="https://code.responsivevoice.org/responsivevoice.js";
+				    elseif(is_string($valor) AND $valor=="graph")  			$file="https://www.gstatic.com/charts/loader.js";
 				    elseif(is_string($field) AND $field=="graph")  			$file="https://www.gstatic.com/charts/loader.js";
+				    
 				    else                                $file="$valor.js";
 				        		        		    
 				    $return.="<script src=\"$file\"></script>";    		        		    
@@ -3387,6 +3389,7 @@
 							{
 								$packages="sankey";
 								$script="
+								        /// sankey
 										var data = new google.visualization.DataTable();
 										data.addColumn('string', 'De');
 										data.addColumn('string', 'A');
@@ -3398,6 +3401,7 @@
 							{
 								$packages="corechart";
 								$script="
+								        /// corechart
 										var data = google.visualization.arrayToDataTable([$title"."$datos]);
 										options = {
 											title: '$label',
